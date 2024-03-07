@@ -99,7 +99,7 @@ public class CustomerOrder
 
     public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish)
     {
-        List<Ingredient>backup; // this exists to hopefully be able to undo
+        List<Ingredient>backup = null; // this exists to hopefully be able to undo
         if(garnish)
             backup = List.copyOf(ingredients);
         
@@ -177,22 +177,22 @@ public class CustomerOrder
 
     public String getRecipeDescription()
     {
-        String csList = "";
-        for( Ingredient ing: recipe)
-        {
-            csList += ing.toString() + ", ";
-        }
-        csList =  csList.substring(0, csList.length() -2);
+        return ingredientListToString(recipe);
     }
 
     public String getGarnishDescription()
     {
+        return ingredientListToString(garnish);
+    }
+    private String ingredientListToString(List<Ingredient> list)
+    {
         String csList = "";
-        for( Ingredient ing: garnish)
+        for( Ingredient ing: list)
         {
             csList += ing.toString() + ", ";
         }
         csList =  csList.substring(0, csList.length() -2);
+        return csList;
     }
 
 }
