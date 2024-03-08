@@ -1,4 +1,4 @@
-package main.bakery;
+package bakery;
 public enum CustomerOrderStatus
 {
     WAITING,
