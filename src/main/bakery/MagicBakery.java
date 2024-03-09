@@ -16,6 +16,16 @@ public class MagicBakery{
     private Random random;
     private static final long serialVersionUID;
 
+    public enum ActionType
+    {
+        DRAW_INGREDIENT,
+        PASS_INGREDIENT,
+        BAKE_LAYER,
+        FULFIL_ORDER,
+        REFRESH_PANTRY
+
+    }
+
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile)
     {
         //do some stuff with the file paths. Is the seed a thing for the serial version?

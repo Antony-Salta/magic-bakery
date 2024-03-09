@@ -13,8 +13,16 @@ public class CustomerOrder
     private String name;
     private List<Ingredient> recipe;
     private CustomerOrderStatus status;
-
     private static final long serialVersionUID;
+
+    public enum CustomerOrderStatus
+    {
+        WAITING,
+        FULFILLED,
+        GARNISHED,
+        IMPATIENT,
+        GIVEN_UP
+    }
 
     /**
      * 

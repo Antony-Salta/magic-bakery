@@ -2,17 +2,15 @@ package util;
 
 import java.io.Console;
 import java.io.File;
-import java.text.CollationElementIterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import bakery.ActionType;
 import bakery.CustomerOrder;
 import bakery.Ingredient;
 import bakery.MagicBakery;
+import bakery.MagicBakery.ActionType;
 import bakery.Player;
 
 public class ConsoleUtils
@@ -94,6 +92,7 @@ public class ConsoleUtils
             }
             names.add(name);
         }
+        return names;
     }
     public boolean promptForStartLoad(String prompt)
     {
