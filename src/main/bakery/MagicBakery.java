@@ -49,7 +49,7 @@ public class MagicBakery{
         
     }
 
-    public int getActionsPwemitted()
+    public int getActionsPermitted()
     {
 
     }
