@@ -1,5 +1,6 @@
 package bakery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,6 +34,11 @@ public class CustomerOrder
      */
     public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level)
     {
+        if(recipe == null)
+            throw new WrongIngredientsException("Cannot have a null recipe in constructor.");
+        if(recipe.isEmpty())
+            throw new WrongIngredientsException("Cannot have an empty recipe in constructor.");
+        
         this.name = name;
         this.recipe = recipe;
         this.garnish = garnish;
@@ -134,9 +140,7 @@ public class CustomerOrder
      */
     public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish)
     {
-        List<Ingredient>backup = null; // this exists to hopefully be able to undo
-        if(garnish)
-            backup = List.copyOf(ingredients);
+        List<Ingredient>used = new ArrayList<>(); 
         
         if(canFulfill(ingredients))
         {
@@ -144,39 +148,42 @@ public class CustomerOrder
             for (Ingredient ingredient : recipe) 
             {
                 if(ingredients.contains(ingredient))
+                {
                     ingredients.remove(ingredient);
+                    used.add(ingredient);
+                }
+                    
                 else
+                {
                     ingredients.remove(Ingredient.HELPFUL_DUCK);
-                
+                    used.add(ingredient);
+                }
             }
-            if(garnish)
+            if(garnish && canGarnish(ingredients))
             {
-                if(canGarnish(ingredients))
+                for (Ingredient ingredient : this.garnish) 
                 {
-                    for (Ingredient ingredient : this.garnish) 
+                    if(ingredients.contains(ingredient))
                     {
-                        if(ingredients.contains(ingredient))
-                            ingredients.remove(ingredient);
-                        else
-                            ingredients.remove(Ingredient.HELPFUL_DUCK);
+                        ingredients.remove(ingredient);
+                        used.add(ingredient);
                     }
-                    status = CustomerOrderStatus.GARNISHED;
-                }
-                else
-                {
-                    //TODO: Check if I need to throw a WrongIngredientsException here.
-                    ingredients.clear(); // this bit's here because the docs say that backup will be unmodifiable
-                    for (Ingredient ingredient : backup) {
-                        ingredients.add(ingredient);
+                    else
+                    {
+                        ingredients.remove(Ingredient.HELPFUL_DUCK);
+                        used.add(ingredient);
                     }
+                        
                 }
-                
+                status = CustomerOrderStatus.GARNISHED;   
             }
             else
                 status = CustomerOrderStatus.FULFILLED;
         }
-        return ingredients;
-        
+        else
+            throw new WrongIngredientsException("Don't have the ingredients to fulfill the order");
+
+        return used;
     }
 
     /**

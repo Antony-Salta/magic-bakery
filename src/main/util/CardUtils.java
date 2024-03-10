@@ -8,12 +8,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import bakery.Layer;
 import bakery.CustomerOrder;
 import bakery.Ingredient;
 
-public  abstract class CardUtils
+public  final class CardUtils
 {
     /**
      * Reads the file with all of the CustomerOrders and returns them in a list
@@ -21,7 +20,13 @@ public  abstract class CardUtils
      * @param layers A list of all layers to see if something in the recipe is an ingredient or layer.
      * @return The list of customer orders generated.
      */
-    public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers)
+    private CardUtils()
+    {
+
+    }
+
+
+    public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers) throws IOException
     {
         List<CustomerOrder> customers = null; 
         try (BufferedReader read = new BufferedReader(new FileReader(path))) 
@@ -41,8 +46,8 @@ public  abstract class CardUtils
             }
             
         } catch (IOException e) {
-            System.out.println("File not found");
-            e.printStackTrace();
+            System.out.println("Error when reading customer file");
+            throw e;
         }
         return customers;
     }
@@ -82,7 +87,8 @@ public  abstract class CardUtils
             
             
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error when reading ingredients file.");
+            throw e;
         }
         return ingredients;
     }
@@ -103,7 +109,8 @@ public  abstract class CardUtils
             layers = stringtoLayers(all);
             
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error when reading layers file.");
+            throw e;
         }
         return layers;
     }

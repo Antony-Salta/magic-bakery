@@ -20,6 +20,11 @@ public class Layer extends Ingredient
     public Layer(String name, List<Ingredient> recipe)
     {
         super(name);
+        if(recipe == null)
+            throw new WrongIngredientsException("Cannot have a null recipe in constructor.");
+        if(recipe.isEmpty())
+            throw new WrongIngredientsException("Cannot have an empty recipe in constructor.");
+        
         this.recipe = recipe;
     }
 
