@@ -10,7 +10,7 @@ public class Player
 {
     private List<Ingredient> hand;
     private String name;
-    private static final long serialVersionUID;
+    private static final long serialVersionUID =1;
 
     /**
      * 

@@ -14,7 +14,7 @@ public class CustomerOrder
     private String name;
     private List<Ingredient> recipe;
     private CustomerOrderStatus status;
-    private static final long serialVersionUID;
+    private static final long serialVersionUID =1;
 
     public enum CustomerOrderStatus
     {

@@ -24,7 +24,7 @@ public class Customers{
     private Collection<CustomerOrder> customerDeck; 
     private List<CustomerOrder> inactiveCustomers;
     private Random random;
-    private static final long serialVersionUID;
+    private static final long serialVersionUID =1;
 
     /**
      * Makes a customer object, which should be initialised at the beginning of the game, initialising the customer side of the game.
@@ -107,7 +107,7 @@ public class Customers{
      * @param hand the list of ingredients and layers in some players hands. 
      * @return The CustomerOrders in activeCustomers that can be fulfilled.
      */
-    public Collection<CustomerOrder> getFulfillable(List<Ingredient> hand)
+    public Collection<CustomerOrder> getFulfilable(List<Ingredient> hand)
     {
         Collection<CustomerOrder> fulfillable = new ArrayList<>();
         
@@ -168,7 +168,11 @@ public class Customers{
         }
         int cardLevel =1;
         for (Integer integer : numCards) {
-            List<CustomerOrder> separatedDeck = allCustomers.stream().filter(c -> c.getLevel() == cardLevel).toList();        
+            List<CustomerOrder> separatedDeck =  new ArrayList<>();
+            for (CustomerOrder customer : allCustomers) {
+                if(customer.getLevel() == cardLevel)
+                    separatedDeck.add(customer);
+            }        
             for (int i = 0; i < integer; i++) {
                 customerDeck.add(separatedDeck.get(0));
                 separatedDeck.remove(0);

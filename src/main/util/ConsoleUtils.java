@@ -57,7 +57,7 @@ public class ConsoleUtils
         Collection<Object> allowedActions = new ArrayList<>();
         allowedActions.add(ActionType.DRAW_INGREDIENT);
         allowedActions.add(ActionType.REFRESH_PANTRY);
-        if(!bakery.getFulfillableCustomers().isEmpty())
+        if(!bakery.getFulfilableCustomers().isEmpty())
             allowedActions.add(ActionType.FULFIL_ORDER);
         if(!bakery.getBakeableLayers().isEmpty())
             allowedActions.add(ActionType.BAKE_LAYER);

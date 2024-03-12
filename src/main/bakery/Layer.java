@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class Layer extends Ingredient
 {
     private List<Ingredient> recipe;
-    private final long serialVersionUID;
+    private final long serialVersionUID =1;
 
     /**
      * This makes a layer object with the given attributes

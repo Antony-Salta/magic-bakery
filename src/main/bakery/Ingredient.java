@@ -10,7 +10,7 @@ public class Ingredient implements Comparable<Ingredient>
      * The static HELPFUL_DUCK gives a reference to see if there is a helpful duck that can be substituted in for some other ingredient in a recipe. 
      */
     public static final Ingredient HELPFUL_DUCK = new Ingredient("helpful duck 𓅭"); // WHAT ARE YOU. Do I just check if ingredients are equal to you?
-    private static final long serialVersionUID;
+    private static final long serialVersionUID =1;
     
     /**
      * Creates an Ingredient object with the given name.

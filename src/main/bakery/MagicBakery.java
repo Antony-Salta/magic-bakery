@@ -15,10 +15,10 @@ public class MagicBakery{
     private Collection<Layer> layers;
     private Collection<Player> players;
     private Collection<Ingredient> pantry;
-    private Collection<Ingredient> pantryDeck; // TODO Change back and see if it works.
+    private Collection<Ingredient> pantryDeck; 
     private Collection<Ingredient> pantryDiscard;
     private Random random;
-    private static final long serialVersionUID;
+    private static final long serialVersionUID =1;
 
     public enum ActionType
     {
@@ -45,7 +45,7 @@ public class MagicBakery{
     }
     public Ingredient drawFromPantryDeck()
     {
-
+        return null;
     }
 
     public void drawFromPantry(String ingredientName)
@@ -59,46 +59,46 @@ public class MagicBakery{
 
     public boolean endTurn()
     {
-
+        return false;
     }
 
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish)
     {
-        
+        return null;
     }
 
     public int getActionsPermitted()
     {
-
+        return -1;
     }
     
     public int getActionsRemaining()
     {
-
+        return -1;
     }
 
     public Collection<Layer> getBakeableLayers()
-    {
-
+    {   
+        return null;
     }
 
     public Player getCurrentPlayer()
     {
-
+        return null;
     }
 
     public Customers getCustomers()
     {
         return customers;
     }
-    public Collection<CustomerOrder> getFulfillableCustomers()
+    public Collection<CustomerOrder> getFulfilableCustomers()
     {
-
+        return null;
     }
 
     public Collection<CustomerOrder> getGarnishableCustomers()
     {
-
+        return null;
     }
 
     public Collection<Layer> getLayers()
@@ -118,7 +118,7 @@ public class MagicBakery{
 
     public static MagicBakery loadState(File file)
     {
-
+        return null;
     } 
 
     public void passCard(Ingredient ingredient, Player recipient)
