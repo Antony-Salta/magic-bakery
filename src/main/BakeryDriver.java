@@ -2,7 +2,6 @@ import util.ConsoleUtils;
 
 import java.io.Reader;
 
-
 import bakery.MagicBakery;
 
 
@@ -12,8 +11,7 @@ public class BakeryDriver {
     }
     public static void main(String[] args)  
     {
-        
-        
+        System.out.println(list.toString());
         //make a seed
         //MagicBakery magicBakery = new MagicBakery(0, "io/ingredients.csv", "io/layers.csv")
         

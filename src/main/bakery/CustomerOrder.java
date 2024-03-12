@@ -60,36 +60,7 @@ public class CustomerOrder
      */
     public boolean canFulfill( List<Ingredient> ingredients)
     {
-        HashMap<String, Integer> quantities = new HashMap<>();
-        for(Ingredient ingredient: recipe) // this builds up the amount needed for each ingredients
-        {
-            String iName = ingredient.toString(); // just to get rid of all the toString calls.
-            if(!quantities.containsKey(iName))
-                quantities.put(iName.toString(), 1);
-            else
-                quantities.replace(iName, quantities.get(iName) + 1);
-        }
-
-        int numDucks =0;
-
-        for (Ingredient ingredient : ingredients) {
-            String iName = ingredient.toString();
-            if(quantities.containsKey(iName))
-                quantities.replace(iName, quantities.get(iName) - 1);
-            
-            if(quantities.get(iName) == 0)
-                quantities.remove(iName);
-            if(ingredient.equals(Ingredient.HELPFUL_DUCK)) // NOTE: dunno if this is how you actually count the helpful ducks.
-                numDucks++;
-        } // so at the end of the loop it will have counted down all of the ingredients, so then we just have to see if they have enough helpful ducks.
-        
-        int count = 0;
-        for(Integer num: quantities.values()) // this gets the number of items in the recipe not accounted for by the normal ingredients.
-        {
-            count += num;
-        }
-            
-        return numDucks >= count; // This will work if the normal ingredients cover it, since then it'll be 0 or more >= 0.
+        return canMake(recipe, ingredients);
     }
 
     /**
@@ -100,30 +71,36 @@ public class CustomerOrder
      */
     public boolean canGarnish( List<Ingredient> ingredients)
     {
-        HashMap<String, Integer> quantities = new HashMap<>();
-        for(Ingredient ingredient: garnish) // this builds up the amount needed for each ingredients
+        return canMake(garnish, ingredients);
+    }
+    private boolean canMake(List<Ingredient> thingToMake, List<Ingredient> ingredients)
+    {
+        HashMap<Ingredient, Integer> quantities = new HashMap<>();
+        for(Ingredient ingredient: thingToMake) // this builds up the amount needed for each ingredients
         {
-            String iName = ingredient.toString(); // just to get rid of all the toString calls.
-            if(!quantities.containsKey(iName))
-                quantities.put(iName.toString(), 1);
+            if(!quantities.containsKey(ingredient))
+                quantities.put(ingredient, 1);
             else
-                quantities.replace(iName, quantities.get(iName) + 1);
+                quantities.replace(ingredient, quantities.get(ingredient) + 1);
         }
 
         int numDucks =0;
 
         for (Ingredient ingredient : ingredients) {
-            String iName = ingredient.toString();
-            if(quantities.containsKey(iName))
-                quantities.replace(iName, quantities.get(iName) - 1);
+            if(quantities.containsKey(ingredient))
+                quantities.replace(ingredient, quantities.get(ingredient) - 1);
             
-            if(quantities.get(iName) == 0)
-                quantities.remove(iName);
-            if(ingredient.equals(Ingredient.HELPFUL_DUCK)) // NOTE: dunno if this is how you actually count the helpful ducks.
+            if(quantities.get(ingredient) == 0)
+                quantities.remove(ingredient);
+            if(ingredient.equals(Ingredient.HELPFUL_DUCK))
                 numDucks++;
         } // so at the end of the loop it will have counted down all of the ingredients, so then we just have to see if they have enough helpful ducks.
         
         int count = 0;
+        for (Ingredient ingredient : quantities.keySet()) { // return false if there is a Layer unaccounted for.
+            if (ingredient instanceof Layer)
+                return false;
+        }
         for(Integer num: quantities.values()) // this gets the number of items in the recipe not accounted for by the normal ingredients.
         {
             count += num;
@@ -136,7 +113,8 @@ public class CustomerOrder
      * This will attempt to fulfil the order, possibly with the garnish
      * @param ingredients: The list of ingredients being used.
      * @param garnish: This is a flag marking if the garnish is being made as well.
-     * @return The list of ingredients after fulfilling the order. If it cannot be fulfilled, then it will return the list that it was given.
+     * @return The list of ingredients used to fulfill the order, so counting Helpful Ducks if they were needed.
+     * @throws WrongIngredientException if the ingredients passed 
      */
     public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish)
     {
@@ -156,7 +134,7 @@ public class CustomerOrder
                 else
                 {
                     ingredients.remove(Ingredient.HELPFUL_DUCK);
-                    used.add(ingredient);
+                    used.add(Ingredient.HELPFUL_DUCK);
                 }
             }
             if(garnish && canGarnish(ingredients))
@@ -171,7 +149,7 @@ public class CustomerOrder
                     else
                     {
                         ingredients.remove(Ingredient.HELPFUL_DUCK);
-                        used.add(ingredient);
+                        used.add(Ingredient.HELPFUL_DUCK);
                     }
                         
                 }

@@ -86,7 +86,7 @@ public class CardUtilsTest {
 		assertEquals(2, order.getLevel());
 		assertEquals("roulade", order.toString());
 
-		List<Ingredient> recipe = order.getRecipe();
+		List<Ingredient> recipe = order.getThingToMake();
 		assertEquals("A", recipe.get(0).toString());
 		assertEquals(Ingredient.class, recipe.get(0).getClass());
 
@@ -102,7 +102,7 @@ public class CardUtilsTest {
 		assertEquals(2, order.getLevel());
 		assertEquals("meringue roulade", order.toString());
 
-		List<Ingredient> recipe = order.getRecipe();
+		List<Ingredient> recipe = order.getThingToMake();
 		assertEquals("multi-word ingredient", recipe.get(0).toString());
 		assertEquals(Ingredient.class, recipe.get(0).getClass());
 
@@ -118,7 +118,7 @@ public class CardUtilsTest {
 		assertEquals(1, order.getLevel());
 		assertEquals("battenberg", order.toString());
 
-		List<Ingredient> recipe = order.getRecipe();
+		List<Ingredient> recipe = order.getThingToMake();
 		assertEquals(1, recipe.size());
 		assertEquals("flour", recipe.get(0).toString());
 		assertEquals(Ingredient.class, recipe.get(0).getClass());
@@ -138,7 +138,7 @@ public class CardUtilsTest {
 		assertEquals(2, order.getLevel());
 		assertEquals("roulade", order.toString());
 
-		List<Ingredient> recipe = order.getRecipe();
+		List<Ingredient> recipe = order.getThingToMake();
 		assertEquals(1, recipe.size());
 		assertEquals("layerA", recipe.get(0).toString());
 		assertEquals(Layer.class, recipe.get(0).getClass());
@@ -156,7 +156,7 @@ public class CardUtilsTest {
 		assertEquals(1, order.getLevel());
 		assertEquals("cheesecake", order.toString());
 
-		List<Ingredient> recipe = order.getRecipe();
+		List<Ingredient> recipe = order.getThingToMake();
 		assertEquals(1, recipe.size());
 		assertEquals("layerC", recipe.get(0).toString());
 		assertEquals(Layer.class, recipe.get(0).getClass());
@@ -176,7 +176,7 @@ public class CardUtilsTest {
 		assertEquals(2, order.getLevel());
 		assertEquals("celebration cake", order.toString());
 
-		List<Ingredient> recipe = order.getRecipe();
+		List<Ingredient> recipe = order.getThingToMake();
 		assertEquals(3, recipe.size());
 		assertEquals("layerC", recipe.get(0).toString());
 		assertEquals(Layer.class, recipe.get(0).getClass());
@@ -202,7 +202,7 @@ public class CardUtilsTest {
 		assertEquals(2, order.getLevel());
 		assertEquals("meringue roulade", order.toString());
 
-		List<Ingredient> recipe = order.getRecipe();
+		List<Ingredient> recipe = order.getThingToMake();
 		assertEquals("multi-word ingredient", recipe.get(0).toString());
 		assertEquals(Ingredient.class, recipe.get(0).getClass());
 

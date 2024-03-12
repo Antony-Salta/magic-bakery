@@ -41,7 +41,27 @@ public class MagicBakery{
     }
     public void bakeLayer(Layer layer)
     {
-
+        List<Ingredient> hand = getCurrentPlayer().getHand();
+        if(layer.canBake(hand))
+        {
+            //Unfortunately can't use removeAll, because it would remove duplicate elements in the hand
+            
+            for (Ingredient ingredient : layer.getRecipe()) {
+                if(hand.contains(ingredient))
+                {
+                    hand.remove(ingredient);
+                    ((Stack<Ingredient>)pantryDiscard).push(ingredient);
+                }
+                else
+                {
+                    hand.remove(Ingredient.HELPFUL_DUCK);
+                    ((Stack<Ingredient>)pantryDiscard).push(Ingredient.HELPFUL_DUCK);
+                }
+            }
+            hand.add(layer);
+        }
+        throw new WrongIngredientsException("You don't have the necessary ingredients to bake this layer.");
+            
     }
     public Ingredient drawFromPantryDeck()
     {
@@ -62,9 +82,11 @@ public class MagicBakery{
         return false;
     }
 
+    //TODO: figure out if this takes the cards from the hand or not.
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish)
     {
-        return null;
+        return customer.fulfill(getCurrentPlayer().getHand(), garnish);
+        // Do I remove the cards
     }
 
     public int getActionsPermitted()
@@ -79,7 +101,7 @@ public class MagicBakery{
 
     public Collection<Layer> getBakeableLayers()
     {   
-        return null;
+        return layers.stream().filter(l -> l.canBake(getCurrentPlayer().getHand())).toList();
     }
 
     public Player getCurrentPlayer()

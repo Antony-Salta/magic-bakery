@@ -148,7 +148,7 @@ public class CustomerOrderTest {
 	public void testGetRecipe() throws NoSuchFieldException, IllegalAccessException {
 		@SuppressWarnings("unchecked")
 		List<Ingredient> recipe = (List<Ingredient>)FunctionalHelper.getFieldValue(order_multi, "recipe");
-		assertSame(order_multi.getRecipe(), recipe);
+		assertSame(order_multi.getThingToMake(), recipe);
 	}
 
 	@Test
