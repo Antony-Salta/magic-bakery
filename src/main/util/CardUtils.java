@@ -26,7 +26,7 @@ public  final class CardUtils
     }
 
 
-    public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers) throws IOException
+    public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers)
     {
         List<CustomerOrder> customers = null; 
         try (BufferedReader read = new BufferedReader(new FileReader(path))) 
@@ -47,7 +47,7 @@ public  final class CardUtils
             
         } catch (IOException e) {
             System.out.println("Error when reading customer file");
-            throw e;
+            e.printStackTrace();
         }
         return customers;
     }
@@ -82,13 +82,13 @@ public  final class CardUtils
         try (BufferedReader read = new BufferedReader(new FileReader(path)))
         {
             Stream<String> lines = read.lines();
-            String all = lines.collect(Collectors.joining("\n"))
+            String all = lines.collect(Collectors.joining("\n"));
             ingredients = stringToIngredients(all);
             
             
         } catch (IOException e) {
             System.out.println("Error when reading ingredients file.");
-            throw e;
+            e.printStackTrace();
         }
         return ingredients;
     }
@@ -105,12 +105,12 @@ public  final class CardUtils
         try (BufferedReader read = new BufferedReader(new FileReader(path)))
         {
             Stream<String> lines = read.lines();
-            String all = lines.collect(Collectors.joining("\n"))
+            String all = lines.collect(Collectors.joining("\n"));
             layers = stringtoLayers(all);
             
         } catch (IOException e) {
             System.out.println("Error when reading layers file.");
-            throw e;
+            e.printStackTrace();
         }
         return layers;
     }

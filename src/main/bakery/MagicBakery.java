@@ -15,7 +15,7 @@ public class MagicBakery{
     private Collection<Layer> layers;
     private Collection<Player> players;
     private Collection<Ingredient> pantry;
-    private Stack<Ingredient> pantryDeck; // TODO Change back and see if it works.
+    private Collection<Ingredient> pantryDeck; // TODO Change back and see if it works.
     private Collection<Ingredient> pantryDiscard;
     private Random random;
     private static final long serialVersionUID;
@@ -152,10 +152,10 @@ public class MagicBakery{
             players.add(new Player(name));
         }
         customers = new Customers(customerDeckFile, random, layers, numPlayers);
-        Collections.shuffle(pantryDeck, random);
+        Collections.shuffle( ((Stack<Ingredient>)pantryDeck), random);
         for (int i = 0; i < 5; i++) 
         {
-            pantry.add(pantryDeck.pop());    
+            pantry.add(((Stack<Ingredient>)pantryDeck).pop());    
         }
 
         customers.addCustomerOrder();    
@@ -165,7 +165,7 @@ public class MagicBakery{
         for (Player player : players) {
             for (int i = 0; i < 3; i++) 
             {
-                player.addToHand(pantryDeck.pop());
+                player.addToHand(((Stack<Ingredient>)pantryDeck).pop());
                 //Not bothering to do empty checking on this, since that's only meant to be an issue once cards go in pantryDiscard.
                 // If it runs out here, the game's kind of unplayable.    
             }

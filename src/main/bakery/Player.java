@@ -57,7 +57,6 @@ public class Player
         if(!hand.contains(ingredient))
             throw new IllegalArgumentException("The hand does not contain this ingredient to be removed");
         hand.remove(ingredient);
-        
     }
 
     /**

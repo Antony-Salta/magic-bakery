@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
@@ -19,8 +20,8 @@ public class Customers{
      * activeCustomers is a queue done by a linked list, but looking at the string Utils representation, 
      * it seems like item in the tail is considered the leftmost activeCustomer, and the item in the head is the rightmost, so it's reversed because of the descendingIterator call.
      */
-    private LinkedList<CustomerOrder> activeCustomers; // collection breaks my method calls, so I'm calling it what it is.
-    private Stack<CustomerOrder> customerDeck; // I know it's a collection in the UML, but if I don't then I get errors on just using stack methods
+    private Collection<CustomerOrder> activeCustomers; //Time for tedious casting
+    private Collection<CustomerOrder> customerDeck; 
     private List<CustomerOrder> inactiveCustomers;
     private Random random;
     private static final long serialVersionUID;
@@ -40,7 +41,7 @@ public class Customers{
         activeCustomers = new LinkedList<>();
         activeCustomers.add(null);
         activeCustomers.add(null);
-        activeCustomers.add(customerDeck.pop());
+        activeCustomers.add(((Stack<CustomerOrder>)customerDeck).pop());
 
         this.random = random;
     }
@@ -79,7 +80,7 @@ public class Customers{
     public CustomerOrder drawCustomer()
     {
         if(!customerDeck.isEmpty())
-            return customerDeck.pop();
+            return ((Stack<CustomerOrder>)customerDeck).pop();
         else return null;
     }
 
@@ -135,7 +136,7 @@ public class Customers{
     public Collection<CustomerOrder> getInactiveCustomersWithStatus(CustomerOrderStatus status)
     {
         Collection<CustomerOrder> matching = new ArrayList<>();
-        matching.addAll(inactiveCustomers.stream().filter(c -> c.getStatus() == status).toList());
+        matching.addAll(inactiveCustomers.stream().filter(c -> c.getStatus() == status).toList()); // The extra matching object is needed to use the stream, since it only returns as a list, and I need a collection
         return matching;
     }
 
@@ -174,7 +175,7 @@ public class Customers{
             }
             cardLevel++;
         }
-        Collections.shuffle(customerDeck, random);
+        Collections.shuffle(((Stack<CustomerOrder>)customerDeck), random);
     }
 
     /**
@@ -192,7 +193,8 @@ public class Customers{
      */
     public CustomerOrder peek()
     {
-        return activeCustomers.peekFirst(); // remember, leftmost is the tail of the list.
+        //I hate this casting.
+        return  ((LinkedList<CustomerOrder>) activeCustomers).peekFirst(); // remember, rightmost is the head of the list.
     }
 
     /**
@@ -201,8 +203,7 @@ public class Customers{
      */
     public void remove(CustomerOrder customer)
     {
-        activeCustomers.add(activeCustomers.indexOf(customer), null); // need to keep null entries in so that gaps are represented properly, which is only really necessary
-        activeCustomers.remove(customer);
+        ((LinkedList<CustomerOrder>) activeCustomers).set(((LinkedList<CustomerOrder>) activeCustomers).indexOf(customer), null); // need to keep null entries in so that gaps are represented properly, which is only really necessary for the sake of printing with gaps.
     }
 
     /**
@@ -224,7 +225,7 @@ public class Customers{
     {
         if(customerWillLeaveSoon())
             peek().abandon();
-        return activeCustomers.removeFirst(); // This is all I need in this implementation. Either there is a customer there, and it'll be returned and removed. Or it's a null element, which is what needs to be returned anyway.
+        return ((LinkedList<CustomerOrder>) activeCustomers).removeFirst(); // This is all I need in this implementation. Either there is a customer there, and it'll be returned and removed. Or it's a null element, which is what needs to be returned anyway.
     }
 
 }
