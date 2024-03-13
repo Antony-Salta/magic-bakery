@@ -1,12 +1,13 @@
 package bakery;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * This represents the players of the game, which will have a hand of ingredient cards and names.
  */
-public class Player 
+public class Player implements Serializable
 {
     private List<Ingredient> hand;
     private String name;

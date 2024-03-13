@@ -107,7 +107,9 @@ public  final class CardUtils
             Stream<String> lines = read.lines();
             String all = lines.collect(Collectors.joining("\n"));
             layers = stringtoLayers(all);
-            
+            layers.addAll(layers);
+            layers.addAll(layers);
+            //This little bit makes it so that there are 4 of each layer, since that's the amount it's meant to be
         } catch (IOException e) {
             System.out.println("Error when reading layers file.");
             e.printStackTrace();
