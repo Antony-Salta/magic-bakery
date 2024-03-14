@@ -1,6 +1,11 @@
 package bakery;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
+import bakery.CustomerOrder.CustomerOrderStatus;
 import util.CardUtils;
 
 public class MagicBakery implements Serializable{
@@ -183,7 +189,21 @@ public class MagicBakery implements Serializable{
 
     public static MagicBakery loadState(File file)
     {
-        return null;
+        MagicBakery gameState = null;
+        try (ObjectInputStream read = new ObjectInputStream(new FileInputStream(file)))
+        {
+            gameState = (MagicBakery) read.readObject();
+        } catch (IOException e) {
+            System.out.println("Error loading from this file.");
+            e.printStackTrace();
+        }
+        catch(ClassNotFoundException e)
+        {
+            System.out.println("");
+        }
+        if(gameState == null)
+            throw new NullPointerException("the magicBakery could not be instantiated from loading");
+        return gameState;
     } 
 
     public void passCard(Ingredient ingredient, Player recipient)
@@ -197,7 +217,12 @@ public class MagicBakery implements Serializable{
 
     public void printCustomerServiceRecord()
     {
-
+        int fulfilledCustomers, garnishedCustomers, givenUpCustomers;
+        fulfilledCustomers = customers.getInactiveCustomersWithStatus(CustomerOrderStatus.FULFILLED).size();
+        garnishedCustomers = fulfilledCustomers + customers.getInactiveCustomersWithStatus(CustomerOrderStatus.GARNISHED).size();
+        givenUpCustomers = customers.getInactiveCustomersWithStatus(CustomerOrderStatus.GIVEN_UP).size();
+        System.out.println("Delighted customers chowing down on a job well done: " + fulfilledCustomers + ", with " + garnishedCustomers + " garnished.");
+        System.out.println("Customers gone for walkies: " + givenUpCustomers);
     }
 
     public void printGameState()
@@ -215,11 +240,18 @@ public class MagicBakery implements Serializable{
     }
     public void saveState(File file)
     {
-
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) 
+        {
+            out.writeObject(this);
+        } catch (IOException e) {
+            System.out.println("Error, could not save game to the provided file");
+            e.printStackTrace();
+        }
     }
 
     public void startGame(List<String> playerNames, String customerDeckFile)
     {
+
         int numPlayers = playerNames.size();
         for (String name : playerNames) {
             players.add(new Player(name));

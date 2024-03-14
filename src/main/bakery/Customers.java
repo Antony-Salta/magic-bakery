@@ -1,5 +1,6 @@
 package bakery;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +15,7 @@ import bakery.CustomerOrder;
 import bakery.CustomerOrder.CustomerOrderStatus;
 import util.CardUtils;
 
-public class Customers{
-    //TODO: change these back to collection when running them.
+public class Customers implements Serializable{
     /**
      * activeCustomers is a queue done by a linked list, but looking at the string Utils representation, 
      * it seems like item in the tail is considered the leftmost activeCustomer, and the item in the head is the rightmost, so it's reversed because of the descendingIterator call.
@@ -53,13 +53,16 @@ public class Customers{
      */
     public CustomerOrder addCustomerOrder()
     {
-        CustomerOrder drawnCustomer = drawCustomer();
-        activeCustomers.add(drawCustomer());
-
         if(customerWillLeaveSoon())
             inactiveCustomers.add(timePasses());
         else   
             timePasses();
+        CustomerOrder drawnCustomer = drawCustomer();
+        activeCustomers.add(drawnCustomer);
+        drawnCustomer.setStatus(CustomerOrderStatus.WAITING);
+        
+        if(customerWillLeaveSoon()) //set new impatient customer if applicable
+            ((LinkedList<CustomerOrder>) activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
         
         return drawnCustomer; // I really have no clue what customer order object I'm meant to return here
     }
@@ -68,9 +71,17 @@ public class Customers{
      * Determines if a customer will leave the activeCustomers deck when timePasses is called (so a round ends).
      * @return whether a card will leave the activeCustomers deck.
      */
+    //TODO: fix this to indicate correctly when there aren't cards in the deck, and set the IMPATIENT status properly, maybe in the addCustomer method.
     public boolean customerWillLeaveSoon()
     {
-        return size() ==3; //little bit of trickery, because the list will always have 3 elements, some will just be null.
+        if( ((LinkedList<CustomerOrder>)activeCustomers).getFirst() == null)
+            return false;
+        if(!customerDeck.isEmpty())
+            return size() ==3;
+
+        //so now we know that there is an order in the rightmost slot, and the deck is empty.
+        // In this case, then a customer will only stay if there is a gap, so the middle element is null, and the tail has a customer
+        return !(((LinkedList<CustomerOrder>)activeCustomers).getLast() != null && ((LinkedList<CustomerOrder>)activeCustomers).get(1) == null);
     }
 
     /**
@@ -188,7 +199,7 @@ public class Customers{
      */
     public boolean isEmpty()
     {
-        return activeCustomers.isEmpty();
+        return size() == 0;
     }
 
     /**
@@ -222,14 +233,37 @@ public class Customers{
 
 
     /**
-     * This method will remmove the first (rightmost) element in the activeCustomers list, which can be null if there is no order there.
-     * @return the CustomerOrder that is at the rightmost position. This will return null if there is no null object there.
+     * This method will remove the first (rightmost) element in the activeCustomers list if it is due to leave
+     * This method will always remove an element from activeCustomers, either the rightmost element (head of the list) which could be null, or a null gap.
+     * @return the CustomerOrder that is leaving from the rightmost position. This will return null if there is no CustomerOrder due to leave.
      */
+    //TODO fix this, conditions aren't right
     public CustomerOrder timePasses()
     {
         if(customerWillLeaveSoon())
-            peek().abandon();
-        return ((LinkedList<CustomerOrder>) activeCustomers).removeFirst(); // This is all I need in this implementation. Either there is a customer there, and it'll be returned and removed. Or it's a null element, which is what needs to be returned anyway.
+            return ((LinkedList<CustomerOrder>) activeCustomers).removeFirst();
+        //If there isn't a customer leaving with an empty deck, then that means there is a null element somewhere, and the rightmost null element should be removed when time passes to shuffle everything along.
+        //This logic would break if activeCustomers was more than 3 elements though.
+        if(customerDeck.isEmpty())
+        {
+            for (int i = 0; i < activeCustomers.size(); i++) 
+            {
+                if( ((LinkedList<CustomerOrder>) activeCustomers).get(i) == null)
+                {
+                    return ((LinkedList<CustomerOrder>) activeCustomers).remove(i);
+                }        
+            }
+        }
+        //in this case, there isn't a customer leaving soon, but customerDeck isn't empty
+        // here, you actually remove the leftmost null element, since you are trying to put a card in on the left, rather than just shuffling everything right one.
+        for (int i = activeCustomers.size() -1; i > -1; i--) 
+            {
+                if( ((LinkedList<CustomerOrder>) activeCustomers).get(i) == null)
+                {
+                    return ((LinkedList<CustomerOrder>) activeCustomers).remove(i);
+                }        
+            }
+        
     }
 
 }
