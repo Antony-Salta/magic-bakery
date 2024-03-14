@@ -1,6 +1,7 @@
 package bakery;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class Player implements Serializable
     public Player(String name)
     {
         this.name = name;
+        this.hand = new ArrayList<>(); 
     }
     
     /**

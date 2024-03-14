@@ -2,6 +2,7 @@ package util;
 
 import java.io.Console;
 import java.io.File;
+import java.io.Serializable;
 import java.text.CollationElementIterator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +16,7 @@ import bakery.MagicBakery;
 import bakery.MagicBakery.ActionType;
 import bakery.Player;
 
-public class ConsoleUtils
+public class ConsoleUtils implements Serializable
 {
     private Console console;
 

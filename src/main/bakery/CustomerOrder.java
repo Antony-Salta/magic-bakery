@@ -1,5 +1,6 @@
 package bakery;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * This class represents the Customer Order cards in the game, so have a recipe, an optional garnish, and a difficulty level associated with them.
  */
-public class CustomerOrder
+public class CustomerOrder implements Serializable
 {
     private List<Ingredient> garnish;
     private int level;

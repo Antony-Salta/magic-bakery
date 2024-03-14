@@ -1,9 +1,11 @@
 package bakery;
 
+import java.io.Serializable;
+
 /** 
  * This class is effectively an ingredient card in the name, and is mostly a wrapper for the String name it contains.
  */
-public class Ingredient implements Comparable<Ingredient>
+public class Ingredient implements Comparable<Ingredient>, Serializable
 {
     private String name;
     /** 

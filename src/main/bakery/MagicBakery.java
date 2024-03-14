@@ -16,6 +16,7 @@ import java.util.Stack;
 
 import bakery.CustomerOrder.CustomerOrderStatus;
 import util.CardUtils;
+import util.StringUtils;
 
 public class MagicBakery implements Serializable{
     private Customers customers;
@@ -44,11 +45,13 @@ public class MagicBakery implements Serializable{
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile)
     {
         //do some stuff with the file paths. Is the seed a thing for the serial version?
-        random = new Random(seed);
-        pantryDeck = CardUtils.readIngredientFile(ingredientDeckFile);
+        this.random = new Random(seed);
+        pantryDeck = new Stack<>();
+        pantryDeck.addAll(CardUtils.readIngredientFile(ingredientDeckFile));
         layers = CardUtils.readLayerFile(layerDeckFile);
         pantryDiscard = new Stack<Ingredient>();
         pantry = new ArrayList<>();
+        players = new ArrayList<>();
     }
     public void bakeLayer(Layer layer)
     {
@@ -227,7 +230,7 @@ public class MagicBakery implements Serializable{
 
     public void printGameState()
     {
-
+        //StringUtils.
     }
 
     public void refreshPantry()
@@ -256,6 +259,7 @@ public class MagicBakery implements Serializable{
         for (String name : playerNames) {
             players.add(new Player(name));
         }
+        
         customers = new Customers(customerDeckFile, random, layers, numPlayers);
         Collections.shuffle( ((Stack<Ingredient>)pantryDeck), random);
         for (int i = 0; i < 5; i++) 
@@ -282,7 +286,7 @@ public class MagicBakery implements Serializable{
             }
         }
 
-        playGame();
+        //playGame();
     }
 
     private void playGame()

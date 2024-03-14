@@ -14,18 +14,15 @@ import bakery.Ingredient;
 
 public  final class CardUtils
 {
+    //makes this uninstantiable
+    private CardUtils(){}
+
     /**
      * Reads the file with all of the CustomerOrders and returns them in a list
      * @param path the path to the customers file.
      * @param layers A list of all layers to see if something in the recipe is an ingredient or layer.
      * @return The list of customer orders generated.
      */
-    private CardUtils()
-    {
-
-    }
-
-
     public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers)
     {
         List<CustomerOrder> customers = null; 
@@ -39,7 +36,7 @@ public  final class CardUtils
             String line = read.readLine(); 
             customers = new ArrayList<>();
 
-            while(!line.equals(null)) 
+            while(line != null) 
             {
                 customers.add(stringToCustomerOrder(line, layers));
                 line = read.readLine();
@@ -60,10 +57,9 @@ public  final class CardUtils
      */
     private static Ingredient makeCorrectIngredient(String name, Collection<Layer> layers)
     {
-        Layer test = new Layer(name, null);
         for (Layer layer : layers) { 
         // this is seeing if the name of a layer has been given, rather than an ingredient. If so, then add that layer into the recipe, with the full layer information.
-            if(layer.equals(test))
+            if(layer.toString().equals(name))
             {
                 return layer;
             }

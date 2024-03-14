@@ -35,15 +35,14 @@ public class Customers implements Serializable{
      */
     public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers)
     {
+        this.random = random;
         initialiseCustomerDeck(deckFile, layers, numPlayers);   
         inactiveCustomers = new ArrayList<>(); 
         
         activeCustomers = new LinkedList<>();
         activeCustomers.add(null);
         activeCustomers.add(null);
-        activeCustomers.add(((Stack<CustomerOrder>)customerDeck).pop());
-
-        this.random = random;
+        activeCustomers.add(null);
     }
 
     /**
@@ -257,12 +256,13 @@ public class Customers implements Serializable{
         //in this case, there isn't a customer leaving soon, but customerDeck isn't empty
         // here, you actually remove the leftmost null element, since you are trying to put a card in on the left, rather than just shuffling everything right one.
         for (int i = activeCustomers.size() -1; i > -1; i--) 
+        {
+            if( ((LinkedList<CustomerOrder>) activeCustomers).get(i) == null)
             {
-                if( ((LinkedList<CustomerOrder>) activeCustomers).get(i) == null)
-                {
-                    return ((LinkedList<CustomerOrder>) activeCustomers).remove(i);
-                }        
-            }
+                return ((LinkedList<CustomerOrder>) activeCustomers).remove(i);
+            }        
+        }
+        return null; // this is actually unreachable.
         
     }
 
