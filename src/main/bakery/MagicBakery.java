@@ -30,7 +30,6 @@ public class MagicBakery implements Serializable{
 
     private int currentPlayerIndex;
     private int actionsLeft;
-    private int actionsLeftReset;
 
     public enum ActionType
     {
@@ -86,6 +85,20 @@ public class MagicBakery implements Serializable{
             }
             layers.remove(layer);
             hand.add(layer);
+            
+            //Weird consequence of allowing the pantry to go empty, I'm going to assume that it should be stocked before pantry deck
+            //pantry size will onlly be < 5 if pantryDeck is empty, so you have to pull from the discard. 
+            if(pantry.size() <5)
+            {
+                pantryDeck.addAll(pantryDiscard);
+                pantryDiscard.clear();
+                Collections.shuffle((Stack<Ingredient>)pantryDeck, random);
+                while(pantry.size() <5)
+                {
+                    ((ArrayList<Ingredient>)pantry).add(drawFromPantryDeck());
+                }
+            }
+
         }
         throw new WrongIngredientsException("You don't have the necessary ingredients to bake this layer.");
             
@@ -102,6 +115,8 @@ public class MagicBakery implements Serializable{
         {
             pantryDeck.addAll(pantryDiscard);
             pantryDiscard.clear();
+            if(pantryDeck.isEmpty())
+                throw new EmptyPantryException("There's no cards left, you'll have to use the cards in your hand for now.", null);
             Collections.shuffle((Stack<Ingredient>) pantryDeck, random);    
         }
         return ((Stack<Ingredient>)pantryDeck).pop();
@@ -123,7 +138,15 @@ public class MagicBakery implements Serializable{
             if (ingredientName.equals(ingredient.toString()))
             {
                 getCurrentPlayer().addToHand(ingredient);
-                ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+                try{
+                    ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+                }catch(EmptyPantryException e)
+                {
+                    ((ArrayList<Ingredient>) pantry).remove(i);
+                    System.out.println(e.getMessage());
+                }
+
+                
                 ingredientThere = true;
                 break; //Make sure this doesn't draw all ingredients with the same name.
             }
@@ -147,7 +170,13 @@ public class MagicBakery implements Serializable{
             if (ingredient.equals(pantryIngredient))
             {
                 getCurrentPlayer().addToHand(pantryIngredient);
-                ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+                try{
+                    ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+                }catch(EmptyPantryException e)
+                {
+                    ((ArrayList<Ingredient>) pantry).remove(i);
+                    System.out.println(e.getMessage());
+                }
                 ingredientThere = true;
                 break; //Make sure this doesn't draw all ingredients with the same name.
             }
@@ -210,41 +239,75 @@ public class MagicBakery implements Serializable{
         return layers.stream().filter(l -> l.canBake(getCurrentPlayer().getHand())).toList();
     }
 
+    /**
+     * Gets the current player in the game
+     * @return the player whose turn it currently is
+     */
     public Player getCurrentPlayer()
     {
         return ((ArrayList<Player>)players).get(currentPlayerIndex);
     }
 
+    /**
+     * Gets the customers, which contains the customerDeck, activeCustomers and inactiveCustomers
+     * @return the customers object
+     */
     public Customers getCustomers()
     {
         return customers;
     }
+
+    /**
+     * This gets all of the customer orders that can be fulfilled with the current player's hand
+     * @return the collection of fulfilable customer orders
+     */
     public Collection<CustomerOrder> getFulfilableCustomers()
     {
         return customers.getFulfilable(getCurrentPlayer().getHand());
     }
 
+    /**
+     * This gets all of the customer orders that can be garnished with the current player's hand
+     * @return the collection of customer orders that can be garnished
+     */
     public Collection<CustomerOrder> getGarnishableCustomers()
     {
         List<Ingredient> hand = getCurrentPlayer().getHand();
         return customers.getActiveCustomers().stream().filter(c -> c.canGarnish(hand)).toList();
     }
 
+    /**
+     * This gets all of the layers, which is 6 of each type of layer.
+     * @return the collection of all of the layers in the game
+     */
     public Collection<Layer> getLayers()
     {
         return layers;
     }
 
+    /**
+     * This gets the pantry, which is the ingredients that players can see and choose to pick from
+     * @return the pantry object
+     */
     public Collection<Ingredient> getPantry()
     {
         return pantry;
     }
     
+    /**
+     * This gets all players in the game
+     * @return the collection of players
+     */
     public Collection<Player> getPlayers() 
     {
         return players;
     }
 
+    /**
+     * 
+     * @param file the file where the serialized MagicBakery is stored
+     * @return the MagicBakery object stored in the file, which will have all of the information needed to play the game being loaded.
+     */
     public static MagicBakery loadState(File file)
     {
         MagicBakery gameState = null;
@@ -264,6 +327,11 @@ public class MagicBakery implements Serializable{
         return gameState;
     } 
 
+    /**
+     * Passes an ingredient from the current player's hand to the chosen player's hand
+     * @param ingredient the ingredient being passed
+     * @param recipient the player receiving the ingredient.
+     */
     public void passCard(Ingredient ingredient, Player recipient)
     {
         List<Ingredient> hand = getCurrentPlayer().getHand();
@@ -273,6 +341,11 @@ public class MagicBakery implements Serializable{
         recipient.addToHand(ingredient);
     }
 
+    /** 
+     * prints out the record for how inactive customers have been serviced. 
+     * This will say how many have been fulfilled, and of those how many were garnished.
+     * It will also say how many left because they gave up, never having their order fulfilled.
+     */
     public void printCustomerServiceRecord()
     {
         int fulfilledCustomers, garnishedCustomers, givenUpCustomers;
@@ -283,19 +356,37 @@ public class MagicBakery implements Serializable{
         System.out.println("Customers gone for walkies: " + givenUpCustomers);
     }
 
+    /** 
+     * Prints the state of the game so that the players can see everything they need to do make their choice of what action they will take.
+     */
     public void printGameState()
     {
         //StringUtils.
     }
 
+    /** 
+     * This is an action a player can take, where they choose to discard all cards in the pantry and get new cards from the deck instead.
+     */
     public void refreshPantry()
     {
         pantryDiscard.addAll(pantry);
         for (int i = 0; i < pantry.size(); i++) {
-            ((ArrayList<Ingredient>)pantry).set(i,drawFromPantryDeck());
+            try{
+                ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+            }catch(EmptyPantryException e)
+            {
+                ((ArrayList<Ingredient>) pantry).remove(i);
+                System.out.println(e.getMessage());
+                break;
+            }
         }
         
     }
+
+    /**
+     * This file will save the state of the game to a file so that it can be loaded and played later
+     * @param file the file that the state of the game (serialized MagicBakery object) is to be saved to
+     */
     public void saveState(File file)
     {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) 
@@ -307,10 +398,20 @@ public class MagicBakery implements Serializable{
         }
     }
 
+    /**
+     * This function starts the game, setting the needed variables to play the game, and then starting the game loop.
+     * It will instantiate the pantry to take 5 ingredients from the pantry deck
+     * It will put the correct number of customer orders in active Customers depending on the number of people
+     * It will put 3 cards from the pantryDeck into each player's hand as the start of the game.
+     * @param playerNames The list of player names needed to instantiate the new players, to be added into the players collection.
+     * @param customerDeckFile The String of the path to the file where all of the Customers are, to be read to instantiate the customers attribute.
+     */
     public void startGame(List<String> playerNames, String customerDeckFile)
     {
 
         int numPlayers = playerNames.size();
+        if(numPlayers < 2 || numPlayers > 5)
+            throw new IllegalArgumentException("Wrong number of players, there must be between 2 and 5 players");
         for (String name : playerNames) {
             players.add(new Player(name));
         }
@@ -326,11 +427,7 @@ public class MagicBakery implements Serializable{
         if(numPlayers == 3 || numPlayers == 5) // Only add a second customer in the beginning if there are 3 or 5 players.
             customers.addCustomerOrder();
 
-        if(numPlayers <=3)
-            actionsLeftReset = 3;
-        else if(numPlayers <=5)
-            actionsLeftReset = 4;
-        actionsLeft = actionsLeftReset;
+        actionsLeft = getActionsPermitted();
         
         for (Player player : players) {
             for (int i = 0; i < 3; i++) 
@@ -344,6 +441,9 @@ public class MagicBakery implements Serializable{
         //playGame();
     }
 
+    /** 
+     * This function will do the main game loop, going between turns, and changing things as each new round starts.
+     */
     private void playGame()
     {
         while(!customers.getCustomerDeck().isEmpty() && !customers.isEmpty()) //Sp while there are still customers to be served

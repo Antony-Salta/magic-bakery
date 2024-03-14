@@ -15,6 +15,12 @@ import bakery.CustomerOrder;
 import bakery.CustomerOrder.CustomerOrderStatus;
 import util.CardUtils;
 
+/**
+ * This class holds all information to do with the customers in the game, separating them into 3 different collections
+ * There is the customerDeck collection, where a customer order is drawn from at the end of each turn
+ * Then there is the activeCustomers collection, where the customers that players can actually fulfil are, which will be moved along every round.
+ * Finally, there is the inactiveCustomers list, where customers that have either had their order fulfiled, or ones that left the shop before the players managed to fulfil their order go.
+ */
 public class Customers implements Serializable{
     /**
      * activeCustomers is a queue done by a linked list, but looking at the string Utils representation, 
@@ -70,7 +76,6 @@ public class Customers implements Serializable{
      * Determines if a customer will leave the activeCustomers deck when timePasses is called (so a round ends).
      * @return whether a card will leave the activeCustomers deck.
      */
-    //TODO: fix this to indicate correctly when there aren't cards in the deck, and set the IMPATIENT status properly, maybe in the addCustomer method.
     public boolean customerWillLeaveSoon()
     {
         if( ((LinkedList<CustomerOrder>)activeCustomers).getFirst() == null)
@@ -91,7 +96,8 @@ public class Customers implements Serializable{
     {
         if(!customerDeck.isEmpty())
             return ((Stack<CustomerOrder>)customerDeck).pop();
-        else return null;
+        else 
+            return null;
     }
 
     /**
@@ -126,15 +132,6 @@ public class Customers implements Serializable{
             if(customerOrder != null && customerOrder.canFulfill(hand))
                 fulfillable.add(customerOrder);    
         }
-        /*
-        fulfillable.addAll(activeCustomers.stream().filter(c ->
-        {
-            try {return c.canFulfill(hand);}
-            catch(NullPointerException e) {return false;}
-        }) 
-        .toList()); 
-        fun stuff to get around the possibility of null pointers wiht the set up I have, but definitely inefficient and obtuse-looking for a list that's 3 elements at max.
-        */
         return fulfillable;
     }
 
@@ -193,8 +190,8 @@ public class Customers implements Serializable{
     }
 
     /**
-     * 
-     * @return if the activeCustomers list is empty
+     * Returns whether activeCustomers list has no customerOrder objects in it.
+     * @return boolean of if the activeCustomers list is empty
      */
     public boolean isEmpty()
     {
@@ -202,7 +199,7 @@ public class Customers implements Serializable{
     }
 
     /**
-     * 
+     * Gets the rightmost (head of list) element in the activeCustomers list
      * @return the rightmost element in activeCustomers. If there is no customer in the rightmost slot, it returns null.
      */
     public CustomerOrder peek()
@@ -236,7 +233,6 @@ public class Customers implements Serializable{
      * This method will always remove an element from activeCustomers, either the rightmost element (head of the list) which could be null, or a null gap.
      * @return the CustomerOrder that is leaving from the rightmost position. This will return null if there is no CustomerOrder due to leave.
      */
-    //TODO fix this, conditions aren't right
     public CustomerOrder timePasses()
     {
         if(customerWillLeaveSoon())
