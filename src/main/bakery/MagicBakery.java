@@ -41,7 +41,12 @@ public class MagicBakery implements Serializable{
         REFRESH_PANTRY
 
     }
-
+    /**
+     * This constructor makes a MagicBakery object, which tracks the whole state of the game as it is played.
+     * @param seed the seed used to instantiate the Random object with a specific seed.
+     * @param ingredientDeckFile The string giving the path to the file containing all of the ingredients
+     * @param layerDeckFile The string giving the path to the file containing all of the layers.
+     */
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile)
     {
         //do some stuff with the file paths. Is the seed a thing for the serial version?
@@ -53,6 +58,13 @@ public class MagicBakery implements Serializable{
         pantry = new ArrayList<>();
         players = new ArrayList<>();
     }
+    
+    /**
+     * This method will take the current player's hand, bake a layer and remove the required ingredients, then add the layer to their hand.@interface
+     * @param layer The layer to be baked
+     * 
+     * @throws a WrongIngredientsException if the player doesn't have the required ingredients to bake the layer.
+     */
     public void bakeLayer(Layer layer)
     {
         List<Ingredient> hand = getCurrentPlayer().getHand();
@@ -78,6 +90,12 @@ public class MagicBakery implements Serializable{
         throw new WrongIngredientsException("You don't have the necessary ingredients to bake this layer.");
             
     }
+
+    /**
+     * This method will take the top element from pantryDeck
+     * But if pantryDeck is empty, then all of the cards in pantryDiscard will be moved into it, and then pantryDeck shuffled before then drawing a card.
+     * @return the ingredient drawn from the pantry deck.
+     */
     public Ingredient drawFromPantryDeck()
     {
         if(pantryDeck.isEmpty())
@@ -87,8 +105,15 @@ public class MagicBakery implements Serializable{
             Collections.shuffle((Stack<Ingredient>) pantryDeck, random);    
         }
         return ((Stack<Ingredient>)pantryDeck).pop();
+
     }
 
+    /**
+     * This function allows the player to choose an ingredient to draw from the pantry.
+     * @param ingredientName The name of the ingredient being drawn from the pantry
+     * 
+     * @throws WrongIngredientException if the ingredient specified by ingredientName isn't in the pantry
+     */
     public void drawFromPantry(String ingredientName)
     {
         boolean ingredientThere = false;
@@ -106,6 +131,13 @@ public class MagicBakery implements Serializable{
         if(!ingredientThere)
             throw new WrongIngredientsException("That ingredient isn't in the pantry to be drawn");
     }
+
+    /**
+     * This function allows the player to choose an ingredient to draw from the pantry.
+     * @param ingredientName The ingredient being drawn from the pantry
+     * 
+     * @throws WrongIngredientException if the ingredient specified isn't in the pantry
+     */
     public void drawFromPantry(Ingredient ingredient)
     {
         boolean ingredientThere = false;
@@ -124,32 +156,55 @@ public class MagicBakery implements Serializable{
             throw new WrongIngredientsException("That ingredient isn't in the pantry to be drawn");
     }
 
+    /**
+     * This checks the number of actions remaining to see if a player's turn should end
+     * @return whether the current player's turn should end
+     */
     public boolean endTurn()
     {
         return getActionsRemaining() <=0;
     }
 
     //TODO: figure out if this takes the cards from the hand or not.
+    /**
+     * This fulfills an order, using the CustomerOrder.fulfill() method
+     * It uses the current player's hand as the list of ingredients to fulfil the order with, to see if it can fulfil/garnish the order.
+     * @param customer The customerOrder being fulfilled 
+     * @param garnish indicator of whether the user is trying to garnish the order or not. 
+     * @return The list of ingredients used to fulfil the order
+     */
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish)
     {
         return customer.fulfill(getCurrentPlayer().getHand(), garnish);
-        // Do I remove the cards here on in the function that calles this, since it returns the list
+        // Do I remove the cards here on in the function that calls this, since it returns the list
     }
 
-    
+    /**
+     * 
+     * @return the number of actions permitted per turn.
+     * The number of actions permitted is 3 is there are 2 or 3 players, and 2 if there are 4 or 5 players.
+     */
     public int getActionsPermitted()
     {
         if(players.size() <=3)
             return 3;
-        return 4;   
+        return 2;   
     }
     
     //Really don't get how you do this without just a class variable, since I'm not passing arguments in.
+    /**
+     * 
+     * @return the number of actions remaining for this turn.
+     */
     public int getActionsRemaining()
     {
         return actionsLeft;
     }
 
+    /**
+     * 
+     * @return all layers that can be fulfilled with the current players hand
+     */
     public Collection<Layer> getBakeableLayers()
     {   
         return layers.stream().filter(l -> l.canBake(getCurrentPlayer().getHand())).toList();
