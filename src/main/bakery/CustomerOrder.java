@@ -72,6 +72,8 @@ public class CustomerOrder implements Serializable
      */
     public boolean canGarnish( List<Ingredient> ingredients)
     {
+        if(garnish == null)
+            return false; // orders without a garnish can't be garnished
         return canMake(garnish, ingredients);
     }
     private boolean canMake(List<Ingredient> thingToMake, List<Ingredient> ingredients)
@@ -89,10 +91,12 @@ public class CustomerOrder implements Serializable
 
         for (Ingredient ingredient : ingredients) {
             if(quantities.containsKey(ingredient))
+            {
                 quantities.replace(ingredient, quantities.get(ingredient) - 1);
-            
-            if(quantities.get(ingredient) == 0)
-                quantities.remove(ingredient);
+                if(quantities.get(ingredient) == 0)
+                    quantities.remove(ingredient);
+            }
+                
             if(ingredient.equals(Ingredient.HELPFUL_DUCK))
                 numDucks++;
         } // so at the end of the loop it will have counted down all of the ingredients, so then we just have to see if they have enough helpful ducks.
@@ -106,7 +110,6 @@ public class CustomerOrder implements Serializable
         {
             count += num;
         }
-            
         return numDucks >= count; // This will work if the normal ingredients cover it, since then it'll be 0 or more >= 0.
     }
 

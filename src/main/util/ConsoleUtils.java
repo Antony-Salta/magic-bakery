@@ -64,6 +64,7 @@ public class ConsoleUtils implements Serializable
             allowedActions.add(ActionType.BAKE_LAYER);
         if(!bakery.getCurrentPlayer().getHand().isEmpty())
             allowedActions.add(ActionType.PASS_INGREDIENT);
+        
         return (ActionType) promptEnumerateCollection(prompt, allowedActions);
     }
 
@@ -180,9 +181,10 @@ public class ConsoleUtils implements Serializable
     public boolean promptForYesNo(String prompt)
     {
         System.out.println(prompt + " [Y]es/[N]o");
-        if(readLine().toLowerCase().charAt(0) == 'y')
+        String choice = readLine();
+        if(choice.toLowerCase().charAt(0) == 'y')
             return true;
-        else if(readLine().toLowerCase().charAt(0) == 'n')
+        else if(choice.toLowerCase().charAt(0) == 'n')
             return false;
         System.out.println("Please enter either y or n to this question:");
         return promptForYesNo(prompt);
@@ -190,23 +192,30 @@ public class ConsoleUtils implements Serializable
 
     /**
      * Prompts the user to choose between various numbered items in a collection. This method is used by the other methods, like promptForIngredient or customer.
+     * If the collection only has one item, then that item is returned by default without printing the prompt.
      * @param prompt The prompt to be printed to the user
      * @param collection the collection being enumerated through
      * @return the object that was chosen.
+     * @throws IllegalArgumentException if the collection given is null or empty
      */
     private Object promptEnumerateCollection(String prompt, Collection<Object> collection)
     {
-        if(collection == null)
+        if(collection == null || collection.size() ==0)
             throw new IllegalArgumentException("the collection cannot be null.");
+        if(collection.size() == 1) // No point asking the choice if there is no choice.
+            return collection.toArray()[0];
+
         Object[] arr = collection.toArray();
         for (int i = 0; i < arr.length; i++) {
                 prompt += "[" + (i+1) + "]" + arr[i].toString() + ", ";
         }
+        prompt = prompt.substring(0, prompt.length()-2);
+        System.out.println(prompt);
         String input = readLine();
         try {
             
-            int choice = Integer.parseInt(input);
-            if(choice <1 || choice > arr.length)
+            int choice = Integer.parseInt(input) -1;
+            if(choice <0 || choice > arr.length -1)
             {
                 System.out.println("Please enter a number within range");
                 return promptEnumerateCollection(prompt, collection);

@@ -50,10 +50,14 @@ public class Layer extends Ingredient
         for (Ingredient ingredient : ingredients) {
             String iName = ingredient.toString();
             if(quantities.containsKey(iName))
+            {
                 quantities.replace(iName, quantities.get(iName) - 1);
+                if(quantities.get(iName) == 0)
+                    quantities.remove(iName);
+            }
+                
             
-            if(quantities.get(iName) == 0)
-                quantities.remove(iName);
+            
             if(ingredient.equals(Ingredient.HELPFUL_DUCK)) // NOTE: dunno if this is how you actually count the helpful ducks.
                 numDucks++;
         } // so at the end of the loop it will have counted down all of the ingredients, so then we just have to see if they have enough helpful ducks.

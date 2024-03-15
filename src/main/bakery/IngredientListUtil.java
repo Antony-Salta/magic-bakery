@@ -25,9 +25,8 @@ public abstract class IngredientListUtil {
      */
     protected static String stringFromIngList(List<Ingredient> list)
     {
-        /**
-         * 
-         */
+        if(list == null)
+            return "N/A"; // This should basically just come up when passing in the garnish for a customerOrder that doesn't have a garnish.
         Collections.sort(list);
         String csList = "";
         Ingredient prevIng = list.get(0);

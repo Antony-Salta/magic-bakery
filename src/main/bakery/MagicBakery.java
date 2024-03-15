@@ -16,6 +16,7 @@ import java.util.Stack;
 
 import bakery.CustomerOrder.CustomerOrderStatus;
 import util.CardUtils;
+import util.ConsoleUtils;
 import util.StringUtils;
 
 public class MagicBakery implements Serializable{
@@ -28,7 +29,7 @@ public class MagicBakery implements Serializable{
     private Random random;
     private static final long serialVersionUID =1;
 
-    private int currentPlayerIndex;
+    private Player currentPlayer;
     private int actionsLeft;
 
     public enum ActionType
@@ -60,6 +61,7 @@ public class MagicBakery implements Serializable{
     
     /**
      * This method will take the current player's hand, bake a layer and remove the required ingredients, then add the layer to their hand.@interface
+     * This method is an action, so will decrement actionsLeft if it executes successfully.
      * @param layer The layer to be baked
      * 
      * @throws a WrongIngredientsException if the player doesn't have the required ingredients to bake the layer.
@@ -83,9 +85,10 @@ public class MagicBakery implements Serializable{
                     ((Stack<Ingredient>)pantryDiscard).push(Ingredient.HELPFUL_DUCK);
                 }
             }
-            layers.remove(layer);
+            //TODO uncomment if layers ends up being limited
+            //layers.remove(layer);
             hand.add(layer);
-            
+            actionsLeft--;
             //Weird consequence of allowing the pantry to go empty, I'm going to assume that it should be stocked before pantry deck
             //pantry size will onlly be < 5 if pantryDeck is empty, so you have to pull from the discard. 
             if(pantry.size() <5)
@@ -100,14 +103,17 @@ public class MagicBakery implements Serializable{
             }
 
         }
-        throw new WrongIngredientsException("You don't have the necessary ingredients to bake this layer.");
+        else
+            throw new WrongIngredientsException("You don't have the necessary ingredients to bake this layer.");
             
     }
 
     /**
      * This method will take the top element from pantryDeck
      * But if pantryDeck is empty, then all of the cards in pantryDiscard will be moved into it, and then pantryDeck shuffled before then drawing a card.
+     * this method also decrements actionsLeft, since the player can do this as an action, so other functions should counteract this.
      * @return the ingredient drawn from the pantry deck.
+     * @throws EmptyPantryException if there are no cards left in the pantryDeck or pantryDiscard.
      */
     public Ingredient drawFromPantryDeck()
     {
@@ -119,12 +125,14 @@ public class MagicBakery implements Serializable{
                 throw new EmptyPantryException("There's no cards left, you'll have to use the cards in your hand for now.", null);
             Collections.shuffle((Stack<Ingredient>) pantryDeck, random);    
         }
+        actionsLeft--;
         return ((Stack<Ingredient>)pantryDeck).pop();
+
 
     }
 
     /**
-     * This function allows the player to choose an ingredient to draw from the pantry.
+     * This function allows the player to choose an ingredient to draw from the pantry, and will decrement actionsLeft
      * @param ingredientName The name of the ingredient being drawn from the pantry
      * 
      * @throws WrongIngredientException if the ingredient specified by ingredientName isn't in the pantry
@@ -153,10 +161,11 @@ public class MagicBakery implements Serializable{
         }
         if(!ingredientThere)
             throw new WrongIngredientsException("That ingredient isn't in the pantry to be drawn");
+        actionsLeft--;
     }
 
     /**
-     * This function allows the player to choose an ingredient to draw from the pantry.
+     * This function allows the player to choose an ingredient to draw from the pantry, and will decrement actionsLeft
      * @param ingredientName The ingredient being drawn from the pantry
      * 
      * @throws WrongIngredientException if the ingredient specified isn't in the pantry
@@ -171,9 +180,12 @@ public class MagicBakery implements Serializable{
             {
                 getCurrentPlayer().addToHand(pantryIngredient);
                 try{
+                    actionsLeft++;
                     ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+
                 }catch(EmptyPantryException e)
                 {
+                    actionsLeft--;
                     ((ArrayList<Ingredient>) pantry).remove(i);
                     System.out.println(e.getMessage());
                 }
@@ -183,29 +195,41 @@ public class MagicBakery implements Serializable{
         }
         if(!ingredientThere)
             throw new WrongIngredientsException("That ingredient isn't in the pantry to be drawn");
+        actionsLeft--;
     }
 
     /**
-     * This checks the number of actions remaining to see if a player's turn should end
+     * This checks the number of actions remaining to see if a player's turn should end.
+     * If it should, then it changes the currentPlayer to be the next player.
      * @return whether the current player's turn should end
      */
     public boolean endTurn()
     {
-        return getActionsRemaining() <=0;
+        if(getActionsRemaining() <=0)
+        {
+            ArrayList<Player> listPlayers  = (ArrayList<Player>) players; // Just to make this casting slightly less verbose
+            currentPlayer = listPlayers.get( (listPlayers.indexOf(currentPlayer) + 1) % players.size());
+            actionsLeft = getActionsPermitted();
+            return true;
+        }
+        return false;
     }
 
     //TODO: figure out if this takes the cards from the hand or not.
     /**
      * This fulfills an order, using the CustomerOrder.fulfill() method
      * It uses the current player's hand as the list of ingredients to fulfil the order with, to see if it can fulfil/garnish the order.
+     * It will decrement actionsLeft before doing anything else.
      * @param customer The customerOrder being fulfilled 
      * @param garnish indicator of whether the user is trying to garnish the order or not. 
      * @return The list of ingredients used to fulfil the order
      */
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish)
     {
+        actionsLeft--;
         return customer.fulfill(getCurrentPlayer().getHand(), garnish);
-        // Do I remove the cards here on in the function that calls this, since it returns the list
+        // Do I remove the cards here or in the function that calls this, since it returns the list
+        
     }
 
     /**
@@ -245,7 +269,7 @@ public class MagicBakery implements Serializable{
      */
     public Player getCurrentPlayer()
     {
-        return ((ArrayList<Player>)players).get(currentPlayerIndex);
+        return currentPlayer;
     }
 
     /**
@@ -273,7 +297,12 @@ public class MagicBakery implements Serializable{
     public Collection<CustomerOrder> getGarnishableCustomers()
     {
         List<Ingredient> hand = getCurrentPlayer().getHand();
-        return customers.getActiveCustomers().stream().filter(c -> c.canGarnish(hand)).toList();
+        Collection<CustomerOrder> garnishable = new ArrayList<>();
+        for (CustomerOrder customerOrder : customers.getActiveCustomers()) {
+            if(customerOrder != null && customerOrder.canGarnish(hand))
+                garnishable.add(customerOrder);
+        }
+        return garnishable;
     }
 
     /**
@@ -328,7 +357,8 @@ public class MagicBakery implements Serializable{
     } 
 
     /**
-     * Passes an ingredient from the current player's hand to the chosen player's hand
+     * Passes an ingredient from the current player's hand to the chosen player's hand.
+     * It will decrement actionsLeft if it executes correctly.
      * @param ingredient the ingredient being passed
      * @param recipient the player receiving the ingredient.
      */
@@ -339,6 +369,7 @@ public class MagicBakery implements Serializable{
             throw new WrongIngredientsException();
         hand.remove(ingredient);
         recipient.addToHand(ingredient);
+        actionsLeft--;
     }
 
     /** 
@@ -361,25 +392,41 @@ public class MagicBakery implements Serializable{
      */
     public void printGameState()
     {
-        //StringUtils.
+        System.out.println("\n\n==============\nCURRENT PLAYER: " + getCurrentPlayer().toString());
+        System.out.println("\n");
+
+        System.out.println("Customer orders to make: ");
+        StringUtils.customerOrdersToStrings(customers.getActiveCustomers()).forEach(s -> System.out.println(s));
+        System.out.println("layers: ");
+        StringUtils.layersToStrings(layers).forEach(s -> System.out.println(s));
+        System.out.println("Pantry: ");
+        StringUtils.ingredientsToStrings(pantry).forEach(s -> System.out.println(s));
+        System.out.println("Your (" + getCurrentPlayer().toString() +"'s) hand: ");
+        StringUtils.ingredientsToStrings(getCurrentPlayer().getHand()).forEach(s -> System.out.println(s));
+
+        System.out.println("\nNumber of actions left: " + getActionsRemaining());
     }
 
     /** 
      * This is an action a player can take, where they choose to discard all cards in the pantry and get new cards from the deck instead.
+     * It will decrement the actionsLeft variable.
      */
     public void refreshPantry()
     {
         pantryDiscard.addAll(pantry);
         for (int i = 0; i < pantry.size(); i++) {
             try{
+                actionsLeft++; //This is to counteract the ActionsLeft decrement that happens when doing drawFromPantryDeck
                 ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
             }catch(EmptyPantryException e)
             {
+                actionsLeft--; // The decrement in drawFromPantryDeck only happens when it works properly, so this undoes the increment above.
                 ((ArrayList<Ingredient>) pantry).remove(i);
                 System.out.println(e.getMessage());
                 break;
             }
         }
+        actionsLeft--;
         
     }
 
@@ -437,19 +484,12 @@ public class MagicBakery implements Serializable{
                 // If it runs out here, the game's kind of unplayable.    
             }
         }
+        currentPlayer = (Player) players.toArray()[0];
 
         //playGame();
     }
 
-    /** 
-     * This function will do the main game loop, going between turns, and changing things as each new round starts.
-     */
-    private void playGame()
-    {
-        while(!customers.getCustomerDeck().isEmpty() && !customers.isEmpty()) //Sp while there are still customers to be served
-        {
-
-        }
-    }
+    
+    
     
 }
