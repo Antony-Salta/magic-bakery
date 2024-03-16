@@ -2,6 +2,7 @@ package bakery;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -52,8 +53,22 @@ public class MagicBakery implements Serializable{
         //do some stuff with the file paths. Is the seed a thing for the serial version?
         this.random = new Random(seed);
         pantryDeck = new Stack<>();
-        pantryDeck.addAll(CardUtils.readIngredientFile(ingredientDeckFile));
-        layers = CardUtils.readLayerFile(layerDeckFile);
+        try {
+            layers = CardUtils.readLayerFile(layerDeckFile);
+        } catch (IOException e) {
+            System.out.println("Cannot read the layers file correctly to start the game. Try saving and closing any files in this folder.");
+            e.printStackTrace();
+            System.exit(1);
+        }
+        try {
+            pantryDeck.addAll(CardUtils.readIngredientFile(ingredientDeckFile));
+        } catch (IOException e) {
+            System.out.println("Cannot read the ingredients file correctly to start the game. Try saving and closing any files in this folder.");
+            e.printStackTrace();
+            System.exit(1);
+        }
+        
+        
         pantryDiscard = new Stack<Ingredient>();
         pantry = new ArrayList<>();
         players = new ArrayList<>();
@@ -68,6 +83,8 @@ public class MagicBakery implements Serializable{
      */
     public void bakeLayer(Layer layer)
     {
+        if(actionsLeft <= 0)
+            throw new TooManyActionsException();
         List<Ingredient> hand = getCurrentPlayer().getHand();
         if(layer.canBake(hand))
         {
@@ -117,6 +134,9 @@ public class MagicBakery implements Serializable{
      */
     public Ingredient drawFromPantryDeck()
     {
+        if(actionsLeft <= 0)
+            throw new TooManyActionsException();
+
         if(pantryDeck.isEmpty())
         {
             pantryDeck.addAll(pantryDiscard);
@@ -139,6 +159,9 @@ public class MagicBakery implements Serializable{
      */
     public void drawFromPantry(String ingredientName)
     {
+        if(actionsLeft <= 0)
+            throw new TooManyActionsException();
+
         boolean ingredientThere = false;
         for (int i = 0; i < pantry.size(); i++) 
         {
@@ -147,9 +170,11 @@ public class MagicBakery implements Serializable{
             {
                 getCurrentPlayer().addToHand(ingredient);
                 try{
+                    actionsLeft++;
                     ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
                 }catch(EmptyPantryException e)
                 {
+                    actionsLeft--;
                     ((ArrayList<Ingredient>) pantry).remove(i);
                     System.out.println(e.getMessage());
                 }
@@ -172,6 +197,9 @@ public class MagicBakery implements Serializable{
      */
     public void drawFromPantry(Ingredient ingredient)
     {
+        if(actionsLeft <= 0)
+            throw new TooManyActionsException();
+
         boolean ingredientThere = false;
         for (int i = 0; i < pantry.size(); i++) 
         {
@@ -226,6 +254,9 @@ public class MagicBakery implements Serializable{
      */
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish)
     {
+        if(actionsLeft <= 0)
+            throw new TooManyActionsException();
+
         actionsLeft--;
         return customer.fulfill(getCurrentPlayer().getHand(), garnish);
         // Do I remove the cards here or in the function that calls this, since it returns the list
@@ -333,26 +364,19 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * 
+     * This method will basically be in a point before the main game, where it can loop between asking the load a game or start a new one, so it doesn't need to throw an error.
      * @param file the file where the serialized MagicBakery is stored
      * @return the MagicBakery object stored in the file, which will have all of the information needed to play the game being loaded.
+     * @throws IOException IF there is an error reading the file
+     * @throws FileNotFoundException If the file specified does not exist or cannot be read for some reason
+     * @throws ClassNotFoundException If the file does not have a valid save state in it.
      */
-    public static MagicBakery loadState(File file)
+    public static MagicBakery loadState(File file) throws FileNotFoundException, IOException, ClassNotFoundException
     {
         MagicBakery gameState = null;
-        try (ObjectInputStream read = new ObjectInputStream(new FileInputStream(file)))
-        {
-            gameState = (MagicBakery) read.readObject();
-        } catch (IOException e) {
-            System.out.println("Error loading from this file.");
-            e.printStackTrace();
-        }
-        catch(ClassNotFoundException e)
-        {
-            System.out.println("");
-        }
-        if(gameState == null)
-            throw new NullPointerException("the magicBakery could not be instantiated from loading");
+        ObjectInputStream read = new ObjectInputStream(new FileInputStream(file));
+        gameState = (MagicBakery) read.readObject();
+        read.close();
         return gameState;
     } 
 
@@ -364,6 +388,9 @@ public class MagicBakery implements Serializable{
      */
     public void passCard(Ingredient ingredient, Player recipient)
     {
+        if(actionsLeft <= 0)
+            throw new TooManyActionsException();
+
         List<Ingredient> hand = getCurrentPlayer().getHand();
         if(!hand.contains(ingredient))
             throw new WrongIngredientsException();
@@ -395,6 +422,7 @@ public class MagicBakery implements Serializable{
         System.out.println("\n\n==============\nCURRENT PLAYER: " + getCurrentPlayer().toString());
         System.out.println("\n");
 
+        printCustomerServiceRecord();
         System.out.println("Customer orders to make: ");
         StringUtils.customerOrdersToStrings(customers.getActiveCustomers()).forEach(s -> System.out.println(s));
         System.out.println("layers: ");
@@ -413,6 +441,9 @@ public class MagicBakery implements Serializable{
      */
     public void refreshPantry()
     {
+        if(actionsLeft <= 0)
+            throw new TooManyActionsException();
+
         pantryDiscard.addAll(pantry);
         for (int i = 0; i < pantry.size(); i++) {
             try{
@@ -433,16 +464,14 @@ public class MagicBakery implements Serializable{
     /**
      * This file will save the state of the game to a file so that it can be loaded and played later
      * @param file the file that the state of the game (serialized MagicBakery object) is to be saved to
+     * @throws IOException 
      */
-    public void saveState(File file)
+    public void saveState(File file) throws IOException
     {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) 
-        {
-            out.writeObject(this);
-        } catch (IOException e) {
-            System.out.println("Error, could not save game to the provided file");
-            e.printStackTrace();
-        }
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file)); 
+        out.writeObject(this);
+        out.close();
+        
     }
 
     /**
@@ -463,7 +492,13 @@ public class MagicBakery implements Serializable{
             players.add(new Player(name));
         }
         
-        customers = new Customers(customerDeckFile, random, layers, numPlayers);
+        try {
+            customers = new Customers(customerDeckFile, random, layers, numPlayers);
+        } catch (IOException e) {
+            System.out.println("Cannot read customers file correctly to start the game. Try saving and closing any files in this folder.");
+            e.printStackTrace();
+            System.exit(1);
+        }
         Collections.shuffle( ((Stack<Ingredient>)pantryDeck), random);
         for (int i = 0; i < 5; i++) 
         {

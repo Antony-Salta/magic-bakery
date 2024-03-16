@@ -3,10 +3,8 @@ package util;
 import java.io.Console;
 import java.io.File;
 import java.io.Serializable;
-import java.text.CollationElementIterator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -165,11 +163,12 @@ public class ConsoleUtils implements Serializable
     public boolean promptForStartLoad(String prompt)
     {
         System.out.println(prompt + " [S]tart/[l]oad");
-        if(readLine().toLowerCase().charAt(0) == 's')
+        String input = readLine();
+        if(input.toLowerCase().charAt(0) == 's')
             return true;
-        else if(readLine().toLowerCase().charAt(0) == 'l')
+        else if(input.toLowerCase().charAt(0) == 'l')
             return false;
-        System.out.println("Please enter either y or n to this question:");
+        System.out.println("Please enter either s or l to this question:");
         return promptForYesNo(prompt);
     }
 

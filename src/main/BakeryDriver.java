@@ -1,5 +1,7 @@
 import util.ConsoleUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,16 +25,31 @@ public class BakeryDriver {
     public static void main(String[] args)  
     {
         
-        //make a seed
+        
         ConsoleUtils console = new ConsoleUtils();
-        long seed = 24;
-        MagicBakery magicBakery = new MagicBakery(seed, "io/ingredients.csv", "io/layers.csv");
-        magicBakery.startGame(console.promptForNewPlayers("Please enter the name of the player. The players will go in this order, and there have to be between 2 and 5 players."), "io/customers.csv");
-        playGame(magicBakery, console);
-    }
-    private static Reader FileReader(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'FileReader'");
+        MagicBakery bakery = null;
+        while(!console.promptForStartLoad("Please choose whether you would like to start a new game or load an existing one."))
+        {
+            try {
+                File gameSave = console.promptForFilePath("Please enter the path to the file storing the game save.");
+                bakery = MagicBakery.loadState(gameSave);
+                break; // If it works, don't prompt again
+            } catch (IOException e) {
+                System.out.println("Error in reading the file. Try saving and closing any unnecessary files. You'll now be \n");
+            } catch(ClassNotFoundException e)
+            {
+                System.out.println("This file seems to be an invalid save state.\n");
+            }
+        }
+        if(bakery == null)
+        {
+            //TODO: put in an actual random seed.
+            long seed = 24;
+            bakery = new MagicBakery(seed, "io/ingredients.csv", "io/layers.csv");
+        bakery.startGame(console.promptForNewPlayers("Please enter the name of the player. The players will go in this order, and there have to be between 2 and 5 players."), "io/customers.csv");
+        }
+        
+        playGame(bakery, console);
     }
     /** 
      * This function will do the main game loop, going between turns, and changing things as each new round starts.
@@ -78,6 +95,7 @@ public class BakeryDriver {
                             Ingredient passedIngredient = console.promptForIngredient("Please choose the ingredient that you would like to pass to " + chosenPlayer.toString() + ": ", IngredientChoices);
                             bakery.passCard(passedIngredient, chosenPlayer);    
                             break;
+
                         case BAKE_LAYER:
                             Collection<Ingredient> bakeables = new ArrayList<>(bakery.getBakeableLayers());
                             Layer layer = (Layer) console.promptForIngredient("Please choose the layer that you would like to bake: ", bakeables);
@@ -85,7 +103,6 @@ public class BakeryDriver {
                             break;
 
                         case FULFIL_ORDER:
-                        //TODO: fix this to work
                             Collection<CustomerOrder> fulfilables = new ArrayList<>(bakery.getFulfilableCustomers());
                             CustomerOrder order = console.promptForCustomer("Please choose the customer order that you would like to fulfil: ", fulfilables);
 
@@ -95,20 +112,35 @@ public class BakeryDriver {
                                 garnish = console.promptForYesNo("Please choose whether you would like to try to garnish this order: ");
                             }
                             List<Ingredient> used = bakery.fulfillOrder(order, garnish);
-                            LinkedList<CustomerOrder> activeCustomers = (LinkedList<CustomerOrder>) bakery.getCustomers().getActiveCustomers();
-                            activeCustomers.set(activeCustomers.indexOf(order), null); // remove the fulfiled order from activeCustomers
                             //I'm doing this here instead of in fulfillOrder, because that's what the great UML diagram decreed. Even though we do it in method in bakeLayer
                             for (Ingredient ingredient : used) {
                                 bakery.getCurrentPlayer().getHand().remove(ingredient);
                             }
 
+                            LinkedList<CustomerOrder> activeCustomers = (LinkedList<CustomerOrder>) bakery.getCustomers().getActiveCustomers();
+                            activeCustomers.set(activeCustomers.indexOf(order), null); // remove the fulfiled order from activeCustomers
+                            
                             break;
 
                         case REFRESH_PANTRY:
                             bakery.refreshPantry();
                             break;
                     }
+                    
+
     
+                }
+                //I'm giving the option to save at the end of each turn.
+                while(console.promptForYesNo("Would you like to save the game now? "))
+                {
+                    try {
+                        File saveFile = console.promptForFilePath("Please enter the path to the file where you would like to save the file: ");
+                        bakery.saveState(saveFile);
+                        System.out.println("File successfully saved! You can quit anytime by enterring Ctrl+C");
+                        break;
+                    } catch (IOException e) {
+                        System.out.println("Writing the state to file didn't work. You may not be able to write to the file you specified.");
+                    }
                 }
                 
             }while(!bakery.getCurrentPlayer().equals((Player) bakery.getPlayers().toArray()[0])); //End of the round once the currentPlayer loops back to being the first player.
@@ -117,7 +149,7 @@ public class BakeryDriver {
             System.out.println("\n==================================");
             System.out.println("\tEND OF ROUND: CUSTOMERS ARE MOVING");
             System.out.println("==================================\n");
-            bakery.printCustomerServiceRecord();
+            
         }
     }
 

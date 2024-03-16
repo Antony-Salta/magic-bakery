@@ -1,5 +1,6 @@
 package bakery;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -38,8 +39,9 @@ public class Customers implements Serializable{
      * @param random the specific random object instantiated with some specific seed.
      * @param layers The collection of all layers in the game
      * @param numPlayers The number of players for the game
+     * @throws IOException If the customer file cannot be read.
      */
-    public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers)
+    public Customers(String deckFile, Random random, Collection<Layer> layers, int numPlayers) throws IOException
     {
         this.random = random;
         initialiseCustomerDeck(deckFile, layers, numPlayers);   
@@ -153,8 +155,9 @@ public class Customers implements Serializable{
      * @param deckFile the path to the file containing all of the CustomerOrders 
      * @param layers the collection of all layers, used to check if an ingredient should be an Ingredient or Layer object
      * @param numPlayers The number of players, used to determine how many of each level of Customer should be put in the customerDeck.
+     * @throws IOException If the customer file cannot be read
      */
-    private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers)
+    private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers) throws IOException
     {
         List<CustomerOrder> allCustomers = CardUtils.readCustomerFile(deckFile, layers);
         Collections.shuffle(allCustomers, random);

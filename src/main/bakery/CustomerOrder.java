@@ -238,15 +238,5 @@ public class CustomerOrder implements Serializable
     {
         return IngredientListUtil.stringFromIngList(garnish);
     }
-    // private String ingredientListToString(List<Ingredient> list)
-    // {
-    //     String csList = "";
-    //     for( Ingredient ing: list)
-    //     {
-    //         csList += ing.toString() + ", ";
-    //     }
-    //     csList =  csList.substring(0, csList.length() -2);
-    //     return csList;
-    // }
 
 }

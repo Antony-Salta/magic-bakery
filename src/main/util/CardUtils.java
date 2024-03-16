@@ -22,30 +22,28 @@ public  final class CardUtils
      * @param path the path to the customers file.
      * @param layers A list of all layers to see if something in the recipe is an ingredient or layer.
      * @return The list of customer orders generated.
+     * @throws IOException If the customer file cannot be read
      */
-    public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers)
+    public static List<CustomerOrder> readCustomerFile(String path, Collection<Layer> layers) throws IOException
     {
         List<CustomerOrder> customers = null; 
-        try (BufferedReader read = new BufferedReader(new FileReader(path))) 
-        {
-            //Structure of the csv is: level, name, list of ingredients/layers to make recipe, list of ingredients/layers to make garnish.
-            //First 4 entries set this out, so can be skipped.
-            //elements in the lists are separated with semi-colons
-            // If there is no garnish, the line will just end with a comma
-            read.readLine(); //skip first line
-            String line = read.readLine(); 
-            customers = new ArrayList<>();
+        BufferedReader read = new BufferedReader(new FileReader(path)); 
+        
+        //Structure of the csv is: level, name, list of ingredients/layers to make recipe, list of ingredients/layers to make garnish.
+        //First 4 entries set this out, so can be skipped.
+        //elements in the lists are separated with semi-colons
+        // If there is no garnish, the line will just end with a comma
+        read.readLine(); //skip first line
+        String line = read.readLine(); 
+        customers = new ArrayList<>();
 
-            while(line != null) 
-            {
-                customers.add(stringToCustomerOrder(line, layers));
-                line = read.readLine();
-            }
-            
-        } catch (IOException e) {
-            System.out.println("Error when reading customer file");
-            e.printStackTrace();
+        while(line != null) 
+        {
+            customers.add(stringToCustomerOrder(line, layers));
+            line = read.readLine();
         }
+
+        read.close();
         return customers;
     }
     
@@ -70,22 +68,18 @@ public  final class CardUtils
      * This reads the ingredients file and returns all of the ingredients as a list.
      * @param path the String path to the Ingredients.csv file
      * @return A list of ingredients in the file
+     * @throws IOException If the ingredient file cannot be read
      */
-    public static List<Ingredient> readIngredientFile(String path)
+    public static List<Ingredient> readIngredientFile(String path) throws IOException
     {
         //format is the name of the ingredient, and the quantity of that ingredient.
         List<Ingredient> ingredients = null;
-        try (BufferedReader read = new BufferedReader(new FileReader(path)))
-        {
-            Stream<String> lines = read.lines();
-            String all = lines.collect(Collectors.joining("\n"));
-            ingredients = stringToIngredients(all);
-            
-            
-        } catch (IOException e) {
-            System.out.println("Error when reading ingredients file.");
-            e.printStackTrace();
-        }
+        BufferedReader read = new BufferedReader(new FileReader(path));
+        Stream<String> lines = read.lines();
+        String all = lines.collect(Collectors.joining("\n"));
+        ingredients = stringToIngredients(all);
+
+        read.close();
         return ingredients;
     }
 
@@ -93,27 +87,23 @@ public  final class CardUtils
      * This function reads the layers stored in the layers file and returns it as a list.
      * @param path the path to the layers.csv file
      * @return the list of layers read from the file
+     * @@throws IOException If the layer file cannot be read
      */
-    public static List<Layer> readLayerFile(String path)
+    public static List<Layer> readLayerFile(String path) throws IOException
     {
         //format is the name of the layer, then the recipe separated by semi-colons
         List<Layer> layers = null;
-        try (BufferedReader read = new BufferedReader(new FileReader(path)))
-        {
-            Stream<String> lines = read.lines();
-            String all = lines.collect(Collectors.joining("\n"));
-            layers = stringtoLayers(all);
-            
-            //TODO Figure out if there are meant to be a limited number of layers or not.
-            //For now I'm gonna say no.
-            // layers.addAll(layers);
-            // layers.addAll(layers);
-            //This little bit makes it so that there are 4 of each layer, since that's the amount it's meant to be
+        BufferedReader read = new BufferedReader(new FileReader(path));
+        Stream<String> lines = read.lines();
+        String all = lines.collect(Collectors.joining("\n"));
+        layers = stringtoLayers(all);
         
-        } catch (IOException e) {
-            System.out.println("Error when reading layers file.");
-            e.printStackTrace();
-        }
+        //TODO Figure out if there are meant to be a limited number of layers or not.
+        //For now I'm gonna say no.
+        // layers.addAll(layers);
+        // layers.addAll(layers);
+        //This little bit makes it so that there are 4 of each layer, since that's the amount it's meant to be
+        read.close();
         return layers;
     }
 
