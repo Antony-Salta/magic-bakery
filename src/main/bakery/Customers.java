@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EmptyStackException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -56,50 +57,51 @@ public class Customers implements Serializable{
     /**
      * This will draw a customer from the customerDeck and add it to the activeCustomers list.
      * It will also shuffle all of the cards right, adding the rightmost order to the inActiveCustomers list if there is one there.
-     * @return The customer drawn from the deck. It will return null if the deck is empty
+     * This should only be called while there are cards in the deck
+     * @return The customer removed from the rightmost element in the list, null if there was no customer there.
+     * @throws EmptyStackException if the customerDeck is empty
      */
     public CustomerOrder addCustomerOrder()
     {
-        if(customerWillLeaveSoon())
-            inactiveCustomers.add(timePasses());
-        else   
-            timePasses();
-        CustomerOrder drawnCustomer = drawCustomer();
-        activeCustomers.add(drawnCustomer);
-        drawnCustomer.setStatus(CustomerOrderStatus.WAITING);
+        LinkedList<CustomerOrder> activeCustomersList = (LinkedList<CustomerOrder>) activeCustomers; 
+        CustomerOrder removedCustomer = timePasses();
+        CustomerOrder drawnCustomer = null;
+        drawnCustomer = drawCustomer();
         
-        if(customerWillLeaveSoon()) //set new impatient customer if applicable
-            ((LinkedList<CustomerOrder>) activeCustomers).getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
+        if(drawnCustomer != null)
+            drawnCustomer.setStatus(CustomerOrderStatus.WAITING);
         
-        return drawnCustomer; // I really have no clue what customer order object I'm meant to return here
+        activeCustomersList.addLast(drawnCustomer);
+        
+        if(size() == 3) //set new impatient customer if applicable
+            activeCustomersList.getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
+        
+        return removedCustomer;
     }
 
     /**
      * Determines if a customer will leave the activeCustomers deck when timePasses is called (so a round ends).
+     * It does this based on whether the rightmost element in the list isn't null and is IMPATiENT
      * @return whether a card will leave the activeCustomers deck.
      */
     public boolean customerWillLeaveSoon()
     {
-        if( ((LinkedList<CustomerOrder>)activeCustomers).getFirst() == null)
-            return false;
-        if(!customerDeck.isEmpty())
-            return size() ==3;
-
-        //so now we know that there is an order in the rightmost slot, and the deck is empty.
-        // In this case, then a customer will only stay if there is a gap, so the middle element is null, and the tail has a customer
-        return !(((LinkedList<CustomerOrder>)activeCustomers).getLast() != null && ((LinkedList<CustomerOrder>)activeCustomers).get(1) == null);
+        LinkedList<CustomerOrder> activeCustomersList = (LinkedList<CustomerOrder>)activeCustomers;
+        //first condition is because of weird things with the linked list being dumb.
+        if(!activeCustomersList.isEmpty() && activeCustomersList.getFirst() != null)
+            return activeCustomersList.getFirst().getStatus() == CustomerOrderStatus.IMPATIENT;
+        return false;
     }
 
     /**
      * This method draws a card from customerDeck, if it is there.
-     * @return the customerOrder drawn from the deck, null if customerDeck is empty
+     * @return the customerOrder drawn from the deck
+     * @throws EmptyStackException if the customer deck is empty
+     * I wanted to just return null but oh well.
      */
     public CustomerOrder drawCustomer()
     {
-        if(!customerDeck.isEmpty())
-            return ((Stack<CustomerOrder>)customerDeck).pop();
-        else 
-            return null;
+        return ((Stack<CustomerOrder>)customerDeck).pop();
     }
 
     /**
@@ -155,6 +157,7 @@ public class Customers implements Serializable{
      * @param deckFile the path to the file containing all of the CustomerOrders 
      * @param layers the collection of all layers, used to check if an ingredient should be an Ingredient or Layer object
      * @param numPlayers The number of players, used to determine how many of each level of Customer should be put in the customerDeck.
+     * @return void There is nothing to be returned here, it sets the values of most of the instance variables of this object.
      * @throws IOException If the customer file cannot be read
      */
     private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers) throws IOException
@@ -212,12 +215,31 @@ public class Customers implements Serializable{
     }
 
     /**
-     * Removes a customer from activeCustomer deck. Should mostly be used for fulfilling orders.
+     * Removes a customer from the activeCustomer list. Should mostly be used for fulfilling orders.
+     * It will also set the head of the activeCustomer list to waiting if it won't leave next turn anymore
      * @param customer the customer to be removed
+     * @return void There is nothing to be returned here
      */
     public void remove(CustomerOrder customer)
     {
-        ((LinkedList<CustomerOrder>) activeCustomers).set(((LinkedList<CustomerOrder>) activeCustomers).indexOf(customer), null); // need to keep null entries in so that gaps are represented properly, which is only really necessary for the sake of printing with gaps.
+        LinkedList<CustomerOrder> activeCustomerList = (LinkedList<CustomerOrder>) activeCustomers;
+        int customerIndex = activeCustomerList.indexOf(customer);
+        inactiveCustomers.add(activeCustomerList.get(customerIndex));
+        activeCustomerList.set(customerIndex, null); // need to keep null entries in so that gaps are represented properly
+        
+        if(activeCustomerList.getFirst() != null )
+        {
+            if(!customerDeck.isEmpty())
+                activeCustomerList.getFirst().setStatus(CustomerOrderStatus.WAITING);
+            //If the customerDeck is empty, then the head will only be set to waiting if there's a gap between the elements
+            else if(activeCustomerList.getLast() != null && activeCustomerList.get(1) == null)
+                activeCustomerList.getFirst().setStatus(CustomerOrderStatus.WAITING);
+            //If the leftmost element is null, then the front element should be impatient. It doesn't matter if the middle element is null or not 
+            else if(activeCustomerList.getLast() == null)
+            activeCustomerList.getFirst().setStatus(CustomerOrderStatus.IMPATIENT);
+        }
+
+            
     }
 
     /**
@@ -234,34 +256,54 @@ public class Customers implements Serializable{
     /**
      * This method will remove the first (rightmost) element in the activeCustomers list if it is due to leave
      * This method will always remove an element from activeCustomers, either the rightmost element (head of the list) which could be null, or a null gap.
+     * This method will also set the status of customers to IMPATIENT as appropriate
      * @return the CustomerOrder that is leaving from the rightmost position. This will return null if there is no CustomerOrder due to leave.
      */
     public CustomerOrder timePasses()
     {
+        //TODO: make this set the patience of customers appropriately.
+        CustomerOrder removedCustomer = null;
+        LinkedList<CustomerOrder> activeCustomersList = (LinkedList<CustomerOrder>) activeCustomers;
         if(customerWillLeaveSoon())
-            return ((LinkedList<CustomerOrder>) activeCustomers).removeFirst();
+        {
+            removedCustomer = activeCustomersList.removeFirst();
+            removedCustomer.abandon();
+            inactiveCustomers.add(removedCustomer);
+        }
         //If there isn't a customer leaving with an empty deck, then that means there is a null element somewhere, and the rightmost null element should be removed when time passes to shuffle everything along.
         //This logic would break if activeCustomers was more than 3 elements though.
-        if(customerDeck.isEmpty())
+        else if(customerDeck.isEmpty())
         {
-            for (int i = 0; i < activeCustomers.size(); i++) 
-            {
-                if( ((LinkedList<CustomerOrder>) activeCustomers).get(i) == null)
+            for (int i = 0; i < activeCustomersList.size(); i++) {
+                CustomerOrder order = activeCustomersList.get(i);
+                if(order == null)
                 {
-                    return ((LinkedList<CustomerOrder>) activeCustomers).remove(i);
+                    activeCustomersList.remove(i);
+                    break;
                 }        
             }
         }
         //in this case, there isn't a customer leaving soon, but customerDeck isn't empty
         // here, you actually remove the leftmost null element, since you are trying to put a card in on the left, rather than just shuffling everything right one.
-        for (int i = activeCustomers.size() -1; i > -1; i--) 
+        else
         {
-            if( ((LinkedList<CustomerOrder>) activeCustomers).get(i) == null)
+            for (int i = activeCustomers.size() -1; i > -1; i--) 
             {
-                return ((LinkedList<CustomerOrder>) activeCustomers).remove(i);
-            }        
+                if( activeCustomersList.get(i) == null)
+                {
+                    activeCustomersList.remove(i);
+                    break;
+
+                }        
+            }
         }
-        return null; // this is actually unreachable.
+        //Now to set the new rightmost element to be impatient if applicable.
+        //I am fudging this. CustomerWillLeave soon is meant to assess whether a customer will leave given 3 elements, but I'm doing it with the two elements, understanding the last is always null in this scenario.
+        //Weird thing where the list throws noSuchElement when the list only has null elements, seemingly only
+        if(!activeCustomersList.isEmpty() &&  activeCustomersList.getFirst() != null && customerDeck.isEmpty()) // if the customer deck isn't empty, it'll never be considered impatient.
+            activeCustomersList.getFirst().setStatus(CustomerOrderStatus.IMPATIENT); 
+        
+        return removedCustomer;
         
     }
 

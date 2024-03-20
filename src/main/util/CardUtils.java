@@ -73,12 +73,15 @@ public  final class CardUtils
     public static List<Ingredient> readIngredientFile(String path) throws IOException
     {
         //format is the name of the ingredient, and the quantity of that ingredient.
-        List<Ingredient> ingredients = null;
+        List<Ingredient> ingredients = new ArrayList<>();
         BufferedReader read = new BufferedReader(new FileReader(path));
-        Stream<String> lines = read.lines();
-        String all = lines.collect(Collectors.joining("\n"));
-        ingredients = stringToIngredients(all);
-
+        read.readLine(); // skip first line
+        String line = read.readLine();
+        while(line != null)
+        {
+            ingredients.addAll(stringToIngredients(line));
+            line = read.readLine();
+        }
         read.close();
         return ingredients;
     }
@@ -92,11 +95,15 @@ public  final class CardUtils
     public static List<Layer> readLayerFile(String path) throws IOException
     {
         //format is the name of the layer, then the recipe separated by semi-colons
-        List<Layer> layers = null;
+        List<Layer> layers = new ArrayList<>();
         BufferedReader read = new BufferedReader(new FileReader(path));
-        Stream<String> lines = read.lines();
-        String all = lines.collect(Collectors.joining("\n"));
-        layers = stringtoLayers(all);
+        read.readLine(); //skip first line
+        String line = read.readLine();
+        while(line != null)
+        {
+            layers.addAll(stringToLayers(line));
+            line = read.readLine();
+        }
         
         //TODO Figure out if there are meant to be a limited number of layers or not.
         //For now I'm gonna say no.
@@ -115,26 +122,26 @@ public  final class CardUtils
      */
     private static CustomerOrder stringToCustomerOrder(String str, Collection<Layer> layers)
     {
-        String[] parts = str.split(", ");
+        String[] parts = str.split(",");
         int level = Integer.parseInt(parts[0]);
-        String name = parts[1];
+        String name = parts[1].strip();
 
         if(parts.length == 3)// If there is no garnish, then there will only be 3 parts, and the recipe will end in a comma, sometimes, it's inconsistent, hence the replace.
             parts[2] = parts[2].replace(",", "");
 
-        String[] recipeIngredients = parts[2].split("; ");
+        String[] recipeIngredients = parts[2].split(";");
         ArrayList<Ingredient> recipe = new ArrayList<>();
         for (String ingredient : recipeIngredients) {
-            recipe.add(makeCorrectIngredient(ingredient, layers));
+            recipe.add(makeCorrectIngredient(ingredient.strip(), layers));
         }
         
         ArrayList<Ingredient> garnish = null;
         if(parts.length != 3)
         {
-            recipeIngredients = parts[3].split("; ");
+            recipeIngredients = parts[3].split(";");
             garnish = new ArrayList<>();
             for (String ingredient : recipeIngredients) {
-                garnish.add(makeCorrectIngredient(ingredient, layers));
+                garnish.add(makeCorrectIngredient(ingredient.strip(), layers));
             }
         }
         return new CustomerOrder(name, recipe, garnish, level);
@@ -142,42 +149,41 @@ public  final class CardUtils
     }
     /**
      * Returns a list of ingredients given the appropriate string
-     * @param str The entire contents of the ingredients file apparently. Which actually makes more work here.
-     * @return The list of ingredients in the file
+     * @param str A line of the ingredients file.
+     * @return The list of ingredients made from that line
      */
-    private static List<Ingredient> stringToIngredients(String str)
+    private static List<Ingredient> stringToIngredients(String line)
     {
         List<Ingredient> ingredients = new ArrayList<>();
-        String[] lines = str.split("\n");
-        for (int i = 1; i < lines.length; i++) {
-            String[] parts = lines[i].split(", ");
-            String name = parts[0];
-            int quantity = Integer.parseInt(parts[1]);
-            for (int j = 0; j < quantity; j++) {
-                ingredients.add(new Ingredient(name));
-            }
+        String[] parts = line.split(",");
+        String name = parts[0];
+        int quantity = Integer.parseInt(parts[1].strip());
+        for (int j = 0; j < quantity; j++) {
+            ingredients.add(new Ingredient(name));
         }
         return ingredients;
     }
     /**
      * Returns a list of layers given the appropriate string
-     * @param str The entire contents of the layers file apparently. Which actually makes more work here.
-     * @return The list of layers in the file
+     * @param line: the line of the layers file
+     * @return The list of layers in the line, 4 of the layer described.
      */
-    private static List<Layer> stringtoLayers(String str)
+    private static List<Layer> stringToLayers(String line)
     {
-        List<Layer> layers = new ArrayList<>();
-        String[] lines = str.split("\n");
-        for (int i = 1; i < lines.length; i++) { //skip first line
-            String[] parts = lines[i].split(", ");
+            List<Layer> layers = new ArrayList<>();
+            String[] parts = line.split(",");
             String name = parts[0];
-            String[] ingredients = parts[1].split("; ");
+            String[] ingredients = parts[1].split(";");
             List<Ingredient> recipe = new ArrayList<>();
+            
             for (String ingName : ingredients) {
-                recipe.add(new Ingredient(ingName));
+                recipe.add(new Ingredient(ingName.strip()));
             }
             layers.add(new Layer(name, recipe));
-        }
+            //TODO Figure out if there are meant to be a limited number of layers or not.
+            layers.addAll(layers);
+            layers.addAll(layers);
+            //This little bit makes it so that there are 4 of each layer, since that's the amount it's meant to be
         return layers;
     }
 }

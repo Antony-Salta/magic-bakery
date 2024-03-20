@@ -1,6 +1,7 @@
 package bakery;
 
 import java.util.List;
+import java.util.Collections;
 import java.util.HashMap;  
 
 /**
@@ -15,7 +16,7 @@ public class Layer extends Ingredient
     /**
      * This makes a layer object with the given attributes
      * @param name: The name of the layer
-     * @param recipe: The ingredients needed to make this layer
+     * @param recipe: The ingredients needed to make this layer, sorted by name.
      */
     public Layer(String name, List<Ingredient> recipe)
     {
@@ -26,6 +27,7 @@ public class Layer extends Ingredient
             throw new WrongIngredientsException("Cannot have an empty recipe in constructor.");
         
         this.recipe = recipe;
+        Collections.sort(this.recipe);
     }
 
     /**
@@ -90,6 +92,7 @@ public class Layer extends Ingredient
         return recipe;
     }
 
+    
     /**
      * 
      * @return the list of ingredients in the recipe, separated with commas 

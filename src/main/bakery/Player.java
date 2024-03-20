@@ -27,6 +27,7 @@ public class Player implements Serializable
     /**
      * 
      * @param ingredients: The list of ingredients to add to the player's hand
+     * @return void There is nothing to be returned here.
      */
     public void addToHand(List<Ingredient> ingredients)
     {
@@ -35,6 +36,7 @@ public class Player implements Serializable
     /**
      * 
      * @param ingredient: The ingredient to add to the player's hand
+     * @return void There is nothing to be returned here
      */
     public void addToHand(Ingredient ingredient)
     {
@@ -54,11 +56,12 @@ public class Player implements Serializable
     /**
      * 
      * @param ingredient: The ingredient to remove one from the player's hand
+     * @return void There is nothing to be returned here.
      */
     public void removeFromHand(Ingredient ingredient)
     {
         if(!hand.contains(ingredient))
-            throw new IllegalArgumentException("The hand does not contain this ingredient to be removed");
+            throw new WrongIngredientsException("The hand does not contain this ingredient to be removed");
         hand.remove(ingredient);
     }
 

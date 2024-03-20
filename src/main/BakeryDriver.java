@@ -18,14 +18,19 @@ import bakery.Player;
 import bakery.CustomerOrder.CustomerOrderStatus;
 import bakery.MagicBakery.ActionType;
 
-
+/**
+ * Plays the main game
+ */
 public class BakeryDriver {
     public BakeryDriver() {
     }
-    public static void main(String[] args)  
+    /**
+     * 
+     * @param args don't do anything with this
+     * @throws IOException if the files needing to start the game can't be read properly. 
+     */
+    public static void main(String[] args) throws IOException  
     {
-        
-        
         ConsoleUtils console = new ConsoleUtils();
         MagicBakery bakery = null;
         while(!console.promptForStartLoad("Please choose whether you would like to start a new game or load an existing one."))
@@ -46,7 +51,7 @@ public class BakeryDriver {
             //TODO: put in an actual random seed.
             long seed = 24;
             bakery = new MagicBakery(seed, "io/ingredients.csv", "io/layers.csv");
-        bakery.startGame(console.promptForNewPlayers("Please enter the name of the player. The players will go in this order, and there have to be between 2 and 5 players."), "io/customers.csv");
+            bakery.startGame(console.promptForNewPlayers("Please enter the name of the player. The players will go in this order, and there have to be between 2 and 5 players."), "io/customers.csv");
         }
         
         playGame(bakery, console);
@@ -75,7 +80,8 @@ public class BakeryDriver {
                                 bakery.drawFromPantry(chosen);
                             }
                             else
-                                bakery.getCurrentPlayer().addToHand(bakery.drawFromPantryDeck());
+                            //TODO: fix this so that you can draw from the pantry deck
+                                bakery.drawFromPantry(Ingredient.HELPFUL_DUCK);
                             break;
                         
                         case PASS_INGREDIENT:
@@ -111,14 +117,14 @@ public class BakeryDriver {
                             {
                                 garnish = console.promptForYesNo("Please choose whether you would like to try to garnish this order: ");
                             }
+
                             List<Ingredient> used = bakery.fulfillOrder(order, garnish);
+                            
                             //I'm doing this here instead of in fulfillOrder, because that's what the great UML diagram decreed. Even though we do it in method in bakeLayer
                             for (Ingredient ingredient : used) {
                                 bakery.getCurrentPlayer().getHand().remove(ingredient);
                             }
-
-                            LinkedList<CustomerOrder> activeCustomers = (LinkedList<CustomerOrder>) bakery.getCustomers().getActiveCustomers();
-                            activeCustomers.set(activeCustomers.indexOf(order), null); // remove the fulfiled order from activeCustomers
+                            bakery.getCustomers().remove(order);
                             
                             break;
 
@@ -144,7 +150,11 @@ public class BakeryDriver {
                 }
                 
             }while(!bakery.getCurrentPlayer().equals((Player) bakery.getPlayers().toArray()[0])); //End of the round once the currentPlayer loops back to being the first player.
-            bakery.getCustomers().addCustomerOrder();
+            
+            if(!bakery.getCustomers().getCustomerDeck().isEmpty()) // Wonderful stuff because I'm not allowed to error handle a stack.
+                bakery.getCustomers().addCustomerOrder();
+            else
+                bakery.getCustomers().timePasses();
 
             System.out.println("\n==================================");
             System.out.println("\tEND OF ROUND: CUSTOMERS ARE MOVING");

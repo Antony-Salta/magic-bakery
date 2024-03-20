@@ -2,6 +2,7 @@ package bakery;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,8 +30,8 @@ public class CustomerOrder implements Serializable
     /**
      * 
      * @param name: The name of the customer order.
-     * @param recipe: The list of ingredients needed to make this order.
-     * @param garnish: The list of ingredients needed to make the optional garnish for a bonus.
+     * @param recipe: The list of ingredients needed to make this order, sorted
+     * @param garnish: The list of ingredients needed to make the optional garnish for a bonus, sorted
      * @param level: The difficulty level of the order
      */
     public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level)
@@ -44,14 +45,17 @@ public class CustomerOrder implements Serializable
         this.recipe = recipe;
         this.garnish = garnish;
         this.level = level;
+        Collections.sort(this.recipe);
+        Collections.sort(this.garnish);
     }
 
     /** 
-     * Sets the status of the order to mark that it has not and cannot be fulfilled.
+     * Sets the status of the order to mark that it has not and cannot be fulfilled, with GIVEN_UP
+     * @return void, sets this object's status to be GIVEN_UP
      */
     public void abandon()
     {
-        status = CustomerOrderStatus.GIVEN_UP;
+        this.status = CustomerOrderStatus.GIVEN_UP;
     }
 
     /**
@@ -76,6 +80,13 @@ public class CustomerOrder implements Serializable
             return false; // orders without a garnish can't be garnished
         return canMake(garnish, ingredients);
     }
+
+    /**
+     * This function is a general function used by canFulfil and canGarnish to see if the given recipe can be made given some other list of ingredients.
+     * @param thingToMake The list of ingredients needed to make either the recipe or the garnish.
+     * @param ingredients The ingredients that can be used to make the specified recipe, generally a player's hand
+     * @return Boolean value of whether the recipe/garnish can be made
+     */
     private boolean canMake(List<Ingredient> thingToMake, List<Ingredient> ingredients)
     {
         HashMap<Ingredient, Integer> quantities = new HashMap<>();
@@ -215,6 +226,7 @@ public class CustomerOrder implements Serializable
     /**
      * 
      * @param status The CustomerOrderStatus to set this order to.
+     * @return void there's nothing to be returned here.
      */
     public void setStatus(CustomerOrderStatus status) 
     {

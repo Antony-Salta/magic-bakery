@@ -1,6 +1,7 @@
 package bakery;
+
 /**
- * This exception is thrown when a player tries to perform an action after already using all of their actions
+ * This exception will be thrown if a player attempts to do too many actions in one turn. 
  */
 public class TooManyActionsException extends IllegalStateException
 {

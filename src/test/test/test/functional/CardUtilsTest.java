@@ -171,26 +171,26 @@ public class CardUtilsTest {
 	public void testStringToCustomerOrder__LayerAndIngredient__MixedGarnish__SingleWord() throws IllegalAccessException, InvocationTargetException {
 		if (toOrder == null) fail();
 
-		String line = "2,celebration cake,layerC;eggs;milk,sprinkles;layerD";
+		String line = "2,celebration cake,eggs;layerC;milk,layerD;sprinkles";
 		CustomerOrder order = (CustomerOrder)toOrder.invoke(null, line, layers);
 		assertEquals(2, order.getLevel());
 		assertEquals("celebration cake", order.toString());
 
 		List<Ingredient> recipe = order.getRecipe();
 		assertEquals(3, recipe.size());
-		assertEquals("layerC", recipe.get(0).toString());
-		assertEquals(Layer.class, recipe.get(0).getClass());
-		assertEquals("eggs", recipe.get(1).toString());
-		assertEquals(Ingredient.class, recipe.get(1).getClass());
+		assertEquals("layerC", recipe.get(1).toString());
+		assertEquals(Layer.class, recipe.get(1).getClass());
+		assertEquals("eggs", recipe.get(0).toString());
+		assertEquals(Ingredient.class, recipe.get(0).getClass());
 		assertEquals("milk", recipe.get(2).toString());
 		assertEquals(Ingredient.class, recipe.get(2).getClass());
 
 		List<Ingredient> garnish = order.getGarnish();
 		assertEquals(2, garnish.size());
-		assertEquals("sprinkles", garnish.get(0).toString());
-		assertEquals(Ingredient.class, garnish.get(0).getClass());
-		assertEquals("layerD", garnish.get(1).toString());
-		assertEquals(Layer.class, garnish.get(1).getClass());
+		assertEquals("sprinkles", garnish.get(1).toString());
+		assertEquals(Ingredient.class, garnish.get(1).getClass());
+		assertEquals("layerD", garnish.get(0).toString());
+		assertEquals(Layer.class, garnish.get(0).getClass());
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class CardUtilsTest {
 	public void testStringToLayer__testSortedRecipe() throws IllegalAccessException, InvocationTargetException {
 		if (toLayers == null) fail();
 
-		String line = "icing,sugar;butter";
+		String line = "icing,butter;sugar";
 		@SuppressWarnings("unchecked")
 		List<Layer> layers = (List<Layer>)toLayers.invoke(null, line);
 		assertTrue(layers.size() > 0);
@@ -257,11 +257,11 @@ public class CardUtilsTest {
 		}
 	}
 
-	@Test
+	@Test	
 	public void testStringToLayer__ManyIngredients__MultiWord() throws IllegalAccessException, InvocationTargetException {
 		if (toLayers == null) fail();
 
-		String line = "another icing,tesco finest unsalted butter;icing sugar;vanilla extract;orange jest;multi-coloured sprinkles";
+		String line = "another icing,icing sugar;multi-coloured sprinkles;orange jest;tesco finest unsalted butter;vanilla extract";
 		@SuppressWarnings("unchecked")
 		List<Layer> layers = (List<Layer>)toLayers.invoke(null, line);
 		assertTrue(layers.size() > 0);
