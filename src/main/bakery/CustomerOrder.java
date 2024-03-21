@@ -45,8 +45,9 @@ public class CustomerOrder implements Serializable
         this.recipe = recipe;
         this.garnish = garnish;
         this.level = level;
-        Collections.sort(this.recipe);
-        Collections.sort(this.garnish);
+        this.status = CustomerOrderStatus.WAITING;
+        //if(this.recipe != null) Collections.sort(this.recipe);
+        //if(this.garnish != null)Collections.sort(this.garnish);
     }
 
     /** 
@@ -61,7 +62,7 @@ public class CustomerOrder implements Serializable
     /**
      * This method will take a list of ingredients and see if it has enough ingredients/Helpful Ducks to make the recipe of this order.
      * @param ingredients: The list of ingredients being checked
-     * @return boolean of if the the recipe can be made
+     * @return boolean of if the recipe can be made
      */
     public boolean canFulfill( List<Ingredient> ingredients)
     {
@@ -76,8 +77,8 @@ public class CustomerOrder implements Serializable
      */
     public boolean canGarnish( List<Ingredient> ingredients)
     {
-        if(garnish == null)
-            return false; // orders without a garnish can't be garnished
+        if(garnish == null || garnish.isEmpty()) // orders without a garnish can't be garnished
+            return false;
         return canMake(garnish, ingredients);
     }
 
@@ -103,15 +104,20 @@ public class CustomerOrder implements Serializable
         for (Ingredient ingredient : ingredients) {
             if(quantities.containsKey(ingredient))
             {
-                quantities.replace(ingredient, quantities.get(ingredient) - 1);
+                int numLeft = quantities.get(ingredient) -1;
+                quantities.replace(ingredient, numLeft);
                 if(quantities.get(ingredient) == 0)
+                {
                     quantities.remove(ingredient);
+                }
+                    
             }
                 
             if(ingredient.equals(Ingredient.HELPFUL_DUCK))
                 numDucks++;
         } // so at the end of the loop it will have counted down all of the ingredients, so then we just have to see if they have enough helpful ducks.
-        
+        if(quantities.isEmpty())
+            return true; //shortcut to avoid this if the normal ingredients account for it.
         int count = 0;
         for (Ingredient ingredient : quantities.keySet()) { // return false if there is a Layer unaccounted for.
             if (ingredient instanceof Layer)
@@ -121,6 +127,7 @@ public class CustomerOrder implements Serializable
         {
             count += num;
         }
+
         return numDucks >= count; // This will work if the normal ingredients cover it, since then it'll be 0 or more >= 0.
     }
 
@@ -134,36 +141,36 @@ public class CustomerOrder implements Serializable
     public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish)
     {
         List<Ingredient>used = new ArrayList<>(); 
-        
-        if(canFulfill(ingredients))
+        List<Ingredient> copy = new ArrayList<>(ingredients);
+        if(canFulfill(copy))
         {
             
             for (Ingredient ingredient : recipe) 
             {
-                if(ingredients.contains(ingredient))
+                if(copy.contains(ingredient))
                 {
-                    ingredients.remove(ingredient);
+                    copy.remove(ingredient);
                     used.add(ingredient);
                 }
                     
                 else
                 {
-                    ingredients.remove(Ingredient.HELPFUL_DUCK);
+                    copy.remove(Ingredient.HELPFUL_DUCK);
                     used.add(Ingredient.HELPFUL_DUCK);
                 }
             }
-            if(garnish && canGarnish(ingredients))
+            if(garnish && canGarnish(copy))
             {
                 for (Ingredient ingredient : this.garnish) 
                 {
-                    if(ingredients.contains(ingredient))
+                    if(copy.contains(ingredient))
                     {
-                        ingredients.remove(ingredient);
+                        copy.remove(ingredient);
                         used.add(ingredient);
                     }
                     else
                     {
-                        ingredients.remove(Ingredient.HELPFUL_DUCK);
+                        copy.remove(Ingredient.HELPFUL_DUCK);
                         used.add(Ingredient.HELPFUL_DUCK);
                     }
                         
@@ -239,7 +246,7 @@ public class CustomerOrder implements Serializable
      */
     public String getRecipeDescription()
     {
-        return IngredientListUtil.stringFromIngList(recipe);
+        return IngredientListUtil.stringFromIngList(recipe, false, false);
     }
     /**
      * 
@@ -248,7 +255,7 @@ public class CustomerOrder implements Serializable
      */
     public String getGarnishDescription()
     {
-        return IngredientListUtil.stringFromIngList(garnish);
+        return IngredientListUtil.stringFromIngList(garnish, false, false);
     }
 
 }

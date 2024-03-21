@@ -27,7 +27,7 @@ public class Layer extends Ingredient
             throw new WrongIngredientsException("Cannot have an empty recipe in constructor.");
         
         this.recipe = recipe;
-        Collections.sort(this.recipe);
+        if(this.recipe != null) Collections.sort(this.recipe);
     }
 
     /**
@@ -100,7 +100,7 @@ public class Layer extends Ingredient
      */
     public String getRecipeDescription()
     {
-        return IngredientListUtil.stringFromIngList(recipe);
+        return IngredientListUtil.stringFromIngList(recipe, false, true);
     }
     
 }

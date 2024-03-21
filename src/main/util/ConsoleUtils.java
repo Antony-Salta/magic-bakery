@@ -40,7 +40,7 @@ public class ConsoleUtils implements Serializable
      * @param args arguments referenced by the format specifiers in the format string. Extra args beyond those specified by the format string are ignored.
      * @return the line read in from the console, not including line-termination characters, or null if the stream is closed.
      */
-    public String ReadLine(String fmt, Object... args)
+    public String ReadLine(String fmt, Object[] args)
     {
         return console.readLine(fmt, args);
     }

@@ -77,12 +77,44 @@ public class Player implements Serializable
 
     /**
      * 
-     * @return: the players hand as a comma separated list, and sorted.
+     * @return: the players hand as a comma separated list, sorted and with capitalised ingredients.
      * e.g. "Chocolate, Eggs (x2), Sugar"
      */
     public String getHandStr()
     {
-        return IngredientListUtil.stringFromIngList(hand);
+        return IngredientListUtil.stringFromIngList(hand, true, true);
+        // if(hand.isEmpty())
+        //     return ""; //Don't bother if it's empty
+        // Collections.sort(hand);
+        // String csList = "";
+        // Ingredient prevIng = hand.get(0);
+        // int numSame = 0;
+        // // e.g. c, e, e, e , s
+        // for( Ingredient ing: hand)
+        // {
+        //     if(ing != prevIng)
+        //     {
+        //         String original = prevIng.toString();
+        //         String CapitalisedName = original.substring(0,1).toUpperCase();
+        //         CapitalisedName += original.substring(1);
+        //         csList += CapitalisedName;
+        //         if(numSame > 1)
+        //             csList += " (x" + numSame + ")";
+        //         csList += ", ";
+        //         numSame = 1;
+        //         prevIng = ing;
+        //     }
+        //     else
+        //         numSame ++;
+        // }
+        // String original = hand.get(hand.size()-1).toString();
+        // String CapitalisedName = original.substring(0,1).toUpperCase();
+        // CapitalisedName += original.substring(1);
+        // csList += CapitalisedName;
+        // if(numSame > 1)
+        //     csList += " (x" + numSame + ")";
+
+        // return  csList;
     }
 
     /** 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,15 @@ public class BakeryDriver {
      */
     public static void main(String[] args) throws IOException  
     {
+        ArrayList<Ingredient> original = new ArrayList<>();
+        original.add(new Ingredient("zzz"));
+        original.add(new Ingredient("aaa"));
+        System.out.println(original.toString());
+        ArrayList<Ingredient> copy = new ArrayList<>(original);
+        Collections.sort(copy);
+        System.out.println(copy.toString());
+        System.out.println(original.toString());
+        System.exit(0);
         ConsoleUtils console = new ConsoleUtils();
         MagicBakery bakery = null;
         while(!console.promptForStartLoad("Please choose whether you would like to start a new game or load an existing one."))
@@ -116,13 +126,6 @@ public class BakeryDriver {
                             if(bakery.getGarnishableCustomers().contains(order)) // Only prompt if it's even possible to garnish the order.
                             {
                                 garnish = console.promptForYesNo("Please choose whether you would like to try to garnish this order: ");
-                            }
-
-                            List<Ingredient> used = bakery.fulfillOrder(order, garnish);
-                            
-                            //I'm doing this here instead of in fulfillOrder, because that's what the great UML diagram decreed. Even though we do it in method in bakeLayer
-                            for (Ingredient ingredient : used) {
-                                bakery.getCurrentPlayer().getHand().remove(ingredient);
                             }
                             bakery.getCustomers().remove(order);
                             

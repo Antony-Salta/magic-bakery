@@ -92,7 +92,7 @@ public class MagicBakery implements Serializable{
                 }
             }
             //TODO uncomment if layers ends up being limited
-            //layers.remove(layer);
+            layers.remove(layer);
             hand.add(layer);
             actionsLeft--;
             //Weird consequence of allowing the pantry to go empty, I'm going to assume that it should be stocked before pantry deck
@@ -250,9 +250,10 @@ public class MagicBakery implements Serializable{
      * This fulfills an order, using the CustomerOrder.fulfill() method
      * It uses the current player's hand as the list of ingredients to fulfil the order with, to see if it can fulfil/garnish the order.
      * It will decrement actionsLeft before doing anything else.
+     * It will use and remove the ingredients used from the player's hand, and then return the player's hand as it stands
      * @param customer The customerOrder being fulfilled 
      * @param garnish indicator of whether the user is trying to garnish the order or not. 
-     * @return The list of ingredients used to fulfil the order
+     * @return The list of ingredients added to the hand due to fulfilling a garnish. This will be null if nothing is drawn
      */
     public List<Ingredient> fulfillOrder(CustomerOrder customer, boolean garnish)
     {
@@ -260,7 +261,17 @@ public class MagicBakery implements Serializable{
             throw new TooManyActionsException();
 
         actionsLeft--;
-        return customer.fulfill(getCurrentPlayer().getHand(), garnish);
+        List<Ingredient> hand = getCurrentPlayer().getHand();
+        List<Ingredient> used = customer.fulfill(hand, garnish);
+        for (Ingredient ingredient: used)
+        {
+                hand.remove(ingredient);
+                if(ingredient instanceof Layer)
+                    layers.add((Layer) ingredient);
+                pantryDiscard.add(ingredient);
+        }
+        customers.remove(customer);
+        return hand;
         // Do I remove the cards here or in the function that calls this, since it returns the list
         
     }

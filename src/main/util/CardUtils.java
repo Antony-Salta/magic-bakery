@@ -30,7 +30,7 @@ public  final class CardUtils
         BufferedReader read = new BufferedReader(new FileReader(path)); 
         
         //Structure of the csv is: level, name, list of ingredients/layers to make recipe, list of ingredients/layers to make garnish.
-        //First 4 entries set this out, so can be skipped.
+        //First line set this out, so can be skipped.
         //elements in the lists are separated with semi-colons
         // If there is no garnish, the line will just end with a comma
         read.readLine(); //skip first line
@@ -122,8 +122,9 @@ public  final class CardUtils
      */
     private static CustomerOrder stringToCustomerOrder(String str, Collection<Layer> layers)
     {
+        //Structure of the csv is: level, name, list of ingredients/layers to make recipe, list of ingredients/layers to make garnish.
         String[] parts = str.split(",");
-        int level = Integer.parseInt(parts[0]);
+        int level = Integer.parseInt(parts[0].strip());
         String name = parts[1].strip();
 
         if(parts.length == 3)// If there is no garnish, then there will only be 3 parts, and the recipe will end in a comma, sometimes, it's inconsistent, hence the replace.
@@ -135,11 +136,10 @@ public  final class CardUtils
             recipe.add(makeCorrectIngredient(ingredient.strip(), layers));
         }
         
-        ArrayList<Ingredient> garnish = null;
+        ArrayList<Ingredient> garnish = new ArrayList<>();
         if(parts.length != 3)
         {
             recipeIngredients = parts[3].split(";");
-            garnish = new ArrayList<>();
             for (String ingredient : recipeIngredients) {
                 garnish.add(makeCorrectIngredient(ingredient.strip(), layers));
             }
@@ -156,7 +156,7 @@ public  final class CardUtils
     {
         List<Ingredient> ingredients = new ArrayList<>();
         String[] parts = line.split(",");
-        String name = parts[0];
+        String name = parts[0].strip();
         int quantity = Integer.parseInt(parts[1].strip());
         for (int j = 0; j < quantity; j++) {
             ingredients.add(new Ingredient(name));
@@ -172,7 +172,7 @@ public  final class CardUtils
     {
             List<Layer> layers = new ArrayList<>();
             String[] parts = line.split(",");
-            String name = parts[0];
+            String name = parts[0].strip();
             String[] ingredients = parts[1].split(";");
             List<Ingredient> recipe = new ArrayList<>();
             

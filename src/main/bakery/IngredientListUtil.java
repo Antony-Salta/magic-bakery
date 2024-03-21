@@ -1,5 +1,6 @@
 package bakery;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,27 +17,42 @@ public abstract class IngredientListUtil {
      * @param list
      * A list is inputted, will then be sorted.
      * This list will be used to generate a comma separated string of the items in the list.
-     * 
+     * @param capitalised setting whether the items should be capitalised or not
+     * @param sorted setting whether the itemse should be sorted or not
      * @return csList
      * the string csList, comma separated list.
      * This list will mark duplicate ingredients instead of outputting it twice. 
      * e.g. it will be: "Chocolate, Eggs (x2), Sugar"
      * instead of "Chocolate, Eggs, Eggs, Sugar"
      */
-    protected static String stringFromIngList(List<Ingredient> list)
+    protected static String stringFromIngList(List<Ingredient> list, boolean capitalised, boolean sorted)
     {
-        if(list == null)
-            return "N/A"; // This should basically just come up when passing in the garnish for a customerOrder that doesn't have a garnish.
-        Collections.sort(list);
+        if(list == null || list.isEmpty())
+            return ""; // This should basically just come up when passing in the garnish for a customerOrder that doesn't have a garnish.
+            
+        List<Ingredient> copy = new ArrayList<>(list); //Make sure it doesn't sort the list passed in, since some don't want that.
+        if(sorted)
+            Collections.sort(copy);
+
         String csList = "";
-        Ingredient prevIng = list.get(0);
+        Ingredient prevIng = copy.get(0);
         int numSame = 0;
         // e.g. c, e, e, e , s
-        for( Ingredient ing: list)
+        for( Ingredient ing: copy)
         {
             if(ing != prevIng)
             {
-                csList += prevIng.toString();
+                String original = prevIng.toString();
+                String name;
+                if(capitalised)
+                {
+                    name = original.substring(0,1).toUpperCase();
+                    name += original.substring(1);  
+                }
+                else
+                    name = original;
+                
+                csList += name;
                 if(numSame > 1)
                     csList += " (x" + numSame + ")";
                 csList += ", ";
@@ -46,11 +62,20 @@ public abstract class IngredientListUtil {
             else
                 numSame ++;
         }
-        
-        csList += list.get(list.size() -1);
+        String original = copy.get(copy.size() -1).toString();
+        String name;
+        if(capitalised)
+        {
+            name = original.substring(0,1).toUpperCase();
+            name += original.substring(1);  
+        }
+        else
+            name = original;
+        csList += name;
         if(numSame > 1)
             csList += " (x" + numSame + ")";
 
         return  csList;
     }
 }
+    
