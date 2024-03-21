@@ -268,10 +268,21 @@ public class MagicBakery implements Serializable{
                 hand.remove(ingredient);
                 if(ingredient instanceof Layer)
                     layers.add((Layer) ingredient);
-                pantryDiscard.add(ingredient);
+                else
+                    pantryDiscard.add(ingredient);
         }
         customers.remove(customer);
-        return hand;
+        List<Ingredient> drawn = new ArrayList<>();
+        if(customer.getStatus() == CustomerOrderStatus.GARNISHED) //draw two random cards from the pantry deck if it is garnished
+        {
+            for (int i = 0; i < 2; i++) {
+                int index = random.nextInt(5);
+                drawFromPantry( ((ArrayList<Ingredient>) pantry).get(index));
+                actionsLeft++; //have to counteract the decrement that's done normally
+                drawn.add(hand.get(hand.size() -1)); //get the most recently added item to the hand. I can't be bothered to redo the drawFromPantryCode
+            }
+        }
+        return drawn;
         // Do I remove the cards here or in the function that calls this, since it returns the list
         
     }

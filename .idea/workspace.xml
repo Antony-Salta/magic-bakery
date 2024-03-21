@@ -5,51 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="48cb288a-beba-4ab6-939a-9ffe68a5a5b2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/BakeryDriver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/BakeryDriver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/CustomerOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/CustomerOrder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/IngredientListUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/IngredientListUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/Layer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Layer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/bakery/MagicBakery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/MagicBakery.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/util/CardUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/util/CardUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/util/ConsoleUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/util/ConsoleUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/CardUtilsTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/CustomerOrderTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/CustomersTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/ExceptionTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/FunctionalHelper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/IngredientTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/LayerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/MagicBakeryTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/functional/PlayerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocCardUtilsTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocConsoleUtilsTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocCustomerOrderTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocCustomersTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocEmptyPantryExceptionTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocHelper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocIngredientTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocLayerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocMagicBakeryTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocPlayerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocTooManyActionsExceptionTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/javadoc/JavadocWrongIngredientsExceptionTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralActionTypeTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralCardUtilsTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralConsoleUtilsTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralCustomerOrderStatusTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralCustomerOrderTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralCustomersTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralEmptyPantryExceptionTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralHelper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralIngredientTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralLayerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralMagicBakeryTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralPlayerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralTooManyActionsExceptionTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/test/test/structural/StructuralWrongIngredientsExceptionTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +31,7 @@
     "settings.editor.selected.configurable": "preferences.rainbow.brackets"
   }
 }]]></component>
-  <component name="RunManager" selected="JUnit.test in comp16412-bakery_r23391as">
+  <component name="RunManager" selected="JUnit.MagicBakeryTest">
     <configuration name="CardUtilsTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="comp16412-bakery_r23391as" />
       <extension name="coverage">
@@ -152,8 +109,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.test in comp16412-bakery_r23391as" />
         <item itemvalue="JUnit.MagicBakeryTest" />
+        <item itemvalue="JUnit.test in comp16412-bakery_r23391as" />
         <item itemvalue="JUnit.MagicBakeryTest.testFulfillOrder__WithLayersWithGarnish" />
         <item itemvalue="JUnit.CardUtilsTest" />
         <item itemvalue="JUnit.CustomerOrderTest" />
