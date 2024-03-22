@@ -78,7 +78,7 @@ public class JavadocCustomersTest {
 
     @Test
     public void testGetFulfilableDocumented() {
-        assertTrue(JavadocHelper._testmemberIsDocumented(FQCN, "Collection\\s*<\\s*CustomerOrder\\s*>\\s*getFulfilable\\s*\\(.*"));
+        assertTrue(JavadocHelper._testmemberIsDocumented(FQCN, "Collection\\s*<\\s*CustomerOrder\\s*>\\s*getFulfil(l)?able\\s*\\(.*"));
     }
 
     @Test

@@ -31,9 +31,10 @@ public class LayerTest {
 	@BeforeAll
 	public static void setUp() {
 		recipe_multi = new ArrayList<Ingredient>();
+		recipe_multi.add(new Ingredient("butter"));
 		recipe_multi.add(new Ingredient("flour"));
 		recipe_multi.add(new Ingredient("sugar"));
-		recipe_multi.add(new Ingredient("butter"));
+		
 
 		recipe_single = new ArrayList<Ingredient>();
 		recipe_single.add(new Ingredient("ready-made sponge"));

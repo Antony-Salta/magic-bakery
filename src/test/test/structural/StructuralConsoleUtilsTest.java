@@ -21,6 +21,9 @@ public class StructuralConsoleUtilsTest {
     public static void setUp() {
         fields = StructuralHelper.getFields(FQCN);
         methods = StructuralHelper.getMethods(FQCN);
+        // Fail early and cleanly if the class is effectively empty
+        assertNotNull(fields, "The class is empty or it has not compiled successfully, I will not run structural tests on it");
+        assertNotNull(methods, "The class is empty or it has not compiled successfully, I will not run structural tests on it");
     }
 
     @Test

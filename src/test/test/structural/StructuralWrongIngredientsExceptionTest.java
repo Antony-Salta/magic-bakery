@@ -1,25 +1,21 @@
 package test.structural;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 @Tag("structural")
 @Tag("WrongIngredientsException")
 public class StructuralWrongIngredientsExceptionTest {
 
     static String FQCN = "bakery.WrongIngredientsException";
-    static Field[] fields;
-    static Method[] methods;
 
     @BeforeAll
     public static void setUp() {
-        fields = StructuralHelper.getFields(FQCN);
-        methods = StructuralHelper.getMethods(FQCN);
+        // Fail early and cleanly if the class is effectively empty
+        assertNotNull(StructuralHelper.getFields(FQCN), "The class is empty or it has not compiled successfully, I will not run structural tests on it");
     }
 
     @Test

@@ -115,7 +115,7 @@ public class JavadocHelper {
       if (lineContainsModifiers(line)) {
           if (line.startsWith("public ") || line.startsWith("protected ")) {
               while (lineContainsModifiers(line)) {
-                  line = line.split(" ", 2)[1];
+                  line = line.split("\\s", 2)[1];
               }
               if (line.endsWith("{")) {
                   StringBuilder sb = new StringBuilder(line);
@@ -204,6 +204,13 @@ public class JavadocHelper {
             }
         }
 
+        // This will be necessary only if there are no empty lines or import statements before the first class javadoc
+        // Unlikely but it will happen eventually
+        if (currentMember != null && docLines.size() > 0) {
+            Collections.reverse(docLines);
+            rtn.put(currentMember, docLines);
+        }
+
         return rtn;
     }
 
@@ -258,8 +265,8 @@ public class JavadocHelper {
         if (params.equals("")) return rtn;
 
         for (String p : params.split(",")) {
-            String[] tmp = p.strip().split(" ");
-            rtn.add(tmp[1]);
+            String[] tmp = p.strip().split("\\s");
+            rtn.add(tmp[tmp.length - 1]);
         }
         return rtn;
     }
@@ -281,7 +288,7 @@ public class JavadocHelper {
     public static boolean returnsValue(String fqcn, String sig) throws ArrayIndexOutOfBoundsException {
         String [] parts = sig.split("\\(");
         if (parts.length == 1) return false;
-        parts = parts[0].strip().split(" ");
+        parts = parts[0].strip().split("\\s");
         if (parts.length == 1) return false;
         return !parts[0].strip().equals("void");
     }
@@ -297,15 +304,15 @@ public class JavadocHelper {
         for (String line: javadocLines) {
             line = stripCommentSignifier(line);
             if (line.startsWith("@")) foundAt = true;
-            if (line.startsWith("@return ") && line.split(" ").length > 1) foundReturn = true;
+            if (line.startsWith("@return ") && line.split("\\s").length > 1) foundReturn = true;
             if (!foundAt && line.length() > 0) ++linesBeforeTags;
             if (line.startsWith("@param")) {
-                String[] parts = line.substring(6).strip().split(" ");
+                String[] parts = line.substring(6).strip().split("\\s");
                 if (parts.length > 1) {
                     paramsFound.add(parts[0]);
                 }
             } else if (line.startsWith("@throws")) {
-                String[] parts = line.substring(7).strip().split(" ");
+                String[] parts = line.substring(7).strip().split("\\s");
                 if (parts.length > 1) {
                     throwsFound.add(parts[0]);
                 }

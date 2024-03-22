@@ -68,7 +68,7 @@ public class JavadocMagicBakeryTest {
 
     @Test
     public void testGetFulfilableCustomersDocumented() {
-        assertTrue(JavadocHelper._testmemberIsDocumented(FQCN, "Collection\\s*<\\s*CustomerOrder\\s*>\\s*getFulfilableCustomers\\s*\\(.*"));
+        assertTrue(JavadocHelper._testmemberIsDocumented(FQCN, "Collection\\s*<\\s*CustomerOrder\\s*>\\s*getFulfil(l)?ableCustomers\\s*\\(.*"));
     }
 
     @Test

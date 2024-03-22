@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -127,6 +128,22 @@ public class CustomersTest {
             }
 		}
         return counts;
+    }
+
+
+    public Collection<CustomerOrder> getFulfilableWrapper(Customers customer, List<Ingredient> hand) throws ClassNotFoundException, IllegalAccessException, InvocationTargetException {
+		Method mtd = FunctionalHelper.getMethod(customer, "getFulfillable", List.class);
+		if (mtd == null) {
+		    // there is no getFulfillable in Customers, let's try getFulfilable
+		    mtd = FunctionalHelper.getMethod(customer, "getFulfilable", List.class);
+        }
+
+        if (mtd == null) return null;
+
+        // This is a complicated way for saying: customer.getFulfillable(hand);
+		@SuppressWarnings("unchecked")
+		Collection<CustomerOrder> fulfillable = (Collection<CustomerOrder>)mtd.invoke(customer, hand);
+        return fulfillable;
     }
 
     // --- Constructor ---
@@ -2359,32 +2376,49 @@ public class CustomersTest {
 
     // --- getFulfillable() ---
 
+    
+
     @Test
-    public void testGetFulfillable() throws FileNotFoundException, IOException, NoSuchFieldException, IllegalAccessException {
+    public void testGetFulfillable() throws ClassNotFoundException, FileNotFoundException, InvocationTargetException, IOException, NoSuchFieldException, IllegalAccessException {
         Customers customers = getDeterministicCustomers();
-        assertTrue(customers.getFulfilable(pantry).isEmpty());
+
+		Collection<CustomerOrder> fulfillable = getFulfilableWrapper(customers, pantry);
+        assertNotNull(fulfillable);
+        assertTrue(fulfillable.isEmpty());
 
         customers.addCustomerOrder();
-        assertTrue(customers.getFulfilable(pantry).isEmpty());
+
+        fulfillable = getFulfilableWrapper(customers, pantry);
+        assertNotNull(fulfillable);
+        assertTrue(fulfillable.isEmpty());
 
         customers.addCustomerOrder();
-        Collection<CustomerOrder> fulfillable = customers.getFulfilable(pantry);
+
+        fulfillable = getFulfilableWrapper(customers, pantry);
+        assertNotNull(fulfillable);
         assertEquals(1, fulfillable.size());
         assertEquals(order2, fulfillable.toArray()[0]);
 
         customers.addCustomerOrder();
-        fulfillable = customers.getFulfilable(pantry);
+        
+        fulfillable = getFulfilableWrapper(customers, pantry);
+        assertNotNull(fulfillable);
         assertEquals(2, fulfillable.size());
         assertTrue(fulfillable.contains(order2));
         assertTrue(fulfillable.contains(order3));
 
         customers.remove(order2);
-        fulfillable = customers.getFulfilable(pantry);
+
+        fulfillable = getFulfilableWrapper(customers, pantry);
+        assertNotNull(fulfillable);
         assertEquals(1, fulfillable.size());
         assertEquals(order3, fulfillable.toArray()[0]);
 
         customers.remove(order3);
-        assertTrue(customers.getFulfilable(pantry).isEmpty());
+
+        fulfillable = getFulfilableWrapper(customers, pantry);
+        assertNotNull(fulfillable);
+        assertTrue(fulfillable.isEmpty());
     }
 
     // --- getInactiveCustomersWithStatus() ---

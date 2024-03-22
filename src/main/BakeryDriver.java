@@ -3,13 +3,8 @@ import util.ConsoleUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import bakery.CustomerOrder;
 import bakery.Ingredient;
@@ -32,14 +27,14 @@ public class BakeryDriver {
      */
     public static void main(String[] args) throws IOException  
     {
-        ArrayList<Ingredient> original = new ArrayList<>();
-        original.add(new Ingredient("zzz"));
-        original.add(new Ingredient("aaa"));
-        System.out.println(original.toString());
-        ArrayList<Ingredient> copy = new ArrayList<>(original);
-        Collections.sort(copy);
-        System.out.println(copy.toString());
-        System.out.println(original.toString());
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(1);list.add(2);list.add(3);
+        Stack<Integer> stack = new Stack<>();
+        stack.clear();
+        stack.addAll(list);
+        for (int i = 0; i <stack.size();) {
+            System.out.println(stack.pop());
+        }
         System.exit(0);
         ConsoleUtils console = new ConsoleUtils();
         MagicBakery bakery = null;
@@ -75,7 +70,7 @@ public class BakeryDriver {
         {
             do // loop for a round of the game
             {
-                while(!bakery.endTurn()) // loop for the actions each player takes on their turn
+                while(bakery.getActionsRemaining() > 0) // loop for the actions each player takes on their turn
                 {
                     bakery.printGameState();
                     ActionType choice = console.promptForAction("Please choose which action you would like to take: ", bakery);
@@ -152,12 +147,7 @@ public class BakeryDriver {
                     }
                 }
                 
-            }while(!bakery.getCurrentPlayer().equals((Player) bakery.getPlayers().toArray()[0])); //End of the round once the currentPlayer loops back to being the first player.
-            
-            if(!bakery.getCustomers().getCustomerDeck().isEmpty()) // Wonderful stuff because I'm not allowed to error handle a stack.
-                bakery.getCustomers().addCustomerOrder();
-            else
-                bakery.getCustomers().timePasses();
+            }while(!bakery.endTurn()); //Finish the loop once a round has ended.
 
             System.out.println("\n==================================");
             System.out.println("\tEND OF ROUND: CUSTOMERS ARE MOVING");

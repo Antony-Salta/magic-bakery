@@ -16,10 +16,20 @@ public class StructuralCustomersTest {
     static Field[] fields;
     static Method[] methods;
 
+    public String getMethodGetFulfilable() {
+        if (StructuralHelper.methodExists("getFulfilable", methods)) {
+            return "getFulfilable";
+        }
+        return "getFulfillable";
+    }
+
     @BeforeAll
     public static void setUp() {
         fields = StructuralHelper.getFields(FQCN);
         methods = StructuralHelper.getMethods(FQCN);
+        // Fail early and cleanly if the class is effectively empty
+        assertNotNull(fields, "The class is empty or it has not compiled successfully, I will not run structural tests on it");
+        assertNotNull(methods, "The class is empty or it has not compiled successfully, I will not run structural tests on it");
     }
 
     @Test
@@ -167,7 +177,8 @@ public class StructuralCustomersTest {
 
     @Test
     public void testGetFulfilableExists() {
-        assertTrue(StructuralHelper.methodExists("getFulfilable", methods));
+        String getFulfillable = getMethodGetFulfilable();
+        assertTrue(StructuralHelper.methodExists(getFulfillable, methods));
     }
 
     @Test
@@ -232,7 +243,8 @@ public class StructuralCustomersTest {
 
     @Test
     public void testGetFulfilableIsPublic() {
-        assertTrue(StructuralHelper.methodAccessIsAccessType("getFulfilable", methods, AccessType.PUBLIC));
+        String getFulfillable = getMethodGetFulfilable();
+        assertTrue(StructuralHelper.methodAccessIsAccessType(getFulfillable, methods, AccessType.PUBLIC));
     }
 
     @Test
@@ -297,7 +309,8 @@ public class StructuralCustomersTest {
 
     @Test
     public void testGetFulfilableTakesListReturnsCollectionOfCustomerOrder() throws ClassNotFoundException, NoSuchFieldException {
-        assertTrue(StructuralHelper.methodHasGenericReturnType("getFulfilable", methods, Class.forName("java.util.Collection"), Class.forName("bakery.CustomerOrder") , Class.forName("java.util.List")));
+        String getFulfillable = getMethodGetFulfilable(); 
+        assertTrue(StructuralHelper.methodHasGenericReturnType(getFulfillable, methods, Class.forName("java.util.Collection"), Class.forName("bakery.CustomerOrder") , Class.forName("java.util.List")));
     }
 
     @Test

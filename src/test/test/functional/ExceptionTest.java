@@ -944,7 +944,20 @@ public class ExceptionTest {
 			fail();
 			return;
 		}
-		assertThrows(Exception.class, () -> {MagicBakery.loadState(file);});
+		assertThrows(ClassCastException.class, () -> {MagicBakery.loadState(file);});
+
+		File file2;
+		try{
+			file2 = File.createTempFile("bakery", ".bin");
+			FileOutputStream fileStream = new FileOutputStream(file2);
+			byte[] txt = {'1', '2', '3', '4', '5', '6', '7'};
+        	fileStream.write(txt);
+        	fileStream.close();
+		} catch (IOException e){
+			fail();
+			return;
+		}
+		assertThrows(java.io.ObjectStreamException.class, () -> {MagicBakery.loadState(file2);});
 	}
 	
 	@Test

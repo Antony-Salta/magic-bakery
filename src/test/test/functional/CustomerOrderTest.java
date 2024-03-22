@@ -37,8 +37,8 @@ public class CustomerOrderTest {
 	@BeforeAll
 	public static void setUp() {
 		recipe_multi = new ArrayList<Ingredient>();
-		recipe_multi.add(new Ingredient("flour"));
 		recipe_multi.add(new Ingredient("butter"));
+		recipe_multi.add(new Ingredient("flour"));
 		recipe_multi.add(new Ingredient("sugar"));
 
 		garnish_multi = new ArrayList<Ingredient>();
@@ -153,7 +153,7 @@ public class CustomerOrderTest {
 
 	@Test
 	public void testGetRecipeDescription() throws NoSuchFieldException, IllegalAccessException {
-		assertEquals("flour, butter, sugar", order_multi.getRecipeDescription());
+		assertEquals("butter, flour, sugar", order_multi.getRecipeDescription());
 	}
 
 	@Test

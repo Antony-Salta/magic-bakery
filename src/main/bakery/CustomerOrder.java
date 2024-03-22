@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Clas
  * This class represents the Customer Order cards in the game, so have a recipe, an optional garnish, and a difficulty level associated with them.
  */
 public class CustomerOrder implements Serializable
@@ -132,11 +133,13 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * This will attempt to fulfil the order, possibly with the garnish
+     * This will attempt to fulfil the order, possibly with the garnish.
+     * If the order cannot be garnished, even if the garnish flag is true, then the order will just be fulfilled.
+     * It will set the status of the customerOrder to FULFILLED or GARNISHED appropriately.
      * @param ingredients: The list of ingredients being used.
      * @param garnish: This is a flag marking if the garnish is being made as well.
      * @return The list of ingredients used to fulfill the order, so counting Helpful Ducks if they were needed.
-     * @throws WrongIngredientException if the ingredients passed 
+     * @throws WrongIngredientException if the ingredients passed cannot fulfil the order.
      */
     public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish)
     {

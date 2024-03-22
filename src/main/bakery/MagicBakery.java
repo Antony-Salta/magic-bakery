@@ -122,8 +122,6 @@ public class MagicBakery implements Serializable{
      */
     private Ingredient drawFromPantryDeck()
     {
-        if(actionsLeft <= 0)
-            throw new TooManyActionsException();
 
         if(pantryDeck.isEmpty())
         {
@@ -229,20 +227,25 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * This checks the number of actions remaining to see if a player's turn should end.
-     * If it should, then it changes the currentPlayer to be the next player.
-     * @return whether the current player's turn should end
+     * This should be called at the end of a player's turn, to switch to the next player and the next round if needed.
+     * @return whether a new round is starting
      */
     public boolean endTurn()
     {
-        if(getActionsRemaining() <=0)
+        ArrayList<Player> listPlayers  = (ArrayList<Player>) players; // Just to make this casting slightly less verbose
+        currentPlayer = listPlayers.get( (listPlayers.indexOf(currentPlayer) + 1) % players.size());
+        actionsLeft = getActionsPermitted();
+        if(listPlayers.indexOf(currentPlayer) != 0)
+            return false;
+        else
         {
-            ArrayList<Player> listPlayers  = (ArrayList<Player>) players; // Just to make this casting slightly less verbose
-            currentPlayer = listPlayers.get( (listPlayers.indexOf(currentPlayer) + 1) % players.size());
-            actionsLeft = getActionsPermitted();
+            if(!customers.getCustomerDeck().isEmpty()) // Wonderful stuff because I'm not allowed to error handle a stack.
+                customers.addCustomerOrder();
+            else
+                customers.timePasses();
             return true;
         }
-        return false;
+
     }
 
     //TODO: figure out if this takes the cards from the hand or not.
@@ -277,8 +280,9 @@ public class MagicBakery implements Serializable{
         {
             for (int i = 0; i < 2; i++) {
                 int index = random.nextInt(5);
-                drawFromPantry( ((ArrayList<Ingredient>) pantry).get(index));
                 actionsLeft++; //have to counteract the decrement that's done normally
+                drawFromPantry( ((ArrayList<Ingredient>) pantry).get(index));
+
                 drawn.add(hand.get(hand.size() -1)); //get the most recently added item to the hand. I can't be bothered to redo the drawFromPantryCode
             }
         }
@@ -311,11 +315,11 @@ public class MagicBakery implements Serializable{
 
     /**
      * 
-     * @return all layers that can be fulfilled with the current players hand
+     * @return all distinct layers that can be fulfilled with the current players hand
      */
     public Collection<Layer> getBakeableLayers()
     {   
-        return layers.stream().filter(l -> l.canBake(getCurrentPlayer().getHand())).toList();
+        return layers.stream().filter(l -> l.canBake(getCurrentPlayer().getHand())).distinct().toList();
     }
 
     /**
@@ -346,16 +350,26 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * This gets all of the customer orders that can be garnished with the current player's hand
+     * This gets all of the customer orders that can be garnished with the current player's hand (This means that they can be both fulfilled and garnished in this case)
      * @return the collection of customer orders that can be garnished
      */
     public Collection<CustomerOrder> getGarnishableCustomers()
     {
         List<Ingredient> hand = getCurrentPlayer().getHand();
         Collection<CustomerOrder> garnishable = new ArrayList<>();
+
         for (CustomerOrder customerOrder : customers.getActiveCustomers()) {
-            if(customerOrder != null && customerOrder.canGarnish(hand))
-                garnishable.add(customerOrder);
+            if(customerOrder != null && customerOrder.canFulfill(hand))
+            {
+                CustomerOrderStatus prevStatus = customerOrder.getStatus();
+                //This is the easiest way to see if the order can be garnished, since basically does all of the steps that have to be taken.
+                customerOrder.fulfill(hand, true);
+                if(customerOrder.getStatus() == CustomerOrderStatus.GARNISHED)
+                {
+                    customerOrder.setStatus(prevStatus); // This undoes the fulfill action, since this is just hypotheticals.
+                    garnishable.add(customerOrder);
+                }
+            }
         }
         return garnishable;
     }
@@ -366,7 +380,7 @@ public class MagicBakery implements Serializable{
      */
     public Collection<Layer> getLayers()
     {
-        return layers;
+        return layers.stream().distinct().toList();
     }
 
     /**
@@ -473,12 +487,13 @@ public class MagicBakery implements Serializable{
             throw new TooManyActionsException();
 
         pantryDiscard.addAll(pantry);
-        for (int i = 0; i < pantry.size(); i++) {
+        pantry.clear();
+        for (int i = 0; i < 5; i++) {
             try{
-                ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+
+                ((ArrayList<Ingredient>) pantry).add(drawFromPantryDeck());
             }catch(EmptyPantryException e)
             {
-                ((ArrayList<Ingredient>) pantry).remove(i);
                 System.out.println(e.getMessage());
                 break;
             }

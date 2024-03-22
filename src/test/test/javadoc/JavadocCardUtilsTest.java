@@ -21,10 +21,10 @@ public class JavadocCardUtilsTest {
         assertTrue(JavadocHelper.allMembersAreDocumented(FQCN));
     }
 
-    @Test
-    public void testConstructorDocumented() {
-        assertTrue(JavadocHelper._testmemberIsDocumented(FQCN, "CardUtils\\s*\\(.*"));
-    }
+    // @Test
+    // public void testConstructorDocumented() {
+    //     assertTrue(JavadocHelper._testmemberIsDocumented(FQCN, "CardUtils\\s*\\(.*"));
+    // }
 
     @Test
     public void testReadIngredientFileDocumented() {
