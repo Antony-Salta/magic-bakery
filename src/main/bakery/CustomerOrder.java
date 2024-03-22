@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Clas
+ * @author Antony Salta
+ * @version %I%, %G%
  * This class represents the Customer Order cards in the game, so have a recipe, an optional garnish, and a difficulty level associated with them.
  */
 public class CustomerOrder implements Serializable
@@ -19,6 +20,15 @@ public class CustomerOrder implements Serializable
     private CustomerOrderStatus status;
     private static final long serialVersionUID =1;
 
+    /**
+     * @author Antony Salta
+     * @version %I%, %G%
+     * This gives the different statuses that CustomerOrders can be in.
+     * To begin, they are waiting
+     * They are impatient when they will be removed next turn from the activeCustomer view
+     * They are fulfilled or garnished depending on how the players make that order
+     * They are given up if they go into inactiveCustomers without being completed.
+     */
     public enum CustomerOrderStatus
     {
         WAITING,
