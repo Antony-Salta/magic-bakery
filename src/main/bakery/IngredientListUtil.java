@@ -10,6 +10,10 @@ import java.util.List;
  * is a common requirement for classes that don't inherit.
  * 
  * Another way to do this would be to make a wrapper class for List<Ingredient> that does this specifically, but that would slightly change the attributes of existing parts of the UML diagram.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
  */
 public abstract class IngredientListUtil {
     /**

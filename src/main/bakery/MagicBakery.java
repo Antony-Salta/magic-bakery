@@ -20,6 +20,15 @@ import util.CardUtils;
 import util.ConsoleUtils;
 import util.StringUtils;
 
+/**
+ * This is the class that will store the state of the game, and change various parts of it as the game plays out.
+ * It will track all of the different sets of cards that need to be managed in the game, like the layers, customers, pantry.
+ * It will also track things to do with the players, like the number of actions left in a turn and the current player.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
+ */
 public class MagicBakery implements Serializable{
     private Customers customers;
     private Collection<Layer> layers;
@@ -33,6 +42,13 @@ public class MagicBakery implements Serializable{
     private Player currentPlayer;
     private int actionsLeft;
 
+    /**
+     * This enum gives the different options that the players can take during their turn
+     * @author Antony Salta
+     * @version 1.0
+     *
+     * This isn't the correct version number, but I haven't been tracking until now
+     */
     public enum ActionType
     {
         DRAW_INGREDIENT,
@@ -47,6 +63,7 @@ public class MagicBakery implements Serializable{
      * @param seed the seed used to instantiate the Random object with a specific seed.
      * @param ingredientDeckFile The string giving the path to the file containing all of the ingredients
      * @param layerDeckFile The string giving the path to the file containing all of the layers.
+     * @throws IOException if there is an error when reading the layers or ingredients file.
      */
     public MagicBakery(long seed, String ingredientDeckFile, String layerDeckFile) throws IOException
     {
@@ -64,11 +81,10 @@ public class MagicBakery implements Serializable{
     }
     
     /**
-     * This method will take the current player's hand, bake a layer and remove the required ingredients, then add the layer to their hand.@interface
+     * Takes the current player's hand, bake a layer and remove the required ingredients, then add the layer to their hand.@interface
      * This method is an action, so will decrement actionsLeft if it executes successfully.
+     * Will throw WrongIngredientsException if the player doesn't have the required ingredients to bake the layer.
      * @param layer The layer to be baked
-     * @return void There's nothing to be returned here, since the layer is added directly to the player's hand in here.
-     * @throws a WrongIngredientsException if the player doesn't have the required ingredients to bake the layer.
      */
     public void bakeLayer(Layer layer)
     {
@@ -115,10 +131,10 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * This method will take the top element from pantryDeck
+     * Takes the top element from pantryDeck
      * But if pantryDeck is empty, then all of the cards in pantryDiscard will be moved into it, and then pantryDeck shuffled before then drawing a card.
+     * if there are no cards left in the pantryDeck or pantryDiscard, then {@link EmptyPantryException} will be thrown
      * @return the ingredient drawn from the pantry deck.
-     * @throws EmptyPantryException if there are no cards left in the pantryDeck or pantryDiscard.
      */
     private Ingredient drawFromPantryDeck()
     {
@@ -137,10 +153,9 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * This function allows the player to choose an ingredient to draw from the pantry, and will decrement actionsLeft
+     * This function allows the player to choose an ingredient to draw from the pantry, and will decrement actionsLeft.
+     * Will throw WrongIngredientException if the ingredient specified by ingredientName isn't in the pantry
      * @param ingredientName The name of the ingredient being drawn from the pantry
-     * @return void This method will add the selected card to the player's hand, returning nothing
-     * @throws WrongIngredientException if the ingredient specified by ingredientName isn't in the pantry
      */
     public void drawFromPantry(String ingredientName)
     {
@@ -174,9 +189,8 @@ public class MagicBakery implements Serializable{
 
     /**
      * This function allows the player to choose an ingredient to draw from the pantry, and will decrement actionsLeft
-     * @param ingredientName The ingredient being drawn from the pantry
-     * @return void This method will add the selected card to the player's hand.
-     * @throws WrongIngredientException if the ingredient specified isn't in the pantry
+     * Will throw WrongIngredientException if the ingredient specified isn't in the pantry
+     * @param ingredient The ingredient being drawn from the pantry
      */
     public void drawFromPantry(Ingredient ingredient)
     {
@@ -248,7 +262,6 @@ public class MagicBakery implements Serializable{
 
     }
 
-    //TODO: figure out if this takes the cards from the hand or not.
     /**
      * This fulfills an order, using the CustomerOrder.fulfill() method
      * It uses the current player's hand as the list of ingredients to fulfil the order with, to see if it can fulfil/garnish the order.
@@ -292,9 +305,8 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * 
-     * @return the number of actions permitted per turn.
      * The number of actions permitted is 3 is there are 2 or 3 players, and 2 if there are 4 or 5 players.
+     * @return the number of actions permitted per turn.
      */
     public int getActionsPermitted()
     {
@@ -305,7 +317,7 @@ public class MagicBakery implements Serializable{
     
     //Really don't get how you do this without just a class variable, since I'm not passing arguments in.
     /**
-     * 
+     * Gets the actions left in the turn.
      * @return the number of actions remaining for this turn.
      */
     public int getActionsRemaining()
@@ -314,8 +326,8 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * 
-     * @return all distinct layers that can be fulfilled with the current players hand
+     * Gets the layers that can be baked with the current player's hand
+     * @return all distinct layers that can be fulfilled with the current player's hand
      */
     public Collection<Layer> getBakeableLayers()
     {   
@@ -341,7 +353,7 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * This gets all of the customer orders that can be fulfilled with the current player's hand
+     * Gets all of the customer orders that can be fulfilled with the current player's hand
      * @return the collection of fulfilable customer orders
      */
     public Collection<CustomerOrder> getFulfilableCustomers()
@@ -350,7 +362,8 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * This gets all of the customer orders that can be garnished with the current player's hand (This means that they can be both fulfilled and garnished in this case)
+     * This gets all of the customer orders that can be garnished with the current player's hand.
+     * This means that they can be both fulfilled and garnished in this case
      * @return the collection of customer orders that can be garnished
      */
     public Collection<CustomerOrder> getGarnishableCustomers()
@@ -375,8 +388,8 @@ public class MagicBakery implements Serializable{
     }
 
     /**
-     * This gets all of the layers, which is 6 of each type of layer.
-     * @return the collection of all of the layers in the game
+     * Gets all of the layers that are available, which is 4 of each type of layer, until they get taken up
+     * @return the collection of all distinct layers in the game which can be baked from the table.
      */
     public Collection<Layer> getLayers()
     {
@@ -405,11 +418,10 @@ public class MagicBakery implements Serializable{
      * This method will basically be in a point before the main game, where it can loop between asking the load a game or start a new one, so it doesn't need to throw an error.
      * @param file the file where the serialized MagicBakery is stored
      * @return the MagicBakery object stored in the file, which will have all of the information needed to play the game being loaded.
-     * @throws IOException IF there is an error reading the file
-     * @throws FileNotFoundException If the file specified does not exist or cannot be read for some reason
+     * @throws IOException If there is an error reading the file
      * @throws ClassNotFoundException If the file does not have a valid save state in it.
      */
-    public static MagicBakery loadState(File file) throws FileNotFoundException, IOException, ClassNotFoundException
+    public static MagicBakery loadState(File file) throws IOException, ClassNotFoundException
     {
         MagicBakery gameState = null;
         ObjectInputStream read = new ObjectInputStream(new FileInputStream(file));
@@ -422,7 +434,6 @@ public class MagicBakery implements Serializable{
      * Passes an ingredient from the current player's hand to the chosen player's hand.
      * It will decrement actionsLeft if it executes correctly.
      * @param ingredient the ingredient being passed
-     * @return void. The chosen card is passed from one player to the other, nothing is returned.
      * @param recipient the player receiving the ingredient.
      */
     public void passCard(Ingredient ingredient, Player recipient)
@@ -442,7 +453,6 @@ public class MagicBakery implements Serializable{
      * prints out the record for how inactive customers have been serviced. 
      * This will say how many have been fulfilled, and of those how many were garnished.
      * It will also say how many left because they gave up, never having their order fulfilled.
-     * @return void, it just prints things, there's nothing to be returned
      */
     public void printCustomerServiceRecord()
     {
@@ -456,7 +466,6 @@ public class MagicBakery implements Serializable{
 
     /** 
      * Prints the state of the game so that the players can see everything they need to do make their choice of what action they will take.
-     * @return void, it just prints, there is nothing to be returned
      */
     public void printGameState()
     {
@@ -479,7 +488,6 @@ public class MagicBakery implements Serializable{
     /** 
      * This is an action a player can take, where they choose to discard all cards in the pantry and get new cards from the deck instead.
      * It will decrement the actionsLeft variable.
-     * @return void, there is nothing to be returned, since the pantry is just swapped out here.
      */
     public void refreshPantry()
     {
@@ -505,8 +513,7 @@ public class MagicBakery implements Serializable{
     /**
      * This file will save the state of the game to a file so that it can be loaded and played later
      * @param file the file that the state of the game (serialized MagicBakery object) is to be saved to
-     * @return void, there is nothing to be returned
-     * @throws IOException 
+     * @throws IOException if there is an issue when writing to the file.
      */
     public void saveState(File file) throws IOException
     {

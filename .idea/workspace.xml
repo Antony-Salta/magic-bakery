@@ -7,6 +7,17 @@
     <list default="true" id="48cb288a-beba-4ab6-939a-9ffe68a5a5b2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/bakery/CustomerOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/CustomerOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/Customers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Customers.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/EmptyPantryException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/EmptyPantryException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/Ingredient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Ingredient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/IngredientListUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/IngredientListUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/Layer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Layer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/MagicBakery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/MagicBakery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/TooManyActionsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/TooManyActionsException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/bakery/WrongIngredientsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/WrongIngredientsException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/util/CardUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/util/CardUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/util/ConsoleUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/util/ConsoleUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,8 +42,8 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.rainbow.brackets&quot;
   }
 }</component>
-  <component name="RunManager" selected="JUnit.JavadocCustomerOrderTest.testCustomerOrderIsDocumented">
-    <configuration name="JavadocCustomerOrderTest.testCustomerOrderIsDocumented" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.test in comp16412-bakery_r23391as">
+    <configuration name="JavadocMagicBakeryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="comp16412-bakery_r23391as" />
       <extension name="coverage">
         <pattern>
@@ -41,24 +52,40 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="test.javadoc" />
-      <option name="MAIN_CLASS_NAME" value="test.javadoc.JavadocCustomerOrderTest" />
-      <option name="METHOD_NAME" value="testCustomerOrderIsDocumented" />
+      <option name="MAIN_CLASS_NAME" value="test.javadoc.JavadocMagicBakeryTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StructuralConsoleUtilsTest.testReadLineTakesStringAndObjectArrayReturnsString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="comp16412-bakery_r23391as" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.structural.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test.structural" />
+      <option name="MAIN_CLASS_NAME" value="test.structural.StructuralConsoleUtilsTest" />
+      <option name="METHOD_NAME" value="testReadLineTakesStringAndObjectArrayReturnsString" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MagicBakeryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="StructuralLayerTest.testSerialVersionUIDExists" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="comp16412-bakery_r23391as" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="test.*" />
+          <option name="PATTERN" value="test.structural.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="test.functional" />
-      <option name="MAIN_CLASS_NAME" value="test.functional.MagicBakeryTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="PACKAGE_NAME" value="test.structural" />
+      <option name="MAIN_CLASS_NAME" value="test.structural.StructuralLayerTest" />
+      <option name="METHOD_NAME" value="testSerialVersionUIDExists" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -77,29 +104,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="test.functional in comp16412-bakery_r23391as" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="test.structural in comp16412-bakery_r23391as" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="comp16412-bakery_r23391as" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="test.functional.*" />
+          <option name="PATTERN" value="test.structural.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="test.functional" />
-      <option name="TEST_OBJECT" value="package" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="test.javadoc in comp16412-bakery_r23391as" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="comp16412-bakery_r23391as" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="test.javadoc.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="test.javadoc" />
+      <option name="PACKAGE_NAME" value="test.structural" />
       <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -107,11 +120,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.JavadocCustomerOrderTest.testCustomerOrderIsDocumented" />
-        <item itemvalue="JUnit.test.javadoc in comp16412-bakery_r23391as" />
-        <item itemvalue="JUnit.test.functional in comp16412-bakery_r23391as" />
-        <item itemvalue="JUnit.MagicBakeryTest" />
         <item itemvalue="JUnit.test in comp16412-bakery_r23391as" />
+        <item itemvalue="JUnit.StructuralConsoleUtilsTest.testReadLineTakesStringAndObjectArrayReturnsString" />
+        <item itemvalue="JUnit.test.structural in comp16412-bakery_r23391as" />
+        <item itemvalue="JUnit.StructuralLayerTest.testSerialVersionUIDExists" />
+        <item itemvalue="JUnit.JavadocMagicBakeryTest" />
       </list>
     </recent_temporary>
   </component>
@@ -155,14 +168,54 @@
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/bakery/MagicBakery.java</url>
-          <line>237</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/test/test/javadoc/JavadocCustomerOrderTest.java</url>
           <line>16</line>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/javadoc/JavadocCardUtilsTest.java</url>
+          <line>20</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/javadoc/JavadocHelper.java</url>
+          <line>253</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/javadoc/JavadocConsoleUtilsTest.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/javadoc/JavadocPlayerTest.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/javadoc/JavadocPlayerTest.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/bakery/Player.java</url>
+          <line>111</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/javadoc/JavadocIngredientTest.java</url>
+          <line>55</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/structural/StructuralLayerTest.java</url>
+          <line>59</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/test/structural/StructuralConsoleUtilsTest.java</url>
+          <line>160</line>
+          <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -170,6 +223,9 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/comp16412_bakery_r23391as$CustomerOrderTest_testCanGarnish__WithOneDuck.ic" NAME="CustomerOrderTest.testCanGarnish__WithOneDuck Coverage Results" MODIFIED="1711047655667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>test.functional.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/comp16412_bakery_r23391as$JavadocPlayerTest_testToStringDocumented.ic" NAME="JavadocPlayerTest.testToStringDocumented Coverage Results" MODIFIED="1711212445790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>test.javadoc.*</FILTER>
     </SUITE>
   </component>
 </project>

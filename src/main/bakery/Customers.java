@@ -22,6 +22,10 @@ import util.CardUtils;
  * There is the customerDeck collection, where a customer order is drawn from at the end of each turn
  * Then there is the activeCustomers collection, where the customers that players can actually fulfil are, which will be moved along every round.
  * Finally, there is the inactiveCustomers list, where customers that have either had their order fulfiled, or ones that left the shop before the players managed to fulfil their order go.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
  */
 public class Customers implements Serializable{
     /**
@@ -59,7 +63,6 @@ public class Customers implements Serializable{
      * It will also shuffle all of the cards right, adding the rightmost order to the inActiveCustomers list if there is one there.
      * This should only be called while there are cards in the deck
      * @return The customer removed from the rightmost element in the list, null if there was no customer there.
-     * @throws EmptyStackException if the customerDeck is empty
      */
     public CustomerOrder addCustomerOrder()
     {
@@ -96,7 +99,6 @@ public class Customers implements Serializable{
     /**
      * This method draws a card from customerDeck, if it is there.
      * @return the customerOrder drawn from the deck
-     * @throws EmptyStackException if the customer deck is empty
      * I wanted to just return null but oh well.
      */
     public CustomerOrder drawCustomer()
@@ -105,7 +107,7 @@ public class Customers implements Serializable{
     }
 
     /**
-     * 
+     * Gets the activeCustomers member variable
      * @return the activeCustomers list.
      */
     public Collection<CustomerOrder> getActiveCustomers()
@@ -114,7 +116,7 @@ public class Customers implements Serializable{
     }
 
     /**
-     * 
+     * Gets the customerDeck member variable
      * @return the customerDeck stack.
      */
     public Collection<CustomerOrder> getCustomerDeck()
@@ -157,7 +159,6 @@ public class Customers implements Serializable{
      * @param deckFile the path to the file containing all of the CustomerOrders 
      * @param layers the collection of all layers, used to check if an ingredient should be an Ingredient or Layer object
      * @param numPlayers The number of players, used to determine how many of each level of Customer should be put in the customerDeck.
-     * @return void There is nothing to be returned here, it sets the values of most of the instance variables of this object.
      * @throws IOException If the customer file cannot be read
      */
     private void initialiseCustomerDeck(String deckFile, Collection<Layer> layers, int numPlayers) throws IOException
@@ -218,7 +219,6 @@ public class Customers implements Serializable{
      * Removes a customer from the activeCustomer list. Should mostly be used for fulfilling orders.
      * It will also set the head of the activeCustomer list to waiting if it won't leave next turn anymore
      * @param customer the customer to be removed
-     * @return void There is nothing to be returned here
      */
     public void remove(CustomerOrder customer)
     {
@@ -243,7 +243,7 @@ public class Customers implements Serializable{
     }
 
     /**
-     * 
+     * Gets the number of customers in activeCustomers
      * @return the number of customers in activeCustomers.
      */
     public int size()

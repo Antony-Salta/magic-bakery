@@ -7,6 +7,10 @@ import java.util.List;
 
 /**
  * This represents the players of the game, which will have a hand of ingredient cards and names.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
  */
 public class Player implements Serializable
 {
@@ -15,8 +19,8 @@ public class Player implements Serializable
     private static final long serialVersionUID =1;
 
     /**
-     * 
-     * @param name: Sets the name attribute to the name passed in this constructor.
+     * Makes a player with the specified name, and an empty list for their hand
+     * @param name Sets the name attribute to the name passed in this constructor.
      */
     public Player(String name)
     {
@@ -25,18 +29,16 @@ public class Player implements Serializable
     }
     
     /**
-     * 
-     * @param ingredients: The list of ingredients to add to the player's hand
-     * @return void There is nothing to be returned here.
+     * Adds a list of ingredients to the player's hand
+     * @param ingredients The list of ingredients to add to the player's hand
      */
     public void addToHand(List<Ingredient> ingredients)
     {
         hand.addAll(ingredients);
     }
     /**
-     * 
-     * @param ingredient: The ingredient to add to the player's hand
-     * @return void There is nothing to be returned here
+     * Adds an ingredient to the player's hand
+     * @param ingredient The ingredient to add to the player's hand
      */
     public void addToHand(Ingredient ingredient)
     {
@@ -44,8 +46,8 @@ public class Player implements Serializable
     }
 
     /**
-     * 
-     * @param ingredient: The ingredient that is being checked to see if it is there
+     * Checks if the player has some ingredient in their hand
+     * @param ingredient The ingredient that is being checked to see if it is there
      * @return a boolean of if their hand contains a certain ingredient
      */
     public boolean hasIngredient(Ingredient ingredient)
@@ -54,9 +56,8 @@ public class Player implements Serializable
     }
 
     /**
-     * 
-     * @param ingredient: The ingredient to remove one from the player's hand
-     * @return void There is nothing to be returned here.
+     * Removes the first instance of the specified ingredient from the player's hand
+     * @param ingredient The ingredient to remove one from the player's hand
      */
     public void removeFromHand(Ingredient ingredient)
     {
@@ -66,7 +67,7 @@ public class Player implements Serializable
     }
 
     /**
-     * 
+     * Gets the sorted list of ingredients in the player's hand.
      * @return the sorted list of ingredients making up the players hand
      */
     public List<Ingredient> getHand()
@@ -76,8 +77,8 @@ public class Player implements Serializable
     }
 
     /**
-     * 
-     * @return: the players hand as a comma separated list, sorted and with capitalised ingredients.
+     * Gets the player's hand as a comma separated list, sorted and with capitalised names for ingredients.
+     * @return the players hand as a comma separated list
      * e.g. "Chocolate, Eggs (x2), Sugar"
      */
     public String getHandStr()
@@ -117,10 +118,11 @@ public class Player implements Serializable
         // return  csList;
     }
 
-    /** 
-     * @return: the name attribute of the player object.
-     */
     @Override
+    /**
+     * Gets the name of the player as the player's string representation.
+     * @return the name attribute of the player object.
+     */
     public String toString()
     {
         return name;

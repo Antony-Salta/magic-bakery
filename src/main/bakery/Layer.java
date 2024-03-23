@@ -7,16 +7,20 @@ import java.util.HashMap;
 /**
  * The Layer class is the representation of the layer card in the game. 
  * It acts as a form of ingredient for customer orders, but has a recipe that has to be fulfilled before a player can earn one of them.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
  */
 public class Layer extends Ingredient
 {
     private List<Ingredient> recipe;
-    private final long serialVersionUID =1;
+    private static final long serialVersionUID =1;
 
     /**
      * This makes a layer object with the given attributes
-     * @param name: The name of the layer
-     * @param recipe: The ingredients needed to make this layer, sorted by name.
+     * @param name The name of the layer
+     * @param recipe The ingredients needed to make this layer, sorted by name.
      */
     public Layer(String name, List<Ingredient> recipe)
     {
@@ -33,8 +37,8 @@ public class Layer extends Ingredient
     /**
      * This method checks if the layer can be baked given some ingredients.
      * It will check if there are enough ingredients matching the required ones, and if not, if there are enough Helpful Duck cards to substitute in.
-     * @param ingredients: The list of ingredients to be checked if it can fulfill the recipe.
-     * @return: the boolean of if the layer can be made
+     * @param ingredients The list of ingredients to be checked if it can fulfill the recipe.
+     * @return whether the layer can be made
      */
     public boolean canBake(List<Ingredient> ingredients)
     {
@@ -73,10 +77,11 @@ public class Layer extends Ingredient
         return numDucks >= count; // This will work if the normal ingredients cover it, since then it'll be 0 or more >= 0.
     }
 
-    /**
-     * This makes the hashcode linked to the name and recipe of the layer object.
-     */
     @Override
+    /**
+     * Generates a hashcode linked to the name and recipe of the layer object.
+     * @return the hashcode of the concatenation of the name of the layer with the recipe description.
+     */
     public int hashCode()
     {
         String combo = this.toString() + getRecipeDescription();
@@ -84,8 +89,8 @@ public class Layer extends Ingredient
     }
     
     /**
-     * 
-     * @return the recipe as a List<Ingredient> object
+     * Gets the recipe of the layer
+     * @return the recipe attribute
      */
     public List<Ingredient> getRecipe()
     {
@@ -94,9 +99,8 @@ public class Layer extends Ingredient
 
     
     /**
-     * 
-     * @return the list of ingredients in the recipe, separated with commas 
      * When there are multiple of the same ingredient, it will be given like: "Eggs (x3)", instead of outputting "Eggs" 3 times.
+     * @return the list of ingredients in the recipe, separated with commas
      */
     public String getRecipeDescription()
     {

@@ -12,10 +12,20 @@ import bakery.Layer;
 import bakery.CustomerOrder;
 import bakery.Ingredient;
 
+/**
+ * This class will read the different files needed to instantiate the collections of the different card types; Customers, Layers and Ingredients.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
+ */
 public  final class CardUtils
 {
-    //makes this uninstantiable
+    /**
+     * This is uninstantiable
+     */
     private CardUtils(){}
+
 
     /**
      * Reads the file with all of the CustomerOrders and returns them in a list
@@ -90,7 +100,7 @@ public  final class CardUtils
      * This function reads the layers stored in the layers file and returns it as a list.
      * @param path the path to the layers.csv file
      * @return the list of layers read from the file
-     * @@throws IOException If the layer file cannot be read
+     * @throws IOException If the layer file cannot be read
      */
     public static List<Layer> readLayerFile(String path) throws IOException
     {
@@ -165,7 +175,7 @@ public  final class CardUtils
     }
     /**
      * Returns a list of layers given the appropriate string
-     * @param line: the line of the layers file
+     * @param line the line of the layers file
      * @return The list of layers in the line, 4 of the layer described.
      */
     private static List<Layer> stringToLayers(String line)

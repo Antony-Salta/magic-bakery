@@ -14,6 +14,14 @@ import bakery.MagicBakery;
 import bakery.MagicBakery.ActionType;
 import bakery.Player;
 
+/**
+ * This is used to be a wrapper to the console class, meant to prompt users and return varibales with the given class
+ * It will also validate inputs, redoing the function if an invalid input is enterred.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
+ */
 public class ConsoleUtils implements Serializable
 {
     private Console console;
@@ -34,13 +42,14 @@ public class ConsoleUtils implements Serializable
     {
         return console.readLine();
     }
+
     /**
-     * 
+     * Provides a formatted string, then reads a line from the console
      * @param fmt A format string 
      * @param args arguments referenced by the format specifiers in the format string. Extra args beyond those specified by the format string are ignored.
      * @return the line read in from the console, not including line-termination characters, or null if the stream is closed.
      */
-    public String ReadLine(String fmt, Object[] args)
+    public String readLine(String fmt, Object[] args)
     {
         return console.readLine(fmt, args);
     }
@@ -94,7 +103,7 @@ public class ConsoleUtils implements Serializable
 
     /**
      *  Prompts the user to enter the file path for some stored data, generally either one of the cards' files, or a save of the game.
-     * This does not check the validity of the path enterred however.
+     * This does not check the validity of the path entered however.
      * @param prompt The prompt to be printed to the user
      * @return the File found by the user.
      */

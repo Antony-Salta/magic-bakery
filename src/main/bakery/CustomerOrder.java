@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Antony Salta
- * @version %I%, %G%
  * This class represents the Customer Order cards in the game, so have a recipe, an optional garnish, and a difficulty level associated with them.
+ * @author Antony Salta
+ * @version 1.0
+ *
+ * This isn't the correct version number, but I haven't been tracking until now
  */
 public class CustomerOrder implements Serializable
 {
@@ -21,13 +23,17 @@ public class CustomerOrder implements Serializable
     private static final long serialVersionUID =1;
 
     /**
-     * @author Antony Salta
-     * @version %I%, %G%
      * This gives the different statuses that CustomerOrders can be in.
      * To begin, they are waiting
      * They are impatient when they will be removed next turn from the activeCustomer view
      * They are fulfilled or garnished depending on how the players make that order
      * They are given up if they go into inactiveCustomers without being completed.
+     * @author Antony Salta
+     * @version 1.0
+     *
+     * This isn't the correct version number, but I haven't been tracking until now
+     *
+
      */
     public enum CustomerOrderStatus
     {
@@ -39,11 +45,11 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * 
-     * @param name: The name of the customer order.
-     * @param recipe: The list of ingredients needed to make this order, sorted
-     * @param garnish: The list of ingredients needed to make the optional garnish for a bonus, sorted
-     * @param level: The difficulty level of the order
+     * Creates a customer order with the specified attributes, and will throw WrongIngredients exception if the recipe is null or empty.
+     * @param name The name of the customer order.
+     * @param recipe The list of ingredients needed to make this order, sorted
+     * @param garnish The list of ingredients needed to make the optional garnish for a bonus, sorted
+     * @param level The difficulty level of the order
      */
     public CustomerOrder(String name, List<Ingredient> recipe, List<Ingredient> garnish, int level)
     {
@@ -63,7 +69,6 @@ public class CustomerOrder implements Serializable
 
     /** 
      * Sets the status of the order to mark that it has not and cannot be fulfilled, with GIVEN_UP
-     * @return void, sets this object's status to be GIVEN_UP
      */
     public void abandon()
     {
@@ -71,8 +76,8 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * This method will take a list of ingredients and see if it has enough ingredients/Helpful Ducks to make the recipe of this order.
-     * @param ingredients: The list of ingredients being checked
+     * Takes a list of ingredients and see if it has enough ingredients/Helpful Ducks to make the recipe of this order.
+     * @param ingredients The list of ingredients being checked
      * @return boolean of if the recipe can be made
      */
     public boolean canFulfill( List<Ingredient> ingredients)
@@ -81,10 +86,10 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * This method will take a list of ingredients and see if it has enough ingredients/Helpful Ducks to make the garnish of this order. 
+     * Takes a list of ingredients and see if it has enough ingredients/Helpful Ducks to make the garnish of this order.
      * This does not look at if the recipe AND garnish can be made, just the garnish.
-     * @param ingredients: The list of ingredients being checked
-     * @return boolean of if the the garnish can be made
+     * @param ingredients The list of ingredients being checked
+     * @return boolean of if the garnish can be made
      */
     public boolean canGarnish( List<Ingredient> ingredients)
     {
@@ -143,13 +148,13 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * This will attempt to fulfil the order, possibly with the garnish.
+     * Attempts to fulfil the order, possibly with the garnish.
      * If the order cannot be garnished, even if the garnish flag is true, then the order will just be fulfilled.
      * It will set the status of the customerOrder to FULFILLED or GARNISHED appropriately.
-     * @param ingredients: The list of ingredients being used.
-     * @param garnish: This is a flag marking if the garnish is being made as well.
+     * It will throw {@link WrongIngredientsException} if the ingredients passed cannot fulfil the order.
+     * @param ingredients The list of ingredients being used.
+     * @param garnish This is a flag marking if the garnish is being made as well.
      * @return The list of ingredients used to fulfill the order, so counting Helpful Ducks if they were needed.
-     * @throws WrongIngredientException if the ingredients passed cannot fulfil the order.
      */
     public List<Ingredient> fulfill(List<Ingredient> ingredients, boolean garnish)
     {
@@ -199,17 +204,18 @@ public class CustomerOrder implements Serializable
         return used;
     }
 
+    @Override
     /**
      * The toString() function returns the name of the order.
+     * @return the name of the order object.
      */
-    @Override
     public String toString()
     {
         return name;
     }
 
     /**
-     * 
+     * Gets the order's garnish
      * @return the list of ingredients that make the garnish attribute
      */
     public List<Ingredient> getGarnish() 
@@ -218,7 +224,7 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * 
+     * Gets the difficulty level of the order
      * @return the difficulty level of this order
      */
     public int getLevel() 
@@ -227,7 +233,7 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * 
+     * Gets the recipe of the order
      * @return The list of ingredients that make the recipe attribute
      */
     public List<Ingredient> getRecipe() 
@@ -235,7 +241,7 @@ public class CustomerOrder implements Serializable
         return recipe;
     }
     /**
-     * 
+     * Gets the status of the order
      * @return the CustomerOrderStatus enum that marks the status of this order
      */
     public CustomerOrderStatus getStatus() 
@@ -244,16 +250,16 @@ public class CustomerOrder implements Serializable
     }
 
     /**
-     * 
+     * Sets the status of the order to the one passed in.
      * @param status The CustomerOrderStatus to set this order to.
-     * @return void there's nothing to be returned here.
      */
     public void setStatus(CustomerOrderStatus status) 
     {
         this.status = status;
     }
+
     /**
-     * 
+     * Gets the comma separated list of ingredients in the recipe.
      * @return a string giving a comma separated list of ingredients in the recipe:
      * e.g. "Chocolate, Eggs (x2), Sugar"
      */
@@ -262,7 +268,7 @@ public class CustomerOrder implements Serializable
         return IngredientListUtil.stringFromIngList(recipe, false, false);
     }
     /**
-     * 
+     * Gets the comma separated list of ingredients in the garnish.
      * @return a string giving a comma separated list of ingredients in the garnish:
      * e.g. "Chocolate, Eggs (x2), Sugar"
      */
