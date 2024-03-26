@@ -27,15 +27,7 @@ public class BakeryDriver {
      */
     public static void main(String[] args) throws IOException  
     {
-        ArrayList<Integer> list = new ArrayList<>();
-        list.add(1);list.add(2);list.add(3);
-        Stack<Integer> stack = new Stack<>();
-        stack.clear();
-        stack.addAll(list);
-        for (int i = 0; i <stack.size();) {
-            System.out.println(stack.pop());
-        }
-        System.exit(0);
+
         ConsoleUtils console = new ConsoleUtils();
         MagicBakery bakery = null;
         while(!console.promptForStartLoad("Please choose whether you would like to start a new game or load an existing one."))
@@ -86,7 +78,7 @@ public class BakeryDriver {
                             }
                             else
                             //TODO: fix this so that you can draw from the pantry deck
-                                bakery.drawFromPantry(Ingredient.HELPFUL_DUCK);
+                                bakery.drawFromPantry((Ingredient) null);
                             break;
                         
                         case PASS_INGREDIENT:

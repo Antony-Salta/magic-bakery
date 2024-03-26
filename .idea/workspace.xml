@@ -6,17 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="48cb288a-beba-4ab6-939a-9ffe68a5a5b2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/CustomerOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/CustomerOrder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/Customers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Customers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/EmptyPantryException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/EmptyPantryException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/Ingredient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Ingredient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/IngredientListUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/IngredientListUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/Layer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Layer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comp16412-bakery_r23391as.iml" beforeDir="false" afterPath="$PROJECT_DIR$/comp16412-bakery_r23391as.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/BakeryDriver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/BakeryDriver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/bakery/MagicBakery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/MagicBakery.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/TooManyActionsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/TooManyActionsException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/bakery/WrongIngredientsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/bakery/WrongIngredientsException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/util/CardUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/util/CardUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/util/ConsoleUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/util/ConsoleUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,25 +16,73 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="JavaFXApplication" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2dMmQEptvVWEvH61KHqPHCXQd2V" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Antony Admin/School/Uni/GitRepos/comp16412-bakery_r23391as&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.rainbow.brackets&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.BakeryDriver.executor": "Run",
+    "Application.GUIDriver.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.gui.executor": "Run",
+    "Application.main.executor": "Run",
+    "Downloaded.Files.Path.Enabled": "false",
+    "JUnit.test in comp16412-bakery_r23391as.executor": "Run",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/AntonyAdmin/School/GitRepos/comp16412-bakery_r23391as/openjfx-21.0.2_windows-x64_bin-sdk/javafx-sdk-21.0.2/lib",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.rainbow.brackets"
   }
-}</component>
-  <component name="RunManager" selected="JUnit.test in comp16412-bakery_r23391as">
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\AntonyAdmin\School\GitRepos\comp16412-bakery_r23391as\src\main\gui" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\AntonyAdmin\School\GitRepos\comp16412-bakery_r23391as" />
+      <recent name="C:\Users\AntonyAdmin\School\GitRepos\comp16412-bakery_r23391as\src\pictures" />
+      <recent name="C:\Users\AntonyAdmin\School\GitRepos\comp16412-bakery_r23391as\src" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.gui">
+    <configuration name="gui" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="gui.GUI" />
+      <module name="comp16412-bakery_r23391as" />
+      <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\AntonyAdmin\School\GitRepos\comp16412-bakery_r23391as\openjfx-21.0.2_windows-x64_bin-sdk\javafx-sdk-21.0.2\lib&quot;     --add-modules=javafx.base,javafx.controls,javafx.graphics,javafx.fxml" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="JavadocMagicBakeryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="comp16412-bakery_r23391as" />
       <extension name="coverage">
@@ -53,6 +93,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="test.javadoc" />
       <option name="MAIN_CLASS_NAME" value="test.javadoc.JavadocMagicBakeryTest" />
+      <option name="METHOD_NAME" value="" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -99,6 +140,8 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
       <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -113,11 +156,21 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="test.structural" />
+      <option name="MAIN_CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
       <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.gui" />
+      <item itemvalue="JUnit.JavadocMagicBakeryTest" />
+      <item itemvalue="JUnit.StructuralConsoleUtilsTest.testReadLineTakesStringAndObjectArrayReturnsString" />
+      <item itemvalue="JUnit.StructuralLayerTest.testSerialVersionUIDExists" />
+      <item itemvalue="JUnit.test.structural in comp16412-bakery_r23391as" />
+      <item itemvalue="JUnit.test in comp16412-bakery_r23391as" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.test in comp16412-bakery_r23391as" />
@@ -127,6 +180,13 @@
         <item itemvalue="JUnit.JavadocMagicBakeryTest" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-17.0.10-corretto-17.0.10-4caba194b151-5cd809f4" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

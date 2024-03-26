@@ -208,7 +208,7 @@ public class ConsoleUtils implements Serializable
      */
     private Object promptEnumerateCollection(String prompt, Collection<Object> collection)
     {
-        if(collection == null || collection.size() ==0)
+        if(collection == null || collection.isEmpty())
             throw new IllegalArgumentException("the collection cannot be null.");
         if(collection.size() == 1) // No point asking the choice if there is no choice.
             return collection.toArray()[0];

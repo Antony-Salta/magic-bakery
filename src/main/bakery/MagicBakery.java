@@ -198,7 +198,7 @@ public class MagicBakery implements Serializable{
             throw new TooManyActionsException();
 
         //This is purely a thing to make it so that you can draw from the pantry deck within the menu
-        if(ingredient.equals(Ingredient.HELPFUL_DUCK))
+        if(ingredient == null)
         {
             try
             {
@@ -476,7 +476,7 @@ public class MagicBakery implements Serializable{
         System.out.println("Customer orders to make: ");
         StringUtils.customerOrdersToStrings(customers.getActiveCustomers()).forEach(s -> System.out.println(s));
         System.out.println("layers: ");
-        StringUtils.layersToStrings(layers).forEach(s -> System.out.println(s));
+        StringUtils.layersToStrings(getLayers()).forEach(s -> System.out.println(s));
         System.out.println("Pantry: ");
         StringUtils.ingredientsToStrings(pantry).forEach(s -> System.out.println(s));
         System.out.println("Your (" + getCurrentPlayer().toString() +"'s) hand: ");
