@@ -1,0 +1,11 @@
+.root{
+    -fx-background-color: #ca864c;
+}
+.label{
+    -fx-font-size: 20;
+    -fx-font-family : "Consolas";
+    -fx-text-fill: "White";
+}
+#cssExample{
+    -fx-alignment: center;
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="scenePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.EventHandler">
+   <children>
+      <Circle fx:id="circle" fill="DODGERBLUE" layoutX="289.0" layoutY="200.0" radius="78.0" stroke="BLACK" strokeType="INSIDE" />
+      <Button layoutX="262.0" layoutY="24.0" mnemonicParsing="false" onAction="#up" text="Up" />
+      <Button layoutX="498.0" layoutY="185.0" mnemonicParsing="false" onAction="#right" text="Right" />
+      <Button layoutX="262.0" layoutY="340.0" mnemonicParsing="false" onAction="#down" text="Down" />
+      <Button layoutX="34.0" layoutY="185.0" mnemonicParsing="false" onAction="#left" text="Left" />
+      <Label fx:id="cssExample" alignment="TOP_LEFT" layoutX="-1.0" layoutY="67.0" lineSpacing="1.0" prefHeight="16.0" prefWidth="600.0" text="Lorem Ipsum Delorean going at 88 mph" />
+      <Button fx:id="scene1Switch" layoutX="88.0" layoutY="307.0" mnemonicParsing="false" onAction="#switchToScene2" text="Switch Scene" />
+      <TextField fx:id="nameEntry" layoutX="389.0" layoutY="294.0" promptText="Please enter your name: ">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </TextField>
+      <Button fx:id="logoutButton" layoutX="472.0" layoutY="42.0" mnemonicParsing="false" onAction="#logout" text="Log out" />
+      <ImageView fx:id="crabView" fitHeight="65.0" fitWidth="91.0" layoutX="379.0" layoutY="85.0" onMouseClicked="#changeCrab" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="251.29735989040796" AnchorPane.leftAnchor="379.0" AnchorPane.rightAnchor="129.8888888888889" AnchorPane.topAnchor="85.0">
+         <image>
+            <Image url="file:images/crab1.jpg" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <DropShadow />
+         </effect>
+      </ImageView>
+      <Button fx:id="crabChange" layoutX="379.0" layoutY="154.0" mnemonicParsing="false" onAction="#changeCrab" text="Change Crab" />
+      <Pane layoutX="72.0" layoutY="97.0" prefHeight="264.0" prefWidth="180.0" AnchorPane.bottomAnchor="39.0" AnchorPane.leftAnchor="72.0" AnchorPane.rightAnchor="348.0" AnchorPane.topAnchor="97.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d5ebff" height="264.0" layoutX="-2.0" layoutY="-1.0" stroke="BLACK" strokeType="INSIDE" width="182.0" />
+            <Label alignment="CENTER" layoutY="14.0" prefHeight="34.0" prefWidth="180.0" text="Name">
+               <font>
+                  <Font size="23.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="98.0" fitWidth="150.0" layoutX="55.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="file:images/pixelChocolate.jpg" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" layoutY="148.0" prefHeight="25.0" prefWidth="180.0" text="Recipe: ">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="-1.0" layoutY="173.0" prefHeight="19.0" prefWidth="180.0" text="Items in recipe">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="-2.0" layoutY="199.0" prefHeight="25.0" prefWidth="182.0" text="Garnish:">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label layoutY="224.0" prefHeight="18.0" prefWidth="180.0" text="Items in garnish" />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

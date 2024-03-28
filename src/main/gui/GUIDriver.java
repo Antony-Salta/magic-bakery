@@ -1,3 +1,4 @@
+package gui;
 import gui.GUI;
 import util.ConsoleUtils;
 
@@ -18,17 +19,15 @@ import bakery.MagicBakery.ActionType;
 /**
  * Plays the main game
  */
-public class BakeryDriver {
-    public BakeryDriver() {
-    }
+public class GUIDriver {
+
     /**
-     * 
+     *
      * @param args don't do anything with this
      * @throws IOException if the files needing to start the game can't be read properly. 
      */
-    public static void main(String[] args) throws IOException  
+    public static void main(String[] args) throws IOException
     {
-        ConsoleUtils console = new ConsoleUtils();
         MagicBakery bakery = null;
         while(!console.promptForStartLoad("Please choose whether you would like to start a new game or load an existing one."))
         {
@@ -50,10 +49,10 @@ public class BakeryDriver {
             bakery = new MagicBakery(seed, "io/ingredients.csv", "io/layers.csv");
             bakery.startGame(console.promptForNewPlayers("Please enter the name of the player. The players will go in this order, and there have to be between 2 and 5 players."), "io/customers.csv");
         }
-        
+
         playGame(bakery, console);
     }
-    /** 
+    /**
      * This function will do the main game loop, going between turns, and changing things as each new round starts.
      */
     private static void playGame(MagicBakery bakery, ConsoleUtils console)
@@ -77,10 +76,10 @@ public class BakeryDriver {
                                 bakery.drawFromPantry(chosen);
                             }
                             else
-                            //TODO: fix this so that you can draw from the pantry deck
+                                //TODO: fix this so that you can draw from the pantry deck
                                 bakery.drawFromPantry((Ingredient) null);
                             break;
-                        
+
                         case PASS_INGREDIENT:
                             //Player chosenPlayer;
                             // if(bakery.getPlayers().size() ==2) // This bit just avoids choosing between 1 option
@@ -96,7 +95,7 @@ public class BakeryDriver {
                             Player chosenPlayer = console.promptForExistingPlayer("Please choose the player that you would like to pass an ingredient to: ", bakery);
                             Set<Ingredient> IngredientChoices = new HashSet<Ingredient>(bakery.getCurrentPlayer().getHand()); // So that they don't get duplicate choices
                             Ingredient passedIngredient = console.promptForIngredient("Please choose the ingredient that you would like to pass to " + chosenPlayer.toString() + ": ", IngredientChoices);
-                            bakery.passCard(passedIngredient, chosenPlayer);    
+                            bakery.passCard(passedIngredient, chosenPlayer);
                             break;
 
                         case BAKE_LAYER:
@@ -115,16 +114,16 @@ public class BakeryDriver {
                                 garnish = console.promptForYesNo("Please choose whether you would like to try to garnish this order: ");
                             }
                             bakery.getCustomers().remove(order);
-                            
+
                             break;
 
                         case REFRESH_PANTRY:
                             bakery.refreshPantry();
                             break;
                     }
-                    
 
-    
+
+
                 }
                 //I'm giving the option to save at the end of each turn.
                 while(console.promptForYesNo("Would you like to save the game now? "))
@@ -138,13 +137,13 @@ public class BakeryDriver {
                         System.out.println("Writing the state to file didn't work. You may not be able to write to the file you specified.");
                     }
                 }
-                
+
             }while(!bakery.endTurn()); //Finish the loop once a round has ended.
 
             System.out.println("\n==================================");
             System.out.println("\tEND OF ROUND: CUSTOMERS ARE MOVING");
             System.out.println("==================================\n");
-            
+
         }
     }
 
