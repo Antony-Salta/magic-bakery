@@ -3,3 +3,6 @@
 *.class
 
 bin/
+!*/javafx-sdk21.02/bin/
+.idea
+

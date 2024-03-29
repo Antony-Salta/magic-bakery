@@ -153,7 +153,7 @@ public class ConsoleUtils implements Serializable
                     break;
             }
             for (String storedName : names) {
-                if(storedName.toLowerCase().equals(name))
+                if(storedName.toLowerCase().equals(name.toLowerCase()))
                 {
                     System.out.println("You can't have the same name as another player, even with different cases. Please try again");
                     continue;
