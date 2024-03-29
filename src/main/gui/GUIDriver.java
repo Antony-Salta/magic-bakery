@@ -26,6 +26,7 @@ public class GUIDriver {
      * @param args don't do anything with this
      * @throws IOException if the files needing to start the game can't be read properly. 
      */
+    /*
     public static void main(String[] args) throws IOException
     {
         MagicBakery bakery = null;

@@ -3,18 +3,25 @@ package gui;
 import bakery.MagicBakery;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -33,10 +40,6 @@ public class GUI extends Application {
 
     private Parent root;
 
-    public GUI()
-    {
-
-    }
     public static void main(String[] args) {
         launch(args);
         System.out.println("done now");
@@ -44,14 +47,42 @@ public class GUI extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("mainGame.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("startPrompt.fxml"));
         Scene scene = new Scene(root);
+//
+//        VBox root = new VBox(15);
+//        root.setAlignment(Pos.TOP_CENTER);
+//        root.setPadding(new Insets(30));
+//        Label choice = new Label("Please choose whether you would like to start a new game or load an existing one from file");
+//
+//
+//        Button start = new Button("Start");
+//        start.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent actionEvent) {
+//                new MainHandler(root).startPrompt(actionEvent););
+//            }
+//        });
+//
+//        Button load = new Button("Load");
+//        start.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent actionEvent) {
+//                handler.loadPrompt(actionEvent);
+//            }
+//        });
+//        HBox buttonRow = new HBox(start,load);
+//        buttonRow.setSpacing(100);
+//        buttonRow.setAlignment(Pos.CENTER);
+//
+//        root.getChildren().addAll(choice,buttonRow);
+
         String css = this.getClass().getResource("main.css").toExternalForm();
         scene.getStylesheets().add(css);
         //interestingly the styling disappears when you switch around with scenes
         //That's because the way that this does it, you load the scene from the fxml file, so you have to add the css again if you want it
 
-        //Scene scene = new Scene(root, 1000, 600, Color.SADDLEBROWN);
+        //Scene scene = new Scene(root, 1280, 720, Color.SADDLEBROWN);
         /*
         //Stage newStage = new Stage();
         Group root = new Group();
