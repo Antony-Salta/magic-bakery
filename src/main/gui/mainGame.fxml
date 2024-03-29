@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -10,9 +11,27 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
    <children>
-      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+      <HBox alignment="TOP_CENTER" prefHeight="12.0" prefWidth="1280.0" spacing="50.0">
+         <children>
+            <Label fx:id="actionsLeft" text="Actions left: x/x">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <ScrollPane minViewportHeight="40.0" minViewportWidth="275.0" prefHeight="84.0" prefViewportWidth="500.0" prefWidth="200.0">
+               <content>
+                  <Label fx:id="currentPlayer" prefWidth="365.0" text="Current Player: lfkjslfjefeskfjseflkjef">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </content>
+            </ScrollPane>
+         </children>
+      </HBox>
+      <HBox fx:id="customerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
          <children>
             <StackPane fx:id="customerDeck" prefHeight="150.0" prefWidth="100.0">
                <children>
@@ -45,10 +64,53 @@
             </StackPane>
          </children>
       </HBox>
-      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" />
-      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+      <HBox fx:id="layerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
          <children>
             <StackPane fx:id="pantryDeck" prefHeight="150.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                  <Label text="Layer" StackPane.alignment="BOTTOM_CENTER">
+                     <font>
+                        <Font name="Segoe Script Bold" size="15.0" />
+                     </font>
+                     <StackPane.margin>
+                        <Insets bottom="20.0" />
+                     </StackPane.margin>
+                  </Label>
+                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="file:images/KJMB_Logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+      <HBox fx:id="pantryRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <StackPane fx:id="pantryDeck1" prefHeight="150.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                  <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">
+                     <font>
+                        <Font name="Segoe Script Bold" size="15.0" />
+                     </font>
+                     <StackPane.margin>
+                        <Insets bottom="20.0" />
+                     </StackPane.margin>
+                  </Label>
+                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="file:images/KJMB_Logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+      <HBox fx:id="handRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <StackPane fx:id="pantryDeck11" prefHeight="150.0" prefWidth="100.0">
                <children>
                   <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
                   <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">

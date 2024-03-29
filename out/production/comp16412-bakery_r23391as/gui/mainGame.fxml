@@ -2,43 +2,136 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="background" prefHeight="720.0" prefWidth="1280.0" stylesheets="@main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
+<VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
    <children>
-      <StackPane fx:id="customerDeck" layoutX="97.0" layoutY="48.0" prefHeight="150.0" prefWidth="100.0">
+      <HBox alignment="TOP_CENTER" prefHeight="12.0" prefWidth="1280.0" spacing="50.0">
          <children>
-            <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#17d8ff" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
-            <Label text="Customer" StackPane.alignment="BOTTOM_CENTER">
+            <Label fx:id="actionsLeft" text="Actions left: x/x">
                <font>
-                  <Font name="Segoe Script Bold" size="18.0" />
-               </font>
-               <StackPane.margin>
-                  <Insets bottom="20.0" />
-               </StackPane.margin>
-            </Label>
-            <Label fx:id="nextCustomerLevel" alignment="CENTER" text="1" StackPane.alignment="TOP_LEFT">
-               <StackPane.margin>
-                  <Insets />
-               </StackPane.margin>
-               <padding>
-                  <Insets left="7.0" top="7.0" />
-               </padding>
-               <font>
-                  <Font name="Segoe Script Bold" size="24.0" />
+                  <Font size="24.0" />
                </font>
             </Label>
-            <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="file:images/KJMB_Logo.png" />
-               </image>
-            </ImageView>
+            <ScrollPane minViewportHeight="40.0" minViewportWidth="275.0" prefHeight="84.0" prefViewportWidth="500.0" prefWidth="200.0">
+               <content>
+                  <Label fx:id="currentPlayer" prefWidth="365.0" text="Current Player: lfkjslfjefeskfjseflkjef">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </content>
+            </ScrollPane>
          </children>
-      </StackPane>
+      </HBox>
+      <HBox fx:id="customerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+         <children>
+            <StackPane fx:id="customerDeck" prefHeight="150.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#17d8ff" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                  <Label text="Customer" StackPane.alignment="BOTTOM_CENTER">
+                     <font>
+                        <Font name="Segoe Script Bold" size="18.0" />
+                     </font>
+                     <StackPane.margin>
+                        <Insets bottom="20.0" />
+                     </StackPane.margin>
+                  </Label>
+                  <Label fx:id="nextCustomerLevel" alignment="CENTER" text="1" StackPane.alignment="TOP_LEFT">
+                     <StackPane.margin>
+                        <Insets />
+                     </StackPane.margin>
+                     <padding>
+                        <Insets left="7.0" top="7.0" />
+                     </padding>
+                     <font>
+                        <Font name="Segoe Script Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="file:images/KJMB_Logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+      <HBox fx:id="layerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <StackPane fx:id="pantryDeck" prefHeight="150.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                  <Label text="Layer" StackPane.alignment="BOTTOM_CENTER">
+                     <font>
+                        <Font name="Segoe Script Bold" size="15.0" />
+                     </font>
+                     <StackPane.margin>
+                        <Insets bottom="20.0" />
+                     </StackPane.margin>
+                  </Label>
+                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="file:images/KJMB_Logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+      <HBox fx:id="pantryRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <StackPane fx:id="pantryDeck1" prefHeight="150.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                  <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">
+                     <font>
+                        <Font name="Segoe Script Bold" size="15.0" />
+                     </font>
+                     <StackPane.margin>
+                        <Insets bottom="20.0" />
+                     </StackPane.margin>
+                  </Label>
+                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="file:images/KJMB_Logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+      <HBox fx:id="handRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <StackPane fx:id="pantryDeck11" prefHeight="150.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                  <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">
+                     <font>
+                        <Font name="Segoe Script Bold" size="15.0" />
+                     </font>
+                     <StackPane.margin>
+                        <Insets bottom="20.0" />
+                     </StackPane.margin>
+                  </Label>
+                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="file:images/KJMB_Logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
    </children>
-</AnchorPane>
+   <padding>
+      <Insets top="20.0" />
+   </padding>
+</VBox>

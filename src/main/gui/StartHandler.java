@@ -14,7 +14,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,13 +38,18 @@ public class StartHandler {
             bakery.startGame(names, "io/customers.csv");
         }
 
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("mainGame.fxml"));
+        Parent root = loader.load();
 
-        Parent root = FXMLLoader.load(getClass().getResource("mainGame.fxml"));
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         String css = this.getClass().getResource("main.css").toExternalForm();
         scene.getStylesheets().add(css);
         stage.setScene(scene);
+        MainHandler mainHandler =  loader.getController();
+        mainHandler.setup(bakery);
+
         stage.show();
     }
 
