@@ -107,7 +107,6 @@ public class MagicBakery implements Serializable{
                     ((Stack<Ingredient>)pantryDiscard).push(Ingredient.HELPFUL_DUCK);
                 }
             }
-            //TODO uncomment if layers ends up being limited
             layers.remove(layer);
             hand.add(layer);
             actionsLeft--;
@@ -189,6 +188,7 @@ public class MagicBakery implements Serializable{
 
     /**
      * This function allows the player to choose an ingredient to draw from the pantry, and will decrement actionsLeft
+     * Passing in null will draw from the pantry deck
      * Will throw WrongIngredientException if the ingredient specified isn't in the pantry
      * @param ingredient The ingredient being drawn from the pantry
      */
@@ -202,7 +202,8 @@ public class MagicBakery implements Serializable{
         {
             try
             {
-                drawFromPantryDeck();
+                Ingredient drawnIngredient = drawFromPantryDeck();
+                getCurrentPlayer().addToHand(drawnIngredient);
                 actionsLeft--;
             }
             catch(EmptyPantryException e)

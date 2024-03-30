@@ -8,20 +8,19 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 
@@ -41,15 +40,32 @@ public class MainHandler
     @FXML
     private HBox handRow;
 
+    private DropShadow yellowHighlight = new DropShadow(5,0,5, Color.YELLOW);
+    private DropShadow blueHighlight = new DropShadow(5,0,5, Color.BLUE);
+    private DropShadow greenHighlight = new DropShadow(5,0,5, Color.GREEN);
+
     private Image logo = new Image("file:images/KJMB_Logo.png");
 
-    public void setup(MagicBakery bakery)
+    /**
+     * Redraws everything that could need to be redrawn after an action.
+     * updateCurrentPlayer and updateActions left aren't called, since that will always be done in handleRoundEnd
+     */
+    public void drawEverything()
     {
-        this.bakery = bakery;
         drawCustomers();
         drawLayers();
         drawPantry();
         drawHand();
+    }
+
+    /**
+     *
+     * @param bakery the bakery object passed in from the startHandler
+     */
+    public void setup(MagicBakery bakery)
+    {
+        this.bakery = bakery;
+        drawEverything();
         updateActionsLeft();
         updateCurrentPlayer();
 
@@ -60,20 +76,50 @@ public class MainHandler
         String name = ((Label) card.getChildren().get(2)).getText();
         bakery.drawFromPantry(name);
 
-        handleRoundEnd();
+         if(handleTurnEnd())
+             drawPantry();
+         else
+         {
+             drawEverything();
+         }
 
-        updateActionsLeft();
-        drawHand();
+
+    }
+    public void drawFromPantryDeck(MouseEvent event)
+    {
+        bakery.drawFromPantry((Ingredient) null);
+        if(!handleTurnEnd())
+        {
+            drawCustomers();
+            drawLayers();
+            drawHand();
+        }
+    }
+    @FXML
+    public void refreshPantry()
+    {
+        bakery.refreshPantry();
+        handleTurnEnd();
         drawPantry();
 
     }
-    public void handleRoundEnd()
+
+    /**
+     * This function should be called after any action. It will check if the current player's turn has ended, and then check if the round has ended
+     * It will update the bakery methods as needed
+     * It will redraw everything that needs to be redrawn if it is the end of a player's turn, which is everything but the pantry row.
+     * It will always update the number of actions left
+     * It will always update the currentPlayer when needed
+     * @return whether it is the end of a turn, and therefore if everything but the pantry row has been redrawn
+     */
+    public boolean handleTurnEnd()
     {
+        boolean turnEnd = false;
         if(bakery.getActionsRemaining() == 0) {
+            turnEnd = true;
             updateCurrentPlayer();
             if(bakery.endTurn())
             {
-                drawCustomers();
                 Customers customers = bakery.getCustomers();
                 //If the game is ending
                 if(customers.isEmpty() && customers.getCustomerDeck().isEmpty())
@@ -87,7 +133,12 @@ public class MainHandler
 
                 }
             }
+            drawCustomers();
+            drawLayers();
+            drawHand();
         }
+        updateActionsLeft();
+        return turnEnd;
 
     }
 
@@ -122,6 +173,8 @@ public class MainHandler
             customerRow.getChildren().add(card);
         }
 
+        Collection<CustomerOrder> fulfilable = bakery.getGarnishableCustomers();
+        Collection<CustomerOrder> garnishable = bakery.getGarnishableCustomers();
         Iterator<CustomerOrder> iterator = (
                 (LinkedList<CustomerOrder>) customers.getActiveCustomers()
         ).descendingIterator();
@@ -135,28 +188,58 @@ public class MainHandler
             else {
                 StackPane card = makeCustomerCard(order);
                 customerRow.getChildren().add(card);
+                if(garnishable.contains(order))
+                {
+                    card.setEffect(greenHighlight);
+                }
+                else if(fulfilable.contains(order))
+                {
+                    card.setEffect(blueHighlight);
+                }
             }
         }
-
-
     }
     public void drawLayers()
     {
         layerRow.getChildren().clear();
+        Collection<Layer> bakeables =  bakery.getBakeableLayers();
         for (Layer layer: bakery.getLayers())
         {
             StackPane card = makeLayerCard(layer);
             layerRow.getChildren().add(card);
+            if(bakeables.contains(layer))
+            {
+                // indicate bakeable layers
+                card.setEffect(yellowHighlight);
+                card.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        bakery.bakeLayer(layer);
+                        if(handleTurnEnd())
+                            drawPantry(); //the pantry could technically need to be redrawn if the pantry deck is empty
+                        else
+                            drawEverything();
+
+                    }
+                });
+            }
+
         }
     }
     public void drawPantry()
     {
-        pantryRow.getChildren().clear();
+        pantryRow.getChildren().removeIf(node -> node instanceof StackPane); //keep the refresh pantry button
         StackPane stackCard = makeStackCard("Ingredient");
         Rectangle stackBacking = (Rectangle) stackCard.getChildren().get(0);
         stackBacking.setFill(Color.GOLD);
         stackBacking.setStroke(Color.WHITE);
         pantryRow.getChildren().add(stackCard);
+        stackCard.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                drawFromPantryDeck(event);
+            }
+        });
 
         for(Ingredient ingredient : bakery.getPantry())
         {
@@ -181,10 +264,19 @@ public class MainHandler
         handRow.getChildren().clear();
         for(Ingredient ingredient : bakery.getCurrentPlayer().getHand())
         {
-            StackPane card = makeNamedCard(ingredient.toString());
-            Rectangle backing = (Rectangle) card.getChildren().get(0);
-            backing.setFill(Color.WHITE);
-            backing.setStroke(Color.GOLD);
+            StackPane card;
+            if(ingredient instanceof Layer)
+            {
+                card = makeLayerCard((Layer) ingredient);
+            }
+            else
+            {
+                card = makeNamedCard(ingredient.toString());
+                Rectangle backing = (Rectangle) card.getChildren().get(0);
+                backing.setFill(Color.WHITE);
+                backing.setStroke(Color.GOLD);
+            }
+
             handRow.getChildren().add(card);
         }
     }
