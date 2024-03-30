@@ -1,9 +1,6 @@
 package gui;
 
-import bakery.CustomerOrder;
-import bakery.Customers;
-import bakery.MagicBakery;
-import bakery.Layer;
+import bakery.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -50,6 +47,8 @@ public class MainHandler
         drawLayers();
         drawPantry();
         drawHand();
+        updateActionsLeft();
+        updateCurrentPlayer();
 
     }
     public void drawCustomers()
@@ -82,6 +81,7 @@ public class MainHandler
 
             customerRow.getChildren().add(card);
         }
+
         Iterator<CustomerOrder> iterator = (
                 (LinkedList<CustomerOrder>) customers.getActiveCustomers()
         ).descendingIterator();
@@ -102,15 +102,42 @@ public class MainHandler
     }
     public void drawLayers()
     {
-
+        layerRow.getChildren().clear();
+        for (Layer layer: bakery.getLayers())
+        {
+            StackPane card = makeLayerCard(layer);
+            layerRow.getChildren().add(card);
+        }
     }
     public void drawPantry()
     {
+        pantryRow.getChildren().clear();
+        StackPane stackCard = makeStackCard("Ingredient");
+        Rectangle stackBacking = (Rectangle) stackCard.getChildren().get(0);
+        stackBacking.setFill(Color.GOLD);
+        stackBacking.setStroke(Color.WHITE);
+        pantryRow.getChildren().add(stackCard);
 
+        for(Ingredient ingredient : bakery.getPantry())
+        {
+            StackPane card = makeNamedCard(ingredient.toString());
+            Rectangle backing = (Rectangle) card.getChildren().get(0);
+            backing.setFill(Color.WHITE);
+            backing.setStroke(Color.GOLD);
+            pantryRow.getChildren().add(card);
+        }
     }
     public void drawHand()
     {
-
+        handRow.getChildren().clear();
+        for(Ingredient ingredient : bakery.getCurrentPlayer().getHand())
+        {
+            StackPane card = makeNamedCard(ingredient.toString());
+            Rectangle backing = (Rectangle) card.getChildren().get(0);
+            backing.setFill(Color.WHITE);
+            backing.setStroke(Color.GOLD);
+            handRow.getChildren().add(card);
+        }
     }
     public void drawCardSlot(HBox row, String name)
     {
@@ -208,8 +235,9 @@ public class MainHandler
         StackPane.setAlignment(recipe,Pos.BOTTOM_CENTER);
         Rectangle backing = (Rectangle) card.getChildren().get(0);
         backing.setFill(Color.WHITE);
-        backing.setStroke(Color.GOLD);
+        backing.setStroke(Color.PINK);
         recipe.setMaxWidth(backing.getWidth());
+        StackPane.setMargin(recipe,new Insets(0,0,10,0));
         return card;
     }
     public StackPane makeCustomerCard(CustomerOrder order)
@@ -233,5 +261,13 @@ public class MainHandler
         backing.setStroke(Color.LIGHTBLUE);
         recipe.setMaxWidth(backing.getWidth());
         return card;
+    }
+    public void updateCurrentPlayer()
+    {
+        currentPlayer.setText("Current Player: " + bakery.getCurrentPlayer().toString());
+    }
+    public void updateActionsLeft()
+    {
+        actionsLeft.setText(bakery.getActionsRemaining() + "/" + bakery.getActionsPermitted() + "Actions left");
     }
 }
