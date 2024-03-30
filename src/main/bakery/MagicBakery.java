@@ -268,6 +268,7 @@ public class MagicBakery implements Serializable{
      * It uses the current player's hand as the list of ingredients to fulfil the order with, to see if it can fulfil/garnish the order.
      * It will decrement actionsLeft before doing anything else.
      * It will use and remove the ingredients used from the player's hand, and then return the player's hand as it stands
+     * If an order is garnished, then 2 random cards will be drawn from the pantry and given to the the player
      * @param customer The customerOrder being fulfilled 
      * @param garnish indicator of whether the user is trying to garnish the order or not. 
      * @return The list of ingredients added to the hand due to fulfilling a garnish. This will be null if nothing is drawn
@@ -290,14 +291,14 @@ public class MagicBakery implements Serializable{
         }
         customers.remove(customer);
         List<Ingredient> drawn = new ArrayList<>();
-        if(customer.getStatus() == CustomerOrderStatus.GARNISHED) //draw two random cards from the pantry deck if it is garnished
+        if(customer.getStatus() == CustomerOrderStatus.GARNISHED) //draw two random cards from the pantry if it is garnished
         {
             for (int i = 0; i < 2; i++) {
                 int index = random.nextInt(5);
                 actionsLeft++; //have to counteract the decrement that's done normally
                 drawFromPantry( ((ArrayList<Ingredient>) pantry).get(index));
 
-                drawn.add(hand.get(hand.size() -1)); //get the most recently added item to the hand. I can't be bothered to redo the drawFromPantryCode
+                drawn.add(hand.get(hand.size() -1)); //get the most recently added item to the hand. I can't be bothered to redo the drawFromPantry code
             }
         }
         return drawn;

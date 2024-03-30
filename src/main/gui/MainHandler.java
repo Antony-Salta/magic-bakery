@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -130,7 +131,6 @@ public class MainHandler
                     end.setFont(new Font("Verdana", 48));
                     end.setTextFill(Color.WHITE);
                     root.getChildren().add(end);
-
                 }
             }
             drawCustomers();
@@ -139,6 +139,36 @@ public class MainHandler
         }
         updateActionsLeft();
         return turnEnd;
+
+    }
+    public void askFulfilOrGarnish(MouseEvent event, CustomerOrder order)
+    {
+        StackPane card = (StackPane) event.getSource();
+        Button fulfil = new Button("Fulfil?");
+        Button garnish = new Button("Garnish?");
+        card.getChildren().addAll(fulfil,garnish);
+        StackPane.setAlignment(fulfil,Pos.CENTER_LEFT);
+        StackPane.setAlignment(garnish,Pos.CENTER_RIGHT);
+        fulfil.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                fulfilOrder(order, false);
+            }
+        });
+        garnish.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                fulfilOrder(order, true);
+            }
+        });
+    }
+    public void fulfilOrder(CustomerOrder order, boolean garnish)
+    {
+        bakery.fulfillOrder(order,garnish);
+        if(handleTurnEnd())
+            drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
+        else
+            drawEverything();
 
     }
 
@@ -151,7 +181,6 @@ public class MainHandler
         //This section will make appropriate customerDeck representation
         if(customers.getCustomerDeck().isEmpty())
         {
-
             drawCardSlot(customerRow, "Customer Deck");
         }
         else
@@ -173,7 +202,7 @@ public class MainHandler
             customerRow.getChildren().add(card);
         }
 
-        Collection<CustomerOrder> fulfilable = bakery.getGarnishableCustomers();
+        Collection<CustomerOrder> fulfilable = bakery.getFulfilableCustomers();
         Collection<CustomerOrder> garnishable = bakery.getGarnishableCustomers();
         Iterator<CustomerOrder> iterator = (
                 (LinkedList<CustomerOrder>) customers.getActiveCustomers()
@@ -191,10 +220,22 @@ public class MainHandler
                 if(garnishable.contains(order))
                 {
                     card.setEffect(greenHighlight);
+                    card.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            askFulfilOrGarnish(event, order);
+                        }
+                    });
                 }
                 else if(fulfilable.contains(order))
                 {
                     card.setEffect(blueHighlight);
+                    card.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            fulfilOrder(order, false);
+                        }
+                    });
                 }
             }
         }

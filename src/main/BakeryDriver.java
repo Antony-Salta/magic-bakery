@@ -114,7 +114,8 @@ public class BakeryDriver {
                             {
                                 garnish = console.promptForYesNo("Please choose whether you would like to try to garnish this order: ");
                             }
-                            bakery.getCustomers().remove(order);
+                            bakery.fulfillOrder(order,garnish);
+
                             
                             break;
 
