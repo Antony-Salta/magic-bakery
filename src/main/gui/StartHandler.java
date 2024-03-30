@@ -47,6 +47,7 @@ public class StartHandler {
         String css = this.getClass().getResource("main.css").toExternalForm();
         scene.getStylesheets().add(css);
         stage.setScene(scene);
+        stage.setFullScreen(true);
         MainHandler mainHandler =  loader.getController();
         mainHandler.setup(bakery);
 
@@ -96,7 +97,7 @@ public class StartHandler {
                     }
                     if (names.size() == 5) {
                         try {
-                            switchToMainGame(event);
+                            switchToMainGame(actionEvent);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

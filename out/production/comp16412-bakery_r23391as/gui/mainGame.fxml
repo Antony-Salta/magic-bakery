@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
+<VBox id="background" alignment="TOP_CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
    <children>
       <HBox alignment="TOP_CENTER" prefHeight="12.0" prefWidth="1280.0" spacing="50.0">
          <children>
@@ -35,8 +35,8 @@
          <children>
             <StackPane fx:id="customerDeck" prefHeight="150.0" prefWidth="100.0">
                <children>
-                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#17d8ff" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
-                  <Label text="Customer" StackPane.alignment="BOTTOM_CENTER">
+                  <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#17d8ff" height="150.0" stroke="WHITE" strokeDashOffset="5.0" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="OUTSIDE" strokeWidth="5.0" width="100.0" />
+                  <Label prefWidth="100.0" text="Customers" wrapText="true" StackPane.alignment="BOTTOM_CENTER">
                      <font>
                         <Font name="Segoe Script Bold" size="18.0" />
                      </font>
@@ -55,16 +55,17 @@
                         <Font name="Segoe Script Bold" size="24.0" />
                      </font>
                   </Label>
-                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
                      <image>
                         <Image url="file:images/KJMB_Logo.png" />
                      </image>
                   </ImageView>
+                  <HBox prefHeight="100.0" prefWidth="200.0" />
                </children>
             </StackPane>
          </children>
       </HBox>
-      <HBox fx:id="layerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+      <HBox fx:id="layerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
          <children>
             <StackPane fx:id="pantryDeck" prefHeight="150.0" prefWidth="100.0">
                <children>
@@ -86,7 +87,7 @@
             </StackPane>
          </children>
       </HBox>
-      <HBox fx:id="pantryRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+      <HBox fx:id="pantryRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
          <children>
             <StackPane fx:id="pantryDeck1" prefHeight="150.0" prefWidth="100.0">
                <children>
@@ -108,7 +109,7 @@
             </StackPane>
          </children>
       </HBox>
-      <HBox fx:id="handRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+      <HBox fx:id="handRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
          <children>
             <StackPane fx:id="pantryDeck11" prefHeight="150.0" prefWidth="100.0">
                <children>

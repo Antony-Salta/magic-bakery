@@ -2,3 +2,6 @@
 #background{
     -fx-background-image: url("file:images/oak-background.jpg");
 }
+.label{
+    -fx-text-alignment: center;
+}
