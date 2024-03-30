@@ -261,7 +261,6 @@ public class Customers implements Serializable{
      */
     public CustomerOrder timePasses()
     {
-        //TODO: make this set the patience of customers appropriately.
         CustomerOrder removedCustomer = null;
         LinkedList<CustomerOrder> activeCustomersList = (LinkedList<CustomerOrder>) activeCustomers;
         if(customerWillLeaveSoon())

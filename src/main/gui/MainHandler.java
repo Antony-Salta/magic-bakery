@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -51,6 +54,43 @@ public class MainHandler
         updateCurrentPlayer();
 
     }
+    public void drawFromPantry(MouseEvent event)
+    {
+        StackPane card = (StackPane) event.getSource();
+        String name = ((Label) card.getChildren().get(2)).getText();
+        bakery.drawFromPantry(name);
+
+        handleRoundEnd();
+
+        updateActionsLeft();
+        drawHand();
+        drawPantry();
+
+    }
+    public void handleRoundEnd()
+    {
+        if(bakery.getActionsRemaining() == 0) {
+            updateCurrentPlayer();
+            if(bakery.endTurn())
+            {
+                drawCustomers();
+                Customers customers = bakery.getCustomers();
+                //If the game is ending
+                if(customers.isEmpty() && customers.getCustomerDeck().isEmpty())
+                {
+                    VBox root = (VBox) customerRow.getScene().getRoot();
+                    root.getChildren().clear();
+                    Label end = new Label("Game over!");
+                    end.setFont(new Font("Verdana", 48));
+                    end.setTextFill(Color.WHITE);
+                    root.getChildren().add(end);
+
+                }
+            }
+        }
+
+    }
+
     public void drawCustomers()
     {
         customerRow.getChildren().clear();
@@ -124,7 +164,16 @@ public class MainHandler
             Rectangle backing = (Rectangle) card.getChildren().get(0);
             backing.setFill(Color.WHITE);
             backing.setStroke(Color.GOLD);
+            card.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    drawFromPantry(event);
+                }
+            });
+
             pantryRow.getChildren().add(card);
+
         }
     }
     public void drawHand()
