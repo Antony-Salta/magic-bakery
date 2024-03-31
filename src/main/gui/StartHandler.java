@@ -39,7 +39,7 @@ public class StartHandler {
         }
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainGame.fxml"));
-        Parent root = loader.load();
+        AnchorPane root = loader.load();
 
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

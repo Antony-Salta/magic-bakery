@@ -6,142 +6,185 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="background" alignment="TOP_CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
+<AnchorPane id="background" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
    <children>
-      <HBox alignment="TOP_CENTER" prefHeight="12.0" prefWidth="1280.0" spacing="50.0">
+      <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0" spacing="70.0">
          <children>
-            <Label fx:id="actionsLeft" text="Actions left: x/x">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Label>
-            <ScrollPane minViewportHeight="40.0" minViewportWidth="275.0" prefHeight="84.0" prefViewportWidth="500.0" prefWidth="200.0">
-               <content>
-                  <Label fx:id="currentPlayer" prefWidth="365.0" text="Current Player: lfkjslfjefeskfjseflkjef">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
-               </content>
-            </ScrollPane>
-         </children>
-      </HBox>
-      <HBox fx:id="customerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-         <children>
-            <StackPane fx:id="customerDeck" prefHeight="150.0" prefWidth="100.0">
+            <VBox fx:id="leftHands" alignment="CENTER_LEFT" prefHeight="720.0" prefWidth="150.0" spacing="50.0" HBox.hgrow="NEVER">
                <children>
-                  <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#17d8ff" height="150.0" stroke="WHITE" strokeDashOffset="5.0" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="OUTSIDE" strokeWidth="5.0" width="100.0" />
-                  <Label prefWidth="100.0" text="Customers" wrapText="true" StackPane.alignment="BOTTOM_CENTER">
-                     <font>
-                        <Font name="Segoe Script Bold" size="18.0" />
-                     </font>
-                     <StackPane.margin>
-                        <Insets bottom="20.0" />
-                     </StackPane.margin>
-                  </Label>
-                  <Label fx:id="nextCustomerLevel" alignment="CENTER" text="1" StackPane.alignment="TOP_LEFT">
-                     <StackPane.margin>
-                        <Insets />
-                     </StackPane.margin>
-                     <padding>
-                        <Insets left="7.0" top="7.0" />
-                     </padding>
-                     <font>
-                        <Font name="Segoe Script Bold" size="24.0" />
-                     </font>
-                  </Label>
-                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
-                     <image>
-                        <Image url="file:images/KJMB_Logo.png" />
-                     </image>
-                  </ImageView>
-                  <HBox prefHeight="100.0" prefWidth="200.0" />
+                  <StackPane prefHeight="150.0" prefWidth="200.0" rotate="90.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="150.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0" />
                </children>
-            </StackPane>
-         </children>
-      </HBox>
-      <HBox fx:id="layerRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-         <children>
-            <StackPane fx:id="pantryDeck" prefHeight="150.0" prefWidth="100.0">
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </VBox>
+            <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
-                  <Label text="Layer" StackPane.alignment="BOTTOM_CENTER">
-                     <font>
-                        <Font name="Segoe Script Bold" size="15.0" />
-                     </font>
-                     <StackPane.margin>
-                        <Insets bottom="20.0" />
-                     </StackPane.margin>
-                  </Label>
-                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="file:images/KJMB_Logo.png" />
-                     </image>
-                  </ImageView>
+                  <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="12.0" prefWidth="1280.0" spacing="50.0">
+                     <children>
+                        <Label fx:id="actionsLeft" text="Actions left: x/x">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                        <ScrollPane minViewportHeight="40.0" minViewportWidth="275.0" prefHeight="84.0" prefViewportWidth="500.0" prefWidth="200.0">
+                           <content>
+                              <Label fx:id="currentPlayer" prefWidth="365.0" text="Current Player: lfkjslfjefeskfjseflkjef">
+                                 <font>
+                                    <Font size="24.0" />
+                                 </font>
+                              </Label>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="customerRow" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                     <children>
+                        <StackPane fx:id="customerDeck" prefHeight="150.0" prefWidth="100.0">
+                           <children>
+                              <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#17d8ff" height="150.0" stroke="WHITE" strokeDashOffset="5.0" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="OUTSIDE" strokeWidth="5.0" width="100.0" />
+                              <Label prefWidth="100.0" text="Customers" wrapText="true" StackPane.alignment="BOTTOM_CENTER">
+                                 <font>
+                                    <Font name="Segoe Script Bold" size="18.0" />
+                                 </font>
+                                 <StackPane.margin>
+                                    <Insets bottom="20.0" />
+                                 </StackPane.margin>
+                              </Label>
+                              <Label fx:id="nextCustomerLevel" alignment="CENTER" text="1" StackPane.alignment="TOP_LEFT">
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
+                                 <padding>
+                                    <Insets left="7.0" top="7.0" />
+                                 </padding>
+                                 <font>
+                                    <Font name="Segoe Script Bold" size="24.0" />
+                                 </font>
+                              </Label>
+                              <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER">
+                                 <image>
+                                    <Image url="file:images/KJMB_Logo.png" />
+                                 </image>
+                              </ImageView>
+                              <HBox prefHeight="100.0" prefWidth="200.0" />
+                           </children>
+                        </StackPane>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="layerRow" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                     <children>
+                        <StackPane fx:id="pantryDeck" prefHeight="150.0" prefWidth="100.0">
+                           <children>
+                              <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                              <Label text="Layer" StackPane.alignment="BOTTOM_CENTER">
+                                 <font>
+                                    <Font name="Segoe Script Bold" size="15.0" />
+                                 </font>
+                                 <StackPane.margin>
+                                    <Insets bottom="20.0" />
+                                 </StackPane.margin>
+                              </Label>
+                              <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="file:images/KJMB_Logo.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="pantryRow" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                     <children>
+                        <StackPane fx:id="pantryDeck1" prefHeight="150.0" prefWidth="100.0">
+                           <children>
+                              <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
+                              <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">
+                                 <font>
+                                    <Font name="Segoe Script Bold" size="15.0" />
+                                 </font>
+                                 <StackPane.margin>
+                                    <Insets bottom="20.0" />
+                                 </StackPane.margin>
+                              </Label>
+                              <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="file:images/KJMB_Logo.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Button mnemonicParsing="false" onAction="#refreshPantry" prefHeight="90.0" prefWidth="114.0" text="Refresh Pantry" wrapText="true">
+                           <HBox.margin>
+                              <Insets top="20.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="handRow" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                     <children>
+                        <StackPane fx:id="pantryDeck11" prefHeight="150.0" prefWidth="100.0">
+                           <children>
+                              <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" StackPane.alignment="CENTER">
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
+                              </Rectangle>
+                              <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">
+                                 <font>
+                                    <Font name="Segoe Script Bold" size="15.0" />
+                                 </font>
+                                 <StackPane.margin>
+                                    <Insets bottom="20.0" />
+                                 </StackPane.margin>
+                              </Label>
+                              <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="file:images/KJMB_Logo.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </HBox>
                </children>
-            </StackPane>
-         </children>
-      </HBox>
-      <HBox fx:id="pantryRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-         <children>
-            <StackPane fx:id="pantryDeck1" prefHeight="150.0" prefWidth="100.0">
+               <padding>
+                  <Insets left="50.0" right="50.0" />
+               </padding>
+            </VBox>
+            <VBox fx:id="rightHands" alignment="CENTER" prefHeight="720.0" prefWidth="150.0" spacing="50.0" HBox.hgrow="NEVER">
                <children>
-                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
-                  <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">
-                     <font>
-                        <Font name="Segoe Script Bold" size="15.0" />
-                     </font>
-                     <StackPane.margin>
-                        <Insets bottom="20.0" />
-                     </StackPane.margin>
-                  </Label>
-                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="file:images/KJMB_Logo.png" />
-                     </image>
-                  </ImageView>
+                  <StackPane prefHeight="100.0" prefWidth="100.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="100.0" rotate="90.0" stroke="BLACK" strokeType="INSIDE" width="150.0" />
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0" rotate="90.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="150.0" rotate="90.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                     </children>
+                  </StackPane>
                </children>
-            </StackPane>
-            <Button mnemonicParsing="false" onAction="#refreshPantry" prefHeight="90.0" prefWidth="114.0" text="Refresh Pantry" wrapText="true">
-               <HBox.margin>
-                  <Insets top="20.0" />
-               </HBox.margin>
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Button>
-         </children>
-      </HBox>
-      <HBox fx:id="handRow" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-         <children>
-            <StackPane fx:id="pantryDeck11" prefHeight="150.0" prefWidth="100.0">
-               <children>
-                  <Rectangle arcHeight="10.0" arcWidth="20.0" fill="#ffcd1a" height="150.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="5.0" width="100.0" />
-                  <Label text="Ingredient" StackPane.alignment="BOTTOM_CENTER">
-                     <font>
-                        <Font name="Segoe Script Bold" size="15.0" />
-                     </font>
-                     <StackPane.margin>
-                        <Insets bottom="20.0" />
-                     </StackPane.margin>
-                  </Label>
-                  <ImageView fitHeight="57.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="file:images/KJMB_Logo.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </StackPane>
+               <padding>
+                  <Insets right="20.0" />
+               </padding>
+            </VBox>
          </children>
       </HBox>
    </children>
-   <padding>
-      <Insets top="20.0" />
-   </padding>
-</VBox>
+</AnchorPane>

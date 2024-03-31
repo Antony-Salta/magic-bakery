@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
-import com.sun.tools.javac.Main;
+
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -43,6 +44,11 @@ public class MainHandler
     @FXML
     private HBox handRow;
 
+    @FXML
+    private VBox leftHands;
+
+    @FXML VBox rightHands;
+
     private DropShadow yellowHighlight = new DropShadow(5,0,5, Color.YELLOW);
     private DropShadow blueHighlight = new DropShadow(5,0,5, Color.BLUE);
     private DropShadow greenHighlight = new DropShadow(5,0,5, Color.GREEN);
@@ -53,10 +59,12 @@ public class MainHandler
 
 
     /**
-     * Redraws everything that could need to be redrawn after an action.
-     * updateCurrentPlayer and updateActions left aren't called, since that will always be done in handleRoundEnd
+     * Redraws all rows, generally for after an action.
+     *
+     * The other hands will not be redrawn with this.
+     * updateCurrentPlayer and updateActions left aren't called, since that will always be done in handleTurnEnd
      */
-    public void drawEverything()
+    public void drawRows()
     {
         drawCustomers();
         drawLayers();
@@ -71,7 +79,8 @@ public class MainHandler
     public void setup(MagicBakery bakery)
     {
         this.bakery = bakery;
-        drawEverything();
+        drawRows();
+        drawOtherHands();
         updateActionsLeft();
         updateCurrentPlayer();
 
@@ -86,7 +95,7 @@ public class MainHandler
              drawPantry();
          else
          {
-             drawEverything();
+             drawRows();
          }
 
 
@@ -130,7 +139,7 @@ public class MainHandler
                 //If the game is ending
                 if(customers.isEmpty() && customers.getCustomerDeck().isEmpty())
                 {
-                    VBox root = (VBox) customerRow.getScene().getRoot();
+                    AnchorPane root = (AnchorPane) customerRow.getScene().getRoot();
                     root.getChildren().clear();
                     Label end = new Label("Game over!");
                     end.setFont(new Font("Verdana", 48));
@@ -141,6 +150,7 @@ public class MainHandler
             drawCustomers();
             drawLayers();
             drawHand();
+            drawOtherHands();
         }
         updateActionsLeft();
         return turnEnd;
@@ -173,10 +183,10 @@ public class MainHandler
         if(handleTurnEnd())
             drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
         else
-            drawEverything();
+            drawRows();
 
     }
-    
+
     public void drawCustomers()
     {
         customerRow.getChildren().clear();
@@ -264,7 +274,7 @@ public class MainHandler
                         if(handleTurnEnd())
                             drawPantry(); //the pantry could technically need to be redrawn if the pantry deck is empty
                         else
-                            drawEverything();
+                            drawRows();
 
                     }
                 });
@@ -308,16 +318,62 @@ public class MainHandler
     public void drawHand()
     {
         handRow.getChildren().clear();
+
+        double maxWidth = handRow.getScene().getWidth() * 2/3 -100;
+        StackPane handPane = makePlayerHand(bakery.getCurrentPlayer(),maxWidth);
+        handRow.getChildren().add(handPane);
+    }
+
+    public void drawOtherHands()
+    {
+        leftHands.getChildren().clear();
+        rightHands.getChildren().clear();
+        double maxWidth = (leftHands.getScene().getHeight()/2) -100;
+        int count =0;
+        for(Player player : bakery.getPlayers())
+        {
+            if(!player.equals(bakery.getCurrentPlayer()))
+            {
+                StackPane handPane = makePlayerHand(player,maxWidth);
+
+
+                if(count %2 == 0) //stick it in the left hand side if even, to spread it somewhat evenly
+                {
+                    handPane.setRotate(90);
+                    Group bounding = new Group(handPane);
+                    bounding.maxWidth(handPane.getHeight());
+                    bounding.maxHeight(handPane.getWidth());
+                    leftHands.getChildren().add(bounding); // So that the bounding boxes work properly
+                }
+                else
+                {
+                    handPane.setRotate(-90);
+                    Group bounding = new Group(handPane);
+                    bounding.maxWidth(handPane.getHeight());
+                    bounding.maxHeight(handPane.getWidth());
+                    rightHands.getChildren().add(bounding); // So that the bounding boxes work properly
+                }
+                count++;
+            }
+        }
+    }
+
+    public StackPane makePlayerHand(Player player, double maxWidth)
+    {
         StackPane handPane = new StackPane();
         double sceneHeight = handRow.getScene().getHeight();
-        double totalWidth = handRow.getScene().getWidth() -100;
-        handPane.setPrefWidth(totalWidth);
+        handPane.setMaxWidth(maxWidth);
         double cardWidth = ((sceneHeight /6) * 2/3) + 10; //This is terrible practice since this can easily change, but this is how the width is calculated normally, plus the stroke on the outside.
-        int numCards = bakery.getCurrentPlayer().getHand().size();
-        double offset = (totalWidth - cardWidth) / numCards;
+
+        int numCards = player.getHand().size();
+        double offset;
+        if(cardWidth * numCards <= maxWidth)
+            offset = cardWidth * 2;
+        else
+            offset = maxWidth * 2 / numCards;
 
         int count = 0;
-        for(Ingredient ingredient : bakery.getCurrentPlayer().getHand())
+        for(Ingredient ingredient : player.getHand())
         {
             StackPane card;
             if(ingredient instanceof Layer)
@@ -339,6 +395,10 @@ public class MainHandler
             StackPane.setMargin(card, new Insets(0, (numCards/2 - count) * offset - evenOffset, 0,0));
             count++;
 
+            if(player.equals(bakery.getCurrentPlayer()))
+            {
+
+            }
             TranslateTransition hover = new TranslateTransition(Duration.millis(200),card);
             hover.setToY(card.getLayoutY() -50);
             hover.setFromY(card.getLayoutY());
@@ -363,11 +423,10 @@ public class MainHandler
                 }
             });
 
-
-
         }
-        handRow.getChildren().add(handPane);
+        return handPane;
     }
+
     public void drawCardSlot(HBox row, String name)
     {
         StackPane card = makeBasicCard(null);
