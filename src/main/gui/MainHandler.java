@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
-
+import com.sun.tools.javac.Main;
+import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,6 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 public class MainHandler
 {
@@ -46,6 +48,9 @@ public class MainHandler
     private DropShadow greenHighlight = new DropShadow(5,0,5, Color.GREEN);
 
     private Image logo = new Image("file:images/KJMB_Logo.png");
+
+
+
 
     /**
      * Redraws everything that could need to be redrawn after an action.
@@ -171,7 +176,7 @@ public class MainHandler
             drawEverything();
 
     }
-
+    
     public void drawCustomers()
     {
         customerRow.getChildren().clear();
@@ -303,6 +308,15 @@ public class MainHandler
     public void drawHand()
     {
         handRow.getChildren().clear();
+        StackPane handPane = new StackPane();
+        double sceneHeight = handRow.getScene().getHeight();
+        double totalWidth = handRow.getScene().getWidth() -100;
+        handPane.setPrefWidth(totalWidth);
+        double cardWidth = ((sceneHeight /6) * 2/3) + 10; //This is terrible practice since this can easily change, but this is how the width is calculated normally, plus the stroke on the outside.
+        int numCards = bakery.getCurrentPlayer().getHand().size();
+        double offset = (totalWidth - cardWidth) / numCards;
+
+        int count = 0;
         for(Ingredient ingredient : bakery.getCurrentPlayer().getHand())
         {
             StackPane card;
@@ -318,8 +332,41 @@ public class MainHandler
                 backing.setStroke(Color.GOLD);
             }
 
-            handRow.getChildren().add(card);
+            handPane.getChildren().add(card);
+            double evenOffset = 0;
+            if(numCards % 2 == 0)
+                evenOffset = offset /2;
+            StackPane.setMargin(card, new Insets(0, (numCards/2 - count) * offset - evenOffset, 0,0));
+            count++;
+
+            TranslateTransition hover = new TranslateTransition(Duration.millis(200),card);
+            hover.setToY(card.getLayoutY() -50);
+            hover.setFromY(card.getLayoutY());
+            int originalIndex = handPane.getChildren().indexOf(card);
+            card.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    Duration time = hover.getCurrentTime();
+                    hover.setRate(1);
+                    hover.playFrom(time);
+                    card.toFront();
+                }
+            });
+            card.setOnMouseExited(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    Duration time = hover.getCurrentTime();
+                    hover.setRate(-1);
+                    hover.playFrom(time);
+                    handPane.getChildren().remove(handPane.getChildren().size()-1); // Weird screwing with the children list to put the card back in the right spot in terms of being ahead and behind other cards.
+                    handPane.getChildren().add(originalIndex,card);
+                }
+            });
+
+
+
         }
+        handRow.getChildren().add(handPane);
     }
     public void drawCardSlot(HBox row, String name)
     {
@@ -367,6 +414,8 @@ public class MainHandler
         StackPane card = new StackPane();
         card.getChildren().addAll(backing, centreImage);
         StackPane.setMargin(centreImage,new Insets(0,0,5,0));
+        card.setMaxWidth(width + 10);
+        card.setMaxHeight(height + 10);
         return card;
     }
 

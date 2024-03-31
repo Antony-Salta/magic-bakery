@@ -49,9 +49,10 @@ public class StartHandler {
         stage.setScene(scene);
         stage.setFullScreen(true);
         MainHandler mainHandler =  loader.getController();
-        mainHandler.setup(bakery);
+
 
         stage.show();
+        mainHandler.setup(bakery);
     }
 
 
