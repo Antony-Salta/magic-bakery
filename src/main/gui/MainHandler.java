@@ -2,10 +2,9 @@ package gui;
 
 import bakery.*;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Stack;
+import java.io.ObjectOutputStream;
+import java.util.*;
+
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
@@ -17,10 +16,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -57,6 +57,7 @@ public class MainHandler
 
     private Image logo = new Image("file:images/KJMB_Logo.png");
 
+    private final DataFormat ingredientFormat = new DataFormat("bakery.Ingredient");
 
 
 
@@ -345,6 +346,74 @@ public class MainHandler
             {
                 StackPane handPane = makePlayerHand(player,maxWidth);
 
+                handPane.setOnDragOver(new EventHandler<DragEvent>() {
+                    @Override
+                    public void handle(DragEvent event) {
+                        if(event.getDragboard().hasContent(ingredientFormat))
+                        {
+                            event.acceptTransferModes(TransferMode.MOVE);
+                        }
+                        event.consume();
+                    }
+                });
+
+                handPane.setOnDragEntered(new EventHandler<DragEvent>() {
+                    @Override
+                    public void handle(DragEvent event) {
+                        handPane.setEffect(new ColorAdjust(0, 0.2, 0, 0.5));
+                        event.consume();
+                    }
+                });
+                handPane.setOnDragExited(new EventHandler<DragEvent>() {
+                    @Override
+                    public void handle(DragEvent event) {
+                        handPane.setEffect(new ColorAdjust(0,0,0,0));
+                        event.consume();
+                    }
+                });
+
+                handPane.setOnDragDropped(new EventHandler<DragEvent>() {
+                    @Override
+                    public void handle(DragEvent event) {
+                        boolean dragDropWorked = false;
+
+                        if(event.getDragboard().hasContent(ingredientFormat))
+                        {
+                            Ingredient passedCard = (Ingredient) event.getDragboard().getContent(ingredientFormat);
+                            bakery.passCard(passedCard,player);
+                            dragDropWorked = true;
+                        }
+
+                        /*
+                        if(event.getDragboard().hasString())
+                        {
+                            String representation = event.getDragboard().getString();
+                            String[] parts = representation.split("[,:] ");
+
+                            Ingredient passedCard;
+                            if(parts.length == 1)// So if it's just an ingredient being passed along.
+                                passedCard = new Ingredient(representation.toLowerCase());
+                            else
+                            {
+                                List<Ingredient> recipe = new ArrayList<>();
+                                for (int i = 0; i <parts.length-1; i++)
+                                {
+                                    recipe.add(new Ingredient(parts[i].toLowerCase()));
+                                }
+                                passedCard = new Layer(parts[parts.length-1].toLowerCase(), recipe) );
+                            }
+                            dragDropWorked = true;
+                            bakery.passCard(passedCard,player);
+                        }
+
+                         */
+                        event.setDropCompleted(dragDropWorked);
+
+                        event.consume();
+                    }
+                });
+
+
                 if(count %2 == 0) //stick it in the left hand side if even, to spread it somewhat evenly
                 {
                     handPane.setRotate(90);
@@ -383,10 +452,7 @@ public class MainHandler
             }
             else
             {
-                card = makeNamedCard(ingredient.toString());
-                Rectangle backing = (Rectangle) card.getChildren().get(0);
-                backing.setFill(Color.WHITE);
-                backing.setStroke(Color.GOLD);
+                card = makeIngredientCard(ingredient.toString());
             }
 
             handPane.getChildren().add(card);
@@ -408,6 +474,7 @@ public class MainHandler
                     hover.setRate(1);
                     hover.playFrom(time);
                     card.toFront();
+                    card.toFront();
                 }
             });
             card.setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -420,6 +487,48 @@ public class MainHandler
                     handPane.getChildren().add(originalIndex,card);
                 }
             });
+
+            if(player.equals(bakery.getCurrentPlayer()))
+            { //Give the ability to pass cards
+                card.setOnDragDetected(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        Dragboard db = card.startDragAndDrop(TransferMode.MOVE);
+
+                        ClipboardContent content = new ClipboardContent();
+                        content.put(ingredientFormat, ingredient);
+                        /*
+                        String representation = ""; //This is fun, it's either get a string to read, or write the object into a temp file.
+                        if(ingredient instanceof Layer)
+                        {
+                            representation += ((Layer) ingredient).getRecipeDescription() + ": ";
+                        }
+                        representation += ingredient.toString();
+                        content.putString(representation);
+
+                         */
+                        db.setContent(content);
+                        event.consume();
+                    }
+                });
+
+                card.setOnDragDone(new EventHandler<DragEvent>() {
+                    @Override
+                    public void handle(DragEvent event) {
+                        if(event.getTransferMode() == TransferMode.MOVE)
+                        { // If the drag drop has worked
+                            if(!handleTurnEnd())
+                            {
+                                drawCustomers();
+                                drawLayers();
+                                drawHand();
+                                drawOtherHands();
+                            }
+                        }
+                        event.consume();
+                    }
+                });
+            }
 
         }
         return handPane;
@@ -503,6 +612,15 @@ public class MainHandler
         card.getChildren().add(nameLabel);
         StackPane.setAlignment(nameLabel,Pos.TOP_CENTER);
         StackPane.setMargin(nameLabel,new Insets(3,0,0,0));
+        return card;
+    }
+
+    public StackPane makeIngredientCard(String name)
+    {
+        StackPane card = makeNamedCard(name);
+        Rectangle backing = (Rectangle) card.getChildren().get(0);
+        backing.setFill(Color.WHITE);
+        backing.setStroke(Color.GOLD);
         return card;
     }
 
