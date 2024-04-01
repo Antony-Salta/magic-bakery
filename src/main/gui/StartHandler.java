@@ -53,6 +53,7 @@ public class StartHandler {
 
         stage.show();
         mainHandler.setup(bakery);
+
     }
 
 

@@ -129,6 +129,7 @@ public class GUI extends Application {
 //        stage.setX(50);
 //        stage.setY(50);
         stage.setFullScreen(true);
+        stage.setResizable(false);
         //stage.setFullScreenExitHint("Hit Q to escape fullscreen");
         //stage.setFullScreenExitKeyCombination(KeyCombination.valueOf("q"));
         //

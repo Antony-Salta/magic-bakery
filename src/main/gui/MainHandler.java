@@ -49,6 +49,8 @@ public class MainHandler
 
     @FXML VBox rightHands;
 
+    @FXML VBox mainLayout;
+
     private DropShadow yellowHighlight = new DropShadow(5,0,5, Color.YELLOW);
     private DropShadow blueHighlight = new DropShadow(5,0,5, Color.BLUE);
     private DropShadow greenHighlight = new DropShadow(5,0,5, Color.GREEN);
@@ -79,8 +81,9 @@ public class MainHandler
     public void setup(MagicBakery bakery)
     {
         this.bakery = bakery;
-        drawRows();
         drawOtherHands();
+        drawRows();
+
         updateActionsLeft();
         updateCurrentPlayer();
 
@@ -319,7 +322,7 @@ public class MainHandler
     {
         handRow.getChildren().clear();
 
-        double maxWidth = handRow.getScene().getWidth() * 2/3 -100;
+        double maxWidth = handRow.getScene().getWidth()/2;
         StackPane handPane = makePlayerHand(bakery.getCurrentPlayer(),maxWidth);
         handRow.getChildren().add(handPane);
     }
@@ -328,7 +331,13 @@ public class MainHandler
     {
         leftHands.getChildren().clear();
         rightHands.getChildren().clear();
-        double maxWidth = (leftHands.getScene().getHeight()/2) -100;
+        rightHands.setLayoutX(rightHands.getScene().getWidth());
+        leftHands.setLayoutX(0);
+        double cardHeight = calculateCardHeight();
+        AnchorPane.setLeftAnchor(mainLayout, cardHeight);
+        AnchorPane.setRightAnchor(mainLayout, cardHeight);
+
+        double maxWidth = (leftHands.getScene().getHeight()/2) -150;
         int count =0;
         for(Player player : bakery.getPlayers())
         {
@@ -336,22 +345,15 @@ public class MainHandler
             {
                 StackPane handPane = makePlayerHand(player,maxWidth);
 
-
                 if(count %2 == 0) //stick it in the left hand side if even, to spread it somewhat evenly
                 {
                     handPane.setRotate(90);
-                    Group bounding = new Group(handPane);
-                    bounding.maxWidth(handPane.getHeight());
-                    bounding.maxHeight(handPane.getWidth());
-                    leftHands.getChildren().add(bounding); // So that the bounding boxes work properly
+                    leftHands.getChildren().add(new Group(handPane));
                 }
                 else
                 {
                     handPane.setRotate(-90);
-                    Group bounding = new Group(handPane);
-                    bounding.maxWidth(handPane.getHeight());
-                    bounding.maxHeight(handPane.getWidth());
-                    rightHands.getChildren().add(bounding); // So that the bounding boxes work properly
+                    rightHands.getChildren().add(new Group(handPane));
                 }
                 count++;
             }
@@ -361,9 +363,8 @@ public class MainHandler
     public StackPane makePlayerHand(Player player, double maxWidth)
     {
         StackPane handPane = new StackPane();
-        double sceneHeight = handRow.getScene().getHeight();
         handPane.setMaxWidth(maxWidth);
-        double cardWidth = ((sceneHeight /6) * 2/3) + 10; //This is terrible practice since this can easily change, but this is how the width is calculated normally, plus the stroke on the outside.
+        double cardWidth = (calculateCardHeight() * 2/3) + 10;
 
         int numCards = player.getHand().size();
         double offset;
@@ -392,13 +393,10 @@ public class MainHandler
             double evenOffset = 0;
             if(numCards % 2 == 0)
                 evenOffset = offset /2;
+
             StackPane.setMargin(card, new Insets(0, (numCards/2 - count) * offset - evenOffset, 0,0));
             count++;
 
-            if(player.equals(bakery.getCurrentPlayer()))
-            {
-
-            }
             TranslateTransition hover = new TranslateTransition(Duration.millis(200),card);
             hover.setToY(card.getLayoutY() -50);
             hover.setFromY(card.getLayoutY());
@@ -456,7 +454,7 @@ public class MainHandler
      */
     public StackPane makeBasicCard(Image image)
     {
-        double height = customerRow.getScene().getWindow().getHeight() / 6;
+        double height = calculateCardHeight();
         double width = height * 2/3;
         Rectangle backing = new Rectangle(width, height); // make a card that is 1.5x longer than it is wide
         backing.setArcHeight(15);
@@ -559,5 +557,10 @@ public class MainHandler
     public void updateActionsLeft()
     {
         actionsLeft.setText(bakery.getActionsRemaining() + "/" + bakery.getActionsPermitted() + "Actions left");
+    }
+
+    private double calculateCardHeight()
+    {
+        return handRow.getScene().getHeight() / 6 + 20;
     }
 }
