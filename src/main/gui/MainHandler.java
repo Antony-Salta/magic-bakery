@@ -384,46 +384,31 @@ public class MainHandler
                             dragDropWorked = true;
                         }
 
-                        /*
-                        if(event.getDragboard().hasString())
-                        {
-                            String representation = event.getDragboard().getString();
-                            String[] parts = representation.split("[,:] ");
-
-                            Ingredient passedCard;
-                            if(parts.length == 1)// So if it's just an ingredient being passed along.
-                                passedCard = new Ingredient(representation.toLowerCase());
-                            else
-                            {
-                                List<Ingredient> recipe = new ArrayList<>();
-                                for (int i = 0; i <parts.length-1; i++)
-                                {
-                                    recipe.add(new Ingredient(parts[i].toLowerCase()));
-                                }
-                                passedCard = new Layer(parts[parts.length-1].toLowerCase(), recipe) );
-                            }
-                            dragDropWorked = true;
-                            bakery.passCard(passedCard,player);
-                        }
-
-                         */
                         event.setDropCompleted(dragDropWorked);
 
                         event.consume();
                     }
                 });
 
+                Label name = new Label(player.toString());
 
+                Group bounding = new Group(handPane);
+                StackPane grouping = new StackPane();
                 if(count %2 == 0) //stick it in the left hand side if even, to spread it somewhat evenly
                 {
                     handPane.setRotate(90);
-                    leftHands.getChildren().add(new Group(handPane));
+                    grouping.getChildren().addAll(bounding, name);
+                    leftHands.getChildren().add(grouping);
                 }
                 else
                 {
                     handPane.setRotate(-90);
-                    rightHands.getChildren().add(new Group(handPane));
+                    grouping.getChildren().addAll(bounding, name);
+                    rightHands.getChildren().add(grouping);
                 }
+                StackPane.setAlignment(name,Pos.TOP_CENTER);
+                StackPane.setMargin(name,new Insets(-20,0,0,0));
+                StackPane.setAlignment(bounding,Pos.BOTTOM_CENTER);
                 count++;
             }
         }
