@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -17,22 +17,17 @@
    <children>
       <VBox fx:id="mainLayout" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1080.0" prefWidth="1920.0" spacing="10.0" AnchorPane.topAnchor="20.0">
          <children>
-            <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="12.0" prefWidth="1280.0" spacing="50.0">
+            <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="1280.0" spacing="50.0">
                <children>
                   <Label fx:id="actionsLeft" text="Actions left: x/x">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Label>
-                  <ScrollPane minViewportHeight="40.0" minViewportWidth="275.0" prefHeight="84.0" prefViewportWidth="500.0" prefWidth="200.0">
-                     <content>
-                        <Label fx:id="currentPlayer" prefWidth="365.0" text="Current Player: lfkjslfjefeskfjseflkjef">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Label>
-                     </content>
-                  </ScrollPane>
+                  <TextArea fx:id="currentPlayer" editable="false" prefColumnCount="20" prefHeight="80.0" prefRowCount="1" scrollLeft="999.0" scrollTop="20.0" text="old macdonald had a farm, eieieo. And on that en, eieieo">
+                     <font>
+                        <Font size="24.0" />
+                     </font></TextArea>
                </children>
             </HBox>
             <HBox fx:id="customerRow" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0">

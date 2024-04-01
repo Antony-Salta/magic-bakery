@@ -34,7 +34,7 @@ public class MainHandler
     @FXML
     private Label actionsLeft;
     @FXML
-    private Label currentPlayer;
+    private TextArea currentPlayer;
     @FXML
     private HBox customerRow;
     @FXML
@@ -390,8 +390,13 @@ public class MainHandler
                     }
                 });
 
-                Label name = new Label(player.toString());
-
+                TextArea name = new TextArea();
+                name.setText(player.toString());
+                name.setEditable(false);
+                name.setMaxWidth(cardHeight);
+                name.setPrefRowCount(1);
+                name.setPrefHeight(0);
+                name.setMaxHeight(20);
                 Group bounding = new Group(handPane);
                 StackPane grouping = new StackPane();
                 if(count %2 == 0) //stick it in the left hand side if even, to spread it somewhat evenly
@@ -407,7 +412,7 @@ public class MainHandler
                     rightHands.getChildren().add(grouping);
                 }
                 StackPane.setAlignment(name,Pos.TOP_CENTER);
-                StackPane.setMargin(name,new Insets(-20,0,0,0));
+                StackPane.setMargin(name,new Insets(-25,0,0,0));
                 StackPane.setAlignment(bounding,Pos.BOTTOM_CENTER);
                 count++;
             }
