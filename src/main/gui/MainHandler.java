@@ -2,10 +2,13 @@ package gui;
 
 import bakery.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.*;
 
 
+import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
@@ -26,6 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 public class MainHandler
@@ -93,8 +98,49 @@ public class MainHandler
 
         updateActionsLeft();
         updateCurrentPlayer();
-        playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/3);
+
     }
+
+    @FXML
+    public void saveGame()
+    {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choose save file");
+        chooser.setInitialDirectory(new File("./"));
+        File save = chooser.showOpenDialog(currentPlayer.getScene().getWindow());
+        try
+        {
+            bakery.saveState(save);
+            Label saveConfirmation = new Label("Game saved.");
+            saveConfirmation.setFont(new Font(48));
+            saveConfirmation.setBackground(new Background(new BackgroundFill( Color.color(0d,0d,0d,0.5), null, null)));
+            ((AnchorPane) currentPlayer.getScene().getRoot()).getChildren().add(saveConfirmation);
+            Scene scene = currentPlayer.getScene();
+            saveConfirmation.setLayoutX(scene.getWidth()/2);
+            saveConfirmation.setLayoutY(scene.getHeight()/2);
+
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(3000), saveConfirmation);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.play();
+            fadeOut.setOnFinished(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Node origin = ((FadeTransition) event.getSource()).getNode();
+                    ((AnchorPane) origin.getParent()).getChildren().remove(origin);
+                }
+            });
+        }
+
+        catch (IOException IOe){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error writing to file.");
+            alert.setContentText("This file could not be written to. Try saving and closing any unneeded files.");
+            alert.show();
+            IOe.printStackTrace();
+        }
+    }
+
     public void drawFromPantry(MouseEvent event)
     {
         StackPane card = (StackPane) event.getSource();
@@ -688,6 +734,7 @@ public class MainHandler
     public void updateCurrentPlayer()
     {
         currentPlayer.setText("Current Player: " + bakery.getCurrentPlayer().toString());
+        playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/3);
     }
     public void updateActionsLeft()
     {

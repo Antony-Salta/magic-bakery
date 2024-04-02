@@ -123,8 +123,6 @@ public class StartHandler {
         try
         {
             bakery = MagicBakery.loadState(save);
-            ObservableList<Node> children = root.getChildren();
-            children.clear();
             switchToMainGame(event);
         }
         catch(ClassNotFoundException e)

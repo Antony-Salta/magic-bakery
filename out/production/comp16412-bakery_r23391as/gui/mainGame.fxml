@@ -19,6 +19,11 @@
          <children>
             <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="1280.0" spacing="50.0">
                <children>
+                  <Button mnemonicParsing="false" onAction="#saveGame" text="Save Game">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Button>
                   <Label fx:id="actionsLeft" text="Actions left: x/x">
                      <font>
                         <Font size="24.0" />
