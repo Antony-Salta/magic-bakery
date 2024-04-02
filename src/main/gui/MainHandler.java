@@ -34,7 +34,11 @@ public class MainHandler
     @FXML
     private Label actionsLeft;
     @FXML
-    private TextArea currentPlayer;
+    private Label currentPlayer;
+
+    @FXML
+    private ScrollPane playerScroll;
+
     @FXML
     private HBox customerRow;
     @FXML
@@ -89,7 +93,7 @@ public class MainHandler
 
         updateActionsLeft();
         updateCurrentPlayer();
-
+        playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/3);
     }
     public void drawFromPantry(MouseEvent event)
     {
@@ -395,13 +399,8 @@ public class MainHandler
                     }
                 });
 
-                TextArea name = new TextArea();
-                name.setText(player.toString());
-                name.setEditable(false);
-                name.setMaxWidth(cardHeight);
-                name.setPrefRowCount(1);
-                name.setPrefHeight(0);
-                name.setMaxHeight(20);
+                ScrollPane name = makePlayerName(player.toString(), cardHeight);
+
                 Group bounding = new Group(handPane);
                 StackPane grouping = new StackPane();
 
@@ -418,7 +417,7 @@ public class MainHandler
                     rightHands.getChildren().add(grouping);
                 }
                 StackPane.setAlignment(name,Pos.TOP_CENTER);
-                StackPane.setMargin(name,new Insets(-25,0,0,0));
+                StackPane.setMargin(name,new Insets(-40,0,0,0));
                 StackPane.setAlignment(bounding,Pos.BOTTOM_CENTER);
                 count++;
             }
@@ -549,6 +548,7 @@ public class MainHandler
 
         Label nameLabel = new Label(name);
         nameLabel.setFont(new Font("Verdana", 15));
+        nameLabel.getStyleClass().add("cardLabel");
         nameLabel.setWrapText(true);
         nameLabel.setAlignment(Pos.TOP_CENTER);
         nameLabel.setOpacity(0.7);
@@ -609,6 +609,7 @@ public class MainHandler
     {
         StackPane card = makeBasicCard(null);
         Label nameLabel = new Label(name);
+        nameLabel.getStyleClass().add("cardLabel");
         nameLabel.setWrapText(true);
         nameLabel.setAlignment(Pos.CENTER);
         nameLabel.setMaxWidth(((Rectangle) card.getChildren().get(0)).getWidth());
@@ -637,6 +638,7 @@ public class MainHandler
         StackPane card = makeNamedCard(layer.toString());
         Label recipe = new Label("Recipe:\n" + layer.getRecipeDescription());
         recipe.setWrapText(true);
+        recipe.getStyleClass().add("cardLabel");
         recipe.setAlignment(Pos.CENTER);
         recipe.setPadding(new Insets(0,5,0,5));
 
@@ -653,6 +655,7 @@ public class MainHandler
     {
         StackPane card = makeNamedCard(order.toString());
         Label recipe = new Label("Recipe:\n" + order.getRecipeDescription());
+        recipe.getStyleClass().add("cardLabel");
         recipe.setWrapText(true);
         recipe.setAlignment(Pos.TOP_CENTER);
         card.getChildren().add(recipe);
@@ -671,6 +674,17 @@ public class MainHandler
         recipe.setMaxWidth(backing.getWidth());
         return card;
     }
+
+    private ScrollPane makePlayerName(String name, double maxWidth)
+    {
+        Label nameLabel = new Label(name);
+        ScrollPane scrollPane = new ScrollPane(nameLabel);
+        nameLabel.setMaxWidth(Double.MAX_VALUE);
+        scrollPane.setMaxWidth(maxWidth);
+        scrollPane.setMaxHeight(nameLabel.getHeight()+15);
+        return scrollPane;
+    }
+
     public void updateCurrentPlayer()
     {
         currentPlayer.setText("Current Player: " + bakery.getCurrentPlayer().toString());
