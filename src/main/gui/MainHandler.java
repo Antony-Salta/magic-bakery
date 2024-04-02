@@ -51,9 +51,11 @@ public class MainHandler
 
     @FXML VBox mainLayout;
 
-    private DropShadow yellowHighlight = new DropShadow(5,0,5, Color.YELLOW);
-    private DropShadow blueHighlight = new DropShadow(5,0,5, Color.BLUE);
-    private DropShadow greenHighlight = new DropShadow(5,0,5, Color.GREEN);
+    private int playerIndex = 1;
+
+    private final DropShadow yellowHighlight = new DropShadow(5,0,5, Color.YELLOW);
+    private final DropShadow blueHighlight = new DropShadow(5,0,5, Color.BLUE);
+    private final DropShadow greenHighlight = new DropShadow(5,0,5, Color.GREEN);
 
     private Image logo = new Image("file:images/KJMB_Logo.png");
 
@@ -136,7 +138,6 @@ public class MainHandler
         boolean turnEnd = false;
         if(bakery.getActionsRemaining() == 0) {
             turnEnd = true;
-            updateCurrentPlayer();
             if(bakery.endTurn())
             {
                 Customers customers = bakery.getCustomers();
@@ -155,6 +156,7 @@ public class MainHandler
             drawLayers();
             drawHand();
             drawOtherHands();
+            updateCurrentPlayer();
         }
         updateActionsLeft();
         return turnEnd;
@@ -340,8 +342,11 @@ public class MainHandler
 
         double maxWidth = (leftHands.getScene().getHeight()/2) -150;
         int count =0;
-        for(Player player : bakery.getPlayers())
-        {
+        int numPlayers = bakery.getPlayers().size();
+        int i = playerIndex;
+        do {
+            Player player =  ((ArrayList<Player>) bakery.getPlayers()).get(i);
+
             if(!player.equals(bakery.getCurrentPlayer()))
             {
                 StackPane handPane = makePlayerHand(player,maxWidth);
@@ -399,6 +404,7 @@ public class MainHandler
                 name.setMaxHeight(20);
                 Group bounding = new Group(handPane);
                 StackPane grouping = new StackPane();
+
                 if(count %2 == 0) //stick it in the left hand side if even, to spread it somewhat evenly
                 {
                     handPane.setRotate(90);
@@ -416,7 +422,14 @@ public class MainHandler
                 StackPane.setAlignment(bounding,Pos.BOTTOM_CENTER);
                 count++;
             }
-        }
+
+            i = (i+1) % numPlayers;
+        }while( i != playerIndex);
+        playerIndex = (playerIndex +1) % numPlayers;
+        /*This player index thing makes it so that the position of the hands is determined by how close they are to playing.
+        The order is that the next player will be top left, then top right, then bottom left, then bottom right.
+        */
+
     }
 
     public StackPane makePlayerHand(Player player, double maxWidth)
