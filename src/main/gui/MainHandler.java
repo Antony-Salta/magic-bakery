@@ -9,11 +9,13 @@ import java.util.*;
 
 
 import javafx.animation.FadeTransition;
+import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -186,7 +188,8 @@ public class MainHandler
     public boolean handleTurnEnd()
     {
         boolean turnEnd = false;
-        if(bakery.getActionsRemaining() == 0) {
+        if(bakery.getActionsRemaining() == 0)
+        {
             turnEnd = true;
             if(bakery.endTurn())
             {
@@ -202,11 +205,115 @@ public class MainHandler
                     root.getChildren().add(end);
                 }
             }
+
+
+            //Now comes a big section to animate the hands moving across to their new positions.
+            int numPlayers = bakery.getPlayers().size();
+            double[][] coords = new double[numPlayers][2]; // structure is that in the inner array, there is the X coordinate, then the Y coordinate.
+            StackPane[] hands = new StackPane[numPlayers];
+            Bounds left = leftHands.localToScene(leftHands.getLayoutBounds());
+            Bounds right = rightHands.localToScene(rightHands.getLayoutBounds());
+
+            for (int i = 0; i < numPlayers -1; i++)
+            {// This will go through all of the non-current players
+                int index = (i + playerIndex) % numPlayers;
+                StackPane hand;
+                if(i % 2 == 0)
+                    hand = (StackPane) leftHands.getChildren().get(i/2);
+                else
+                    hand = (StackPane) rightHands.getChildren().get(i/2);
+                hands[i] = hand;
+                Player player = ((ArrayList<Player>) bakery.getPlayers()).get(index);
+
+                double y = hand.localToScene(hand.getLayoutBounds()).getCenterY();
+                System.out.println(y);
+
+                double x;
+                /*
+                if(i >1)
+                {
+                    if (i % 2 ==0)
+                        y += hand.getHeight() + leftHands.getSpacing();
+                    else
+                        y += hand.getHeight() + rightHands.getSpacing();
+                }
+
+                 */
+                if(i % 2 == 0)
+                    x = left.getCenterX();
+                else
+                    x = right.getCenterX();
+
+                coords[i][0] = x;
+                coords[i][1] = y;
+            }
+            StackPane currentHand = (StackPane) handRow.getChildren().get(0);
+            hands[numPlayers-1] = currentHand;
+            Bounds currentBound = currentHand.localToScene(currentHand.getLayoutBounds());
+            coords[numPlayers-1][0] = currentBound.getCenterX();
+            coords[numPlayers-1][1] = currentBound.getCenterY();
+            System.out.println(calculateCardHeight());
+
+            TranslateTransition[] moves = new TranslateTransition[numPlayers];
+            RotateTransition[] rotates = new RotateTransition[numPlayers];
+            for (int i = 0; i < numPlayers; i++)
+            {
+                TranslateTransition moveHand = new TranslateTransition(Duration.millis(2000), hands[i]);
+                moveHand.setFromX(0);
+                moveHand.setFromY(0);
+                moveHand.setToX(coords[((i-1 + numPlayers) % numPlayers)][0] - coords[i][0]); // avoiding negatives in the modulo operation.
+                moveHand.setToY(coords[((i-1 + numPlayers) % numPlayers)][1] - coords[i][1]);
+
+                RotateTransition rotateHand = new RotateTransition(Duration.millis(2000), hands[i]);
+                if(i == 0) //going to the main hand
+                {
+                    rotateHand.setFromAngle(0);
+                    rotateHand.setToAngle(-90);
+                }
+
+                else if(i == numPlayers-1)
+                {
+                    rotateHand.setFromAngle(hands[i].getRotate());
+                    if(numPlayers % 2 == 0)
+                        rotateHand.setToAngle(90);
+                    else
+                        rotateHand.setToAngle(-90);
+                    //rotateHand.setByAngle(180);
+                }
+                else if( i == 2) // going to the right side of the screen
+                {
+                    rotateHand.setFromAngle(0);
+                    rotateHand.setToAngle(180);
+                }
+
+                else if(i % 2 == 1) //going to the left side of the screen
+                {
+                    rotateHand.setFromAngle(0);
+                    rotateHand.setToAngle(180);
+                    //rotateHand.setByAngle(180);
+                }
+
+
+                moves[i] = moveHand;
+                rotates[i] = rotateHand;
+            }
+            for (int i = 0; i <numPlayers ; i++) {
+                moves[i].play();
+                rotates[i].play();
+            }
+
+            for (double[] nums : coords)
+            {
+                System.out.println("X: " + nums[0] + " Y: "+ nums[1]);
+            }
+            /*
             drawCustomers();
             drawLayers();
             drawHand();
             drawOtherHands();
             updateCurrentPlayer();
+
+             */
         }
         updateActionsLeft();
         return turnEnd;
@@ -466,6 +573,7 @@ public class MainHandler
                 StackPane.setMargin(name,new Insets(-40,0,0,0));
                 StackPane.setAlignment(bounding,Pos.BOTTOM_CENTER);
                 count++;
+
             }
 
             i = (i+1) % numPlayers;
@@ -481,7 +589,9 @@ public class MainHandler
     {
         StackPane handPane = new StackPane();
         handPane.setMaxWidth(maxWidth);
-        double cardWidth = (calculateCardHeight() * 2/3) + 10;
+        double cardHeight = calculateCardHeight();
+        handPane.setMaxHeight(cardHeight);
+        double cardWidth = (cardHeight * 2/3) + 10;
 
         int numCards = player.getHand().size();
         double offset;
@@ -545,16 +655,6 @@ public class MainHandler
 
                         ClipboardContent content = new ClipboardContent();
                         content.put(ingredientFormat, ingredient);
-                        /*
-                        String representation = ""; //This is fun, it's either get a string to read, or write the object into a temp file.
-                        if(ingredient instanceof Layer)
-                        {
-                            representation += ((Layer) ingredient).getRecipeDescription() + ": ";
-                        }
-                        representation += ingredient.toString();
-                        content.putString(representation);
-
-                         */
                         db.setContent(content);
                         event.consume();
                     }
