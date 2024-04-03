@@ -210,35 +210,23 @@ public class MainHandler
             //Now comes a big section to animate the hands moving across to their new positions.
             int numPlayers = bakery.getPlayers().size();
             double[][] coords = new double[numPlayers][2]; // structure is that in the inner array, there is the X coordinate, then the Y coordinate.
-            StackPane[] hands = new StackPane[numPlayers];
+
             Bounds left = leftHands.localToScene(leftHands.getLayoutBounds());
             Bounds right = rightHands.localToScene(rightHands.getLayoutBounds());
 
             for (int i = 0; i < numPlayers -1; i++)
             {// This will go through all of the non-current players
-                int index = (i + playerIndex) % numPlayers;
                 StackPane hand;
                 if(i % 2 == 0)
                     hand = (StackPane) leftHands.getChildren().get(i/2);
                 else
                     hand = (StackPane) rightHands.getChildren().get(i/2);
-                hands[i] = hand;
-                Player player = ((ArrayList<Player>) bakery.getPlayers()).get(index);
+
 
                 double y = hand.localToScene(hand.getLayoutBounds()).getCenterY();
                 System.out.println(y);
 
                 double x;
-                /*
-                if(i >1)
-                {
-                    if (i % 2 ==0)
-                        y += hand.getHeight() + leftHands.getSpacing();
-                    else
-                        y += hand.getHeight() + rightHands.getSpacing();
-                }
-
-                 */
                 if(i % 2 == 0)
                     x = left.getCenterX();
                 else
@@ -248,55 +236,70 @@ public class MainHandler
                 coords[i][1] = y;
             }
             StackPane currentHand = (StackPane) handRow.getChildren().get(0);
-            hands[numPlayers-1] = currentHand;
+
             Bounds currentBound = currentHand.localToScene(currentHand.getLayoutBounds());
             coords[numPlayers-1][0] = currentBound.getCenterX();
             coords[numPlayers-1][1] = currentBound.getCenterY();
-            System.out.println(calculateCardHeight());
+
+            StackPane[] hands = new StackPane[numPlayers];
+
+            drawCustomers();
+            drawLayers();
+            drawHand();
+            drawOtherHands();
+            updateCurrentPlayer();
+
+            //This loop to get the hand panes has to be done again to get the new panes that were drawn, while the coordinates from before the redrawing were needed to make the transition smoother.
+            for (int i = 0; i < numPlayers -1; i++)
+            {
+                StackPane hand;
+                if(i % 2 == 0)
+                    hand = (StackPane) leftHands.getChildren().get(i/2);
+                else
+                    hand = (StackPane) rightHands.getChildren().get(i/2);
+
+                hands[i] = hand;
+            }
+            hands[numPlayers-1] = (StackPane) handRow.getChildren().get(0);
+
+
 
             TranslateTransition[] moves = new TranslateTransition[numPlayers];
             RotateTransition[] rotates = new RotateTransition[numPlayers];
             for (int i = 0; i < numPlayers; i++)
             {
-                TranslateTransition moveHand = new TranslateTransition(Duration.millis(2000), hands[i]);
-                moveHand.setFromX(0);
-                moveHand.setFromY(0);
-                moveHand.setToX(coords[((i-1 + numPlayers) % numPlayers)][0] - coords[i][0]); // avoiding negatives in the modulo operation.
-                moveHand.setToY(coords[((i-1 + numPlayers) % numPlayers)][1] - coords[i][1]);
+                TranslateTransition moveHand = new TranslateTransition(Duration.millis(1500), hands[i]);
+                moveHand.setFromX(coords[(i+1) % numPlayers][0] - coords[i][0]);
+                moveHand.setFromY(coords[(i+1) % numPlayers][1] - coords[i][1]);
+                moveHand.setToX(0);
+                moveHand.setToY(0);
 
-                RotateTransition rotateHand = new RotateTransition(Duration.millis(2000), hands[i]);
-                if(i == 0) //going to the main hand
+
+                RotateTransition rotateHand = new RotateTransition(Duration.millis(1000), hands[i]);
+                if(i == numPlayers-1) // will be the main hand
                 {
-                    rotateHand.setFromAngle(0);
-                    rotateHand.setToAngle(-90);
+                    rotateHand.setFromAngle(90);
+                    rotateHand.setToAngle(0);
                 }
-
-                else if(i == numPlayers-1)
+                else if( i == numPlayers -2) // will be coming from the main hand
                 {
-                    rotateHand.setFromAngle(hands[i].getRotate());
                     if(numPlayers % 2 == 0)
-                        rotateHand.setToAngle(90);
+                        rotateHand.setFromAngle(-90);
                     else
-                        rotateHand.setToAngle(-90);
-                    //rotateHand.setByAngle(180);
+                        rotateHand.setFromAngle(90);
+                    rotateHand.setToAngle(0);
                 }
-                else if( i == 2) // going to the right side of the screen
+                else
                 {
-                    rotateHand.setFromAngle(0);
-                    rotateHand.setToAngle(180);
-                }
-
-                else if(i % 2 == 1) //going to the left side of the screen
-                {
-                    rotateHand.setFromAngle(0);
-                    rotateHand.setToAngle(180);
-                    //rotateHand.setByAngle(180);
+                    rotateHand.setFromAngle(180);
+                    rotateHand.setToAngle(0);
                 }
 
 
                 moves[i] = moveHand;
                 rotates[i] = rotateHand;
             }
+
             for (int i = 0; i <numPlayers ; i++) {
                 moves[i].play();
                 rotates[i].play();
@@ -306,14 +309,9 @@ public class MainHandler
             {
                 System.out.println("X: " + nums[0] + " Y: "+ nums[1]);
             }
-            /*
-            drawCustomers();
-            drawLayers();
-            drawHand();
-            drawOtherHands();
-            updateCurrentPlayer();
 
-             */
+
+
         }
         updateActionsLeft();
         return turnEnd;
