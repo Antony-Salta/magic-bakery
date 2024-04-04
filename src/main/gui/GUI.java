@@ -41,6 +41,15 @@ public class GUI extends Application {
     private Parent root;
 
     public static void main(String[] args) {
+        /*
+        for(String name: Font.getFamilies())
+        {
+            System.out.println(name);
+        }
+
+        System.exit(0);
+
+         */
         launch(args);
         System.out.println("done now");
     }

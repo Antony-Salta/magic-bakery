@@ -10,6 +10,9 @@
 .cardLabel{
     -fx-text-fill: black;
 }
+.customerRecipe{
+    -fx-text-fill: black;
+}
 
 
 .text-area{

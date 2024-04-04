@@ -208,109 +208,109 @@ public class MainHandler
 
 
             //Now comes a big section to animate the hands moving across to their new positions.
-            int numPlayers = bakery.getPlayers().size();
-            double[][] coords = new double[numPlayers][2]; // structure is that in the inner array, there is the X coordinate, then the Y coordinate.
-
-            Bounds left = leftHands.localToScene(leftHands.getLayoutBounds());
-            Bounds right = rightHands.localToScene(rightHands.getLayoutBounds());
-
-            for (int i = 0; i < numPlayers -1; i++)
-            {// This will go through all of the non-current players
-                StackPane hand;
-                if(i % 2 == 0)
-                    hand = (StackPane) leftHands.getChildren().get(i/2);
-                else
-                    hand = (StackPane) rightHands.getChildren().get(i/2);
-
-
-                double y = hand.localToScene(hand.getLayoutBounds()).getCenterY();
-
-                double x;
-                if(i % 2 == 0)
-                    x = left.getCenterX();
-                else
-                    x = right.getCenterX();
-
-                coords[i][0] = x;
-                coords[i][1] = y;
-            }
-            StackPane currentHand = (StackPane) handRow.getChildren().get(0);
-
-            Bounds currentBound = currentHand.localToScene(currentHand.getLayoutBounds());
-            coords[numPlayers-1][0] = currentBound.getCenterX();
-            coords[numPlayers-1][1] = currentBound.getCenterY();
-
-            StackPane[] hands = new StackPane[numPlayers];
-
-            drawCustomers();
-            drawLayers();
-            drawHand();
-            drawOtherHands();
-            updateCurrentPlayer();
-
-            //This loop to get the hand panes has to be done again to get the new panes that were drawn, while the coordinates from before the redrawing were needed to make the transition smoother.
-            for (int i = 0; i < numPlayers -1; i++)
-            {
-                StackPane hand;
-                if(i % 2 == 0)
-                    hand = (StackPane) leftHands.getChildren().get(i/2);
-                else
-                    hand = (StackPane) rightHands.getChildren().get(i/2);
-
-                hands[i] = hand;
-            }
-            hands[numPlayers-1] = (StackPane) handRow.getChildren().get(0);
-
-
-
-            TranslateTransition[] moves = new TranslateTransition[numPlayers];
-            RotateTransition[] rotates = new RotateTransition[numPlayers];
-            for (int i = 0; i < numPlayers; i++)
-            {
-                TranslateTransition moveHand = new TranslateTransition(Duration.millis(1500), hands[i]);
-                moveHand.setFromX(coords[(i+1) % numPlayers][0] - coords[i][0]);
-                moveHand.setFromY(coords[(i+1) % numPlayers][1] - coords[i][1]);
-                moveHand.setToX(0);
-                moveHand.setToY(0);
-
-
-                RotateTransition rotateHand = new RotateTransition(Duration.millis(1000), hands[i]);
-                if(i == numPlayers-1) // will be the main hand
-                {
-                    rotateHand.setFromAngle(90);
-                    rotateHand.setToAngle(0);
-                }
-                else if( i == numPlayers -2) // will be coming from the main hand
-                {
-                    if(numPlayers % 2 == 0)
-                        rotateHand.setFromAngle(-90);
-                    else
-                        rotateHand.setFromAngle(90);
-                    rotateHand.setToAngle(0);
-                }
-                else
-                {
-                    rotateHand.setFromAngle(180);
-                    rotateHand.setToAngle(0);
-                }
-
-
-                moves[i] = moveHand;
-                rotates[i] = rotateHand;
-            }
-
-            for (int i = 0; i <numPlayers ; i++) {
-                moves[i].play();
-                rotates[i].play();
-            }
-
-
-
+            moveHandsAround();
 
         }
         updateActionsLeft();
         return turnEnd;
 
+    }
+
+    /**
+     * This will move the hands around to make it more obvious when a turn ends.
+     * During this, all of the rows other than the pantry will be redrawn, as this is where the current player switches
+     */
+    private void moveHandsAround()
+    {
+        int numPlayers = bakery.getPlayers().size();
+        double[][] coords = new double[numPlayers][2]; // structure is that in the inner array, there is the X coordinate, then the Y coordinate.
+
+        for (int i = 0; i < numPlayers -1; i++)
+        {// This will go through all of the non-current players
+            StackPane hand;
+            if(i % 2 == 0)
+                hand = (StackPane) leftHands.getChildren().get(i/2);
+            else
+                hand = (StackPane) rightHands.getChildren().get(i/2);
+
+
+            double y = hand.localToScene(hand.getLayoutBounds()).getCenterY();
+
+            double x = hand.localToScene(hand.getLayoutBounds()).getCenterX();;
+
+
+            coords[i][0] = x;
+            coords[i][1] = y;
+        }
+        StackPane currentHand = (StackPane) handRow.getChildren().get(0);
+
+        Bounds currentBound = currentHand.localToScene(currentHand.getLayoutBounds());
+        coords[numPlayers-1][0] = currentBound.getCenterX();
+        coords[numPlayers-1][1] = currentBound.getCenterY();
+
+        StackPane[] hands = new StackPane[numPlayers];
+
+        drawCustomers();
+        drawLayers();
+        drawHand();
+        drawOtherHands();
+        updateCurrentPlayer();
+
+        //This loop to get the hand panes has to be done again to get the new panes that were drawn, while the coordinates from before the redrawing were needed to make the transition smoother.
+        for (int i = 0; i < numPlayers -1; i++)
+        {
+            StackPane hand;
+            if(i % 2 == 0)
+                hand = (StackPane) leftHands.getChildren().get(i/2);
+            else
+                hand = (StackPane) rightHands.getChildren().get(i/2);
+
+            hands[i] = hand;
+        }
+        hands[numPlayers-1] = (StackPane) handRow.getChildren().get(0);
+
+
+
+        TranslateTransition[] moves = new TranslateTransition[numPlayers];
+        RotateTransition[] rotates = new RotateTransition[numPlayers];
+        for (int i = 0; i < numPlayers; i++)
+        {
+            TranslateTransition moveHand = new TranslateTransition(Duration.millis(1500), hands[i]);
+            moveHand.setFromX(coords[(i+1) % numPlayers][0] - coords[i][0]);
+            moveHand.setFromY(coords[(i+1) % numPlayers][1] - coords[i][1]);
+            moveHand.setToX(0);
+            moveHand.setToY(0);
+
+
+            RotateTransition rotateHand = new RotateTransition(Duration.millis(1000), hands[i]);
+            if(i == numPlayers-1) // will be the main hand
+            {
+                rotateHand.setFromAngle(90);
+                rotateHand.setToAngle(0);
+            }
+            else if( i == numPlayers -2) // will be coming from the main hand
+            {
+                if(numPlayers % 2 == 0)
+                    rotateHand.setFromAngle(-90);
+                else
+                    rotateHand.setFromAngle(90);
+                rotateHand.setToAngle(0);
+            }
+            else
+            {
+                rotateHand.setFromAngle(180);
+                rotateHand.setToAngle(0);
+            }
+
+
+            moves[i] = moveHand;
+            rotates[i] = rotateHand;
+        }
+
+        for (int i = 0; i <numPlayers ; i++) {
+            moves[i].play();
+            rotates[i].play();
+        }
     }
     public void askFulfilOrGarnish(MouseEvent event, CustomerOrder order)
     {
@@ -803,24 +803,35 @@ public class MainHandler
     public StackPane makeCustomerCard(CustomerOrder order)
     {
         StackPane card = makeNamedCard(order.toString());
-        Label recipe = new Label("Recipe:\n" + order.getRecipeDescription());
-        recipe.getStyleClass().add("cardLabel");
+
+
+        Label recipe = new Label();
+        String recipeText = "Recipe:\n- " + order.getRecipeDescription();
+        recipe.getStyleClass().add("customerRecipe");
+        recipe.setFont(new Font("Consolas", 13));
+
         recipe.setWrapText(true);
-        recipe.setAlignment(Pos.TOP_CENTER);
+        recipe.setAlignment(Pos.CENTER_LEFT);
         card.getChildren().add(recipe);
-        StackPane.setAlignment(recipe,Pos.BOTTOM_CENTER);
-        StackPane.setMargin(recipe, new Insets(0,0,10,0));
+        StackPane.setAlignment(recipe,Pos.BOTTOM_LEFT);
+        StackPane.setMargin(recipe, new Insets(0,0,5,0));
         recipe.setPadding(new Insets(0,5,0,5));
         recipe.setAlignment(Pos.CENTER);
         if( !(order.getGarnish() == null || order.getGarnish().isEmpty()) )
         {
-            recipe.setText(recipe.getText() + "\nGarnish:\n" + order.getGarnishDescription());
+            recipeText += "\nGarnish:\n- " + order.getGarnishDescription();
         }
-
+        recipeText = recipeText.replace(", ", "\n- ");
+        recipe.setText(recipeText);
         Rectangle backing = (Rectangle) card.getChildren().get(0);
-        backing.setFill(Color.WHITE);
+        backing.setFill(Color.rgb(255,255,150));
         backing.setStroke(Color.LIGHTBLUE);
         recipe.setMaxWidth(backing.getWidth());
+
+        Label nameLabel = (Label) card.getChildren().get(2);
+        nameLabel.getStyleClass().add("customerRecipe");
+        nameLabel.setFont(new Font("Consolas", 15));
+
         return card;
     }
 
