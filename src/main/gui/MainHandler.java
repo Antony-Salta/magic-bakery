@@ -224,7 +224,6 @@ public class MainHandler
 
 
                 double y = hand.localToScene(hand.getLayoutBounds()).getCenterY();
-                System.out.println(y);
 
                 double x;
                 if(i % 2 == 0)
@@ -305,10 +304,6 @@ public class MainHandler
                 rotates[i].play();
             }
 
-            for (double[] nums : coords)
-            {
-                System.out.println("X: " + nums[0] + " Y: "+ nums[1]);
-            }
 
 
 
@@ -491,9 +486,12 @@ public class MainHandler
         rightHands.getChildren().clear();
         rightHands.setLayoutX(rightHands.getScene().getWidth());
         leftHands.setLayoutX(0);
+
         double cardHeight = calculateCardHeight();
         AnchorPane.setLeftAnchor(mainLayout, cardHeight);
         AnchorPane.setRightAnchor(mainLayout, cardHeight);
+        rightHands.setPrefWidth(cardHeight + 60); //This is a very weird thing because of the Groups that are used later, this is needed to make it so that only the hand with a mouse over has a hand hover, and not have the entire side move.
+        leftHands.setPrefWidth(cardHeight + 60);
 
         double maxWidth = (leftHands.getScene().getHeight()/2) -150;
         int count =0;
@@ -520,14 +518,21 @@ public class MainHandler
                 handPane.setOnDragEntered(new EventHandler<DragEvent>() {
                     @Override
                     public void handle(DragEvent event) {
-                        handPane.setEffect(new ColorAdjust(0, 0.2, 0, 0.5));
+                        for( Node card :  handPane.getChildren())
+                        {
+                            ((Rectangle) ((StackPane)card).getChildren().get(0)).setEffect(new ColorAdjust(0.3, 0.3, 0, 0.5));
+                        }
+
                         event.consume();
                     }
                 });
                 handPane.setOnDragExited(new EventHandler<DragEvent>() {
                     @Override
                     public void handle(DragEvent event) {
-                        handPane.setEffect(new ColorAdjust(0,0,0,0));
+                        for( Node card :  handPane.getChildren())
+                        {
+                            ((Rectangle) ((StackPane)card).getChildren().get(0)).setEffect(new ColorAdjust(0, 0, 0, 0));
+                        }
                         event.consume();
                     }
                 });
@@ -751,7 +756,7 @@ public class MainHandler
      */
     public StackPane makeNamedCard(String name)
     {
-        StackPane card = makeBasicCard(null);
+        StackPane card = makeBasicCard(new Image("file:images/" + name + ".png"));
         Label nameLabel = new Label(name);
         nameLabel.getStyleClass().add("cardLabel");
         nameLabel.setWrapText(true);

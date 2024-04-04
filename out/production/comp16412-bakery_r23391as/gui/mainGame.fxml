@@ -171,7 +171,7 @@
             <Insets />
          </opaqueInsets>
       </VBox>
-      <VBox fx:id="leftHands" alignment="TOP_CENTER" prefHeight="1040.0" spacing="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="40.0">
+      <VBox fx:id="leftHands" alignment="TOP_CENTER" prefHeight="1040.0" spacing="50.0" AnchorPane.topAnchor="40.0">
          <children>
             <StackPane prefHeight="100.0" prefWidth="100.0">
                <children>
