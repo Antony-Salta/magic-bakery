@@ -144,10 +144,16 @@ public class MainHandler
     }
 
     public void drawFromPantry(MouseEvent event)
-    {
+    {//TODO: make an animation for this using the chosen card.
         StackPane card = (StackPane) event.getSource();
         String name = ((Label) card.getChildren().get(2)).getText();
         bakery.drawFromPantry(name);
+        Bounds cardBound = card.localToScene(card.getLayoutBounds());
+        double[] from = {cardBound.getCenterX(), cardBound.getCenterY()};
+        StackPane hand = (StackPane) handRow.getChildren().get(0);
+        Bounds handBound = hand.localToScene(hand.getLayoutBounds());
+        double[] to = {handBound.getCenterX(), handBound.getCenterY()};
+        
 
          if(handleTurnEnd())
              drawPantry();
