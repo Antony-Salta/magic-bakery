@@ -333,7 +333,7 @@ public class MagicBakery implements Serializable{
      */
     public Collection<Layer> getBakeableLayers()
     {   
-        return layers.stream().filter(l -> l.canBake(getCurrentPlayer().getHand())).distinct().toList();
+        return getLayers().stream().filter(l -> l.canBake(getCurrentPlayer().getHand())).distinct().toList();
     }
 
     /**

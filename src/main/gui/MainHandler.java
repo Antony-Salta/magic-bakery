@@ -4,7 +4,6 @@ import bakery.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.*;
 
 
@@ -148,32 +147,154 @@ public class MainHandler
         StackPane card = (StackPane) event.getSource();
         String name = ((Label) card.getChildren().get(2)).getText();
         bakery.drawFromPantry(name);
-        Bounds cardBound = card.localToScene(card.getLayoutBounds());
-        double[] from = {cardBound.getCenterX(), cardBound.getCenterY()};
-        StackPane hand = (StackPane) handRow.getChildren().get(0);
-        Bounds handBound = hand.localToScene(hand.getLayoutBounds());
-        double[] to = {handBound.getCenterX(), handBound.getCenterY()};
-        
 
-         if(handleTurnEnd())
-             drawPantry();
-         else
-         {
-             drawRows();
-         }
-
-
+        TranslateTransition cardMove = animateNodeToNode(card, handRow.getChildren().get(0), null);
+        cardMove.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(handleTurnEnd())
+                    drawPantry();
+                else
+                {
+                    drawRows();
+                }
+            }
+        });
+        cardMove.play();
     }
     public void drawFromPantryDeck(MouseEvent event)
     {
+        ArrayList<Ingredient> prevHand = new ArrayList<>(bakery.getCurrentPlayer().getHand());
+
         bakery.drawFromPantry((Ingredient) null);
-        if(!handleTurnEnd())
-        {
-            drawCustomers();
-            drawLayers();
-            drawHand();
+        ArrayList<Ingredient> currentHand = new ArrayList<>(bakery.getCurrentPlayer().getHand());
+        int indexOfNew = prevHand.size();
+        //getHand gives a sorted list, so the player's hand before and after drawing a card will be the same, until it hits the newly inserted card, which can be considered to be at the end of the block of ingredients that are the same as it.
+        for (int i = 0; i < prevHand.size(); i++) {
+            if(!prevHand.get(i).equals(currentHand.get(i)))
+            {
+                indexOfNew = i;
+                break;
+            }
         }
+
+        drawHand();
+        drawPantry();
+
+        //This has to be reversed because this animation can only happen after everything is redrawn
+        Node card = ((StackPane) handRow.getChildren().get(0)).getChildren().get(indexOfNew);
+        //TODO: fix this so that the cards actually come from the deck rather than just float down from above.
+        TranslateTransition reverseDraw = animateNodeToNode(card, pantryRow.getChildren().get(1), null);
+        reverseDraw.setRate(-1);
+        reverseDraw.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                if(!handleTurnEnd())
+                {
+                    drawCustomers();
+                    drawLayers();
+                    drawHand();
+                }
+            }
+        });
+        reverseDraw.play();
     }
+
+    /**
+     *
+     * @param event
+     */
+    public void bakeLayer(MouseEvent event, List<Ingredient> usedIngredients)
+    {
+        StackPane card = (StackPane) event.getSource();
+        TranslateTransition cardMove = animateNodeToNode(card, handRow.getChildren().get(0), null);
+        cardMove.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(handleTurnEnd())
+                    drawPantry(); //the pantry could technically need to be redrawn if the pantry deck was empty before
+                else
+                    drawRows();
+            }
+        });
+
+        ArrayList<TranslateTransition> spentCardAnimations = new ArrayList<>();
+        StackPane handPane = (StackPane) handRow.getChildren().get(0);
+        //Currently an issue here from helpful ducks
+        for(Node ingredientNode :  handPane.getChildren()) {
+            StackPane ingredientCard = (StackPane) ingredientNode;
+            String name = ((Label) ingredientCard.getChildren().get(2)).getText();
+            Ingredient temp = new Ingredient(name.toLowerCase());
+            if(usedIngredients.isEmpty())
+                break;
+            if (usedIngredients.contains(temp)) {
+                spentCardAnimations.add(animateNodeToNode(ingredientCard, pantryRow.getChildren().get(1), null));
+                usedIngredients.remove(temp);
+            }
+        }
+        // now the clean-up round on helpful ducks
+        if(!usedIngredients.isEmpty())
+        {
+            for(Node ingredientNode :  handPane.getChildren()) {
+                StackPane ingredientCard = (StackPane) ingredientNode;
+                String name = ((Label) ingredientCard.getChildren().get(2)).getText();
+                if(name.contains("helpful duck")) // not pasting the whole thing because I have precautions around the duck character not working on all platforms.
+                {
+                    spentCardAnimations.add(animateNodeToNode(ingredientCard, pantryRow.getChildren().get(1), null));
+                    usedIngredients.remove(0);
+                }
+            }
+        }
+        spentCardAnimations.forEach(a -> a.play());
+        cardMove.play();
+    }
+
+    /**
+     * Uses animate node, and the bounding boxes of the source and destination node to animate one object to another.
+     * @param source
+     * @param destination
+     * @param duration default duration time is 500ms if null is passed in, otherwise dictates how long the animation takes to complete.
+     * @return the TranslateTransition giving the animation.
+     */
+    public TranslateTransition animateNodeToNode(Node source, Node destination, Duration duration)
+    {
+        if(duration == null)
+        {
+            duration = Duration.millis(500);
+        }
+
+        Bounds sourceBound = source.localToScene(source.getLayoutBounds());
+        double[] from = {sourceBound.getCenterX(), sourceBound.getCenterY()};
+        Bounds destinationBound = destination.localToScene(destination.getLayoutBounds());
+        double[] to = {destinationBound.getCenterX(), destinationBound.getCenterY()};
+        TranslateTransition movingCard = animateNode(source, from, to, duration);
+        return movingCard;
+    }
+
+
+
+    /**
+     * Makes a translate transition that moves a stack pane from one set of coordinates to another, because this is going to be needed a lot in animations
+     * @param source the StackPane that is being moved
+     * @param from The coordinate that it is moving from, this should be an array of length 2, with the center x and then center y coordinate
+     * @param to the coordinate that it is moving to, in the same format of the from variable
+     * @param duration the duration of the animation, which will default to 500ms if null is passed in
+     * @return the translate transition of this, with a default duration of 500ms
+     */
+    public TranslateTransition animateNode(Node source, double[] from, double[] to, Duration duration)
+    {
+        if(duration == null)
+            duration = Duration.millis(500);
+
+        TranslateTransition move = new TranslateTransition(duration, source);
+        move.setFromX(0);
+        move.setFromY(0);
+        move.setToX(to[0] - from[0]);
+        move.setToY(to[1] - from[1]);
+        return move;
+    }
+
     @FXML
     public void refreshPantry()
     {
@@ -281,11 +402,9 @@ public class MainHandler
         RotateTransition[] rotates = new RotateTransition[numPlayers];
         for (int i = 0; i < numPlayers; i++)
         {
-            TranslateTransition moveHand = new TranslateTransition(Duration.millis(1500), hands[i]);
-            moveHand.setFromX(coords[(i+1) % numPlayers][0] - coords[i][0]);
-            moveHand.setFromY(coords[(i+1) % numPlayers][1] - coords[i][1]);
-            moveHand.setToX(0);
-            moveHand.setToY(0);
+            //This will use the moveNode code in reverse
+            TranslateTransition moveHand = animateNode(hands[i], coords[i], coords[(i+1) % numPlayers], Duration.millis(1500) );
+            moveHand.setRate(-1);
 
 
             RotateTransition rotateHand = new RotateTransition(Duration.millis(1000), hands[i]);
@@ -431,13 +550,9 @@ public class MainHandler
                 card.setEffect(yellowHighlight);
                 card.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
-                    public void handle(MouseEvent event) {
+                    public void handle(MouseEvent event) { //TODO: make an animation for drawing cards
                         bakery.bakeLayer(layer);
-                        if(handleTurnEnd())
-                            drawPantry(); //the pantry could technically need to be redrawn if the pantry deck is empty
-                        else
-                            drawRows();
-
+                        bakeLayer(event, new ArrayList<>(layer.getRecipe()) ); //need to make the copy so that it doesn't wipe the other recipes
                     }
                 });
             }

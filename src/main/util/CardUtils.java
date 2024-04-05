@@ -116,10 +116,6 @@ public  final class CardUtils
         }
         
         //TODO Figure out if there are meant to be a limited number of layers or not.
-        //For now I'm gonna say no.
-        // layers.addAll(layers);
-        // layers.addAll(layers);
-        //This little bit makes it so that there are 4 of each layer, since that's the amount it's meant to be
         read.close();
         return layers;
     }
