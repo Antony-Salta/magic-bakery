@@ -44,7 +44,7 @@ public abstract class IngredientListUtil {
         // e.g. c, e, e, e , s
         for( Ingredient ing: copy)
         {
-            if(ing != prevIng)
+            if(!ing.equals(prevIng))
             {
                 String original = prevIng.toString();
                 String name;
@@ -64,7 +64,7 @@ public abstract class IngredientListUtil {
                 prevIng = ing;
             }
             else
-                numSame ++;
+                numSame++;
         }
         String original = copy.get(copy.size() -1).toString();
         String name;

@@ -133,7 +133,7 @@ public  final class CardUtils
         int level = Integer.parseInt(parts[0].strip());
         String name = parts[1].strip();
 
-        if(parts.length == 3)// If there is no garnish, then there will only be 3 parts, and the recipe will end in a comma, sometimes, it's inconsistent, hence the replace.
+        if(parts.length == 3)// If there is no garnish, then there will only be 3 parts, and the recipe will end in a comma (sometimes, it's inconsistent) hence the replace.
             parts[2] = parts[2].replace(",", "");
 
         String[] recipeIngredients = parts[2].split(";");

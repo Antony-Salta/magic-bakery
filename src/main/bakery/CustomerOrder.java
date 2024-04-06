@@ -265,7 +265,7 @@ public class CustomerOrder implements Serializable
      */
     public String getRecipeDescription()
     {
-        return IngredientListUtil.stringFromIngList(recipe, false, false);
+        return IngredientListUtil.stringFromIngList(recipe, false, true);
     }
     /**
      * Gets the comma separated list of ingredients in the garnish.

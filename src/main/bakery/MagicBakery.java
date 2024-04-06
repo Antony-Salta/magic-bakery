@@ -460,9 +460,9 @@ public class MagicBakery implements Serializable{
     {
         int fulfilledCustomers, garnishedCustomers, givenUpCustomers;
         fulfilledCustomers = customers.getInactiveCustomersWithStatus(CustomerOrderStatus.FULFILLED).size();
-        garnishedCustomers = fulfilledCustomers + customers.getInactiveCustomersWithStatus(CustomerOrderStatus.GARNISHED).size();
+        garnishedCustomers = customers.getInactiveCustomersWithStatus(CustomerOrderStatus.GARNISHED).size();
         givenUpCustomers = customers.getInactiveCustomersWithStatus(CustomerOrderStatus.GIVEN_UP).size();
-        System.out.println("Delighted customers chowing down on a job well done: " + fulfilledCustomers + ", with " + garnishedCustomers + " garnished.");
+        System.out.println("Delighted customers chowing down on a job well done: " + (fulfilledCustomers + garnishedCustomers) + ", with " + garnishedCustomers + " garnished.");
         System.out.println("Customers gone for walkies: " + givenUpCustomers);
     }
 

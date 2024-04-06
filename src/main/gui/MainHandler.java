@@ -62,6 +62,8 @@ public class MainHandler
     @FXML VBox rightHands;
 
     @FXML VBox mainLayout;
+    @FXML
+    private Label customerStatus;
 
     private int playerIndex = 1;
 
@@ -101,7 +103,7 @@ public class MainHandler
 
         updateActionsLeft();
         updateCurrentPlayer();
-
+        updateCustomerStatus();
     }
 
     @FXML
@@ -315,7 +317,8 @@ public class MainHandler
      * It will redraw everything that needs to be redrawn if it is the end of a player's turn, which is everything but the pantry row.
      * It will always update the number of actions left
      * It will always update the currentPlayer when needed
-     * @return whether it is the end of a turn, and therefore if everything but the pantry row has been redrawn
+     * It will always update customerStatus if it is the end of a round.
+     * @return whether it is the end of a round, and therefore if everything but the pantry row has been redrawn
      */
     public boolean handleTurnEnd()
     {
@@ -330,6 +333,7 @@ public class MainHandler
             if(bakery.endTurn())
             {
                 Customers customers = bakery.getCustomers();
+                updateCustomerStatus();
                 //If the game is ending
                 if(customers.isEmpty() && customers.getCustomerDeck().isEmpty())
                 {
@@ -469,6 +473,7 @@ public class MainHandler
     public void fulfilOrder(CustomerOrder order, boolean garnish)
     {
         bakery.fulfillOrder(order,garnish);
+        updateCustomerStatus();
         if(handleTurnEnd())
             drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
         else
@@ -974,12 +979,23 @@ public class MainHandler
     public void updateCurrentPlayer()
     {
         currentPlayer.setText("Current Player: " + bakery.getCurrentPlayer().toString());
-        playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/3);
+        playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/4);
     }
     public void updateActionsLeft()
     {
         actionsLeft.setText(bakery.getActionsRemaining() + "/" + bakery.getActionsPermitted() + "Actions left");
     }
+    public void updateCustomerStatus()
+    {
+        int fulfilledCustomers, garnishedCustomers, givenUpCustomers;
+        Customers customers = bakery.getCustomers();
+        fulfilledCustomers = customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.FULFILLED).size();
+        garnishedCustomers = customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GARNISHED).size();
+        givenUpCustomers = customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GIVEN_UP).size();
+        String status = "Customers fulfiled (and garnished) : " + (fulfilledCustomers + garnishedCustomers) + "(" + garnishedCustomers + ")\nCustomers that have given up: " + givenUpCustomers;
+        customerStatus.setText(status);
+    }
+
 
     private double calculateCardHeight()
     {
