@@ -325,36 +325,58 @@ public class MainHandler
      */
     public boolean handleTurnEnd()
     {
+        boolean gameOver = false;
         boolean turnEnd = false;
         if(bakery.getActionsRemaining() == 0)
         {
-            playerIndex = (playerIndex +1) % bakery.getPlayers().size();
-            /*This player index thing makes it so that the position of the hands is determined by how close they are to playing.
-            The order is that the next player will be top left, then top right, then bottom left, then bottom right.
-            */
             turnEnd = true;
             if(bakery.endTurn())
             {
                 Customers customers = bakery.getCustomers();
+
+
                 updateCustomerStatus();
                 //If the game is ending
                 if(customers.isEmpty() && customers.getCustomerDeck().isEmpty())
                 {
+                    gameOver =true;
                     AnchorPane root = (AnchorPane) customerRow.getScene().getRoot();
                     root.getChildren().clear();
-                    Label end = new Label("Game over!");
+                    int numCompleted = customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GARNISHED).size() + customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.FULFILLED).size();
+                    String ranking = "";
+                    if(numCompleted >=7)
+                        ranking = "GOLD";
+                    else if(numCompleted >= 5)
+                        ranking = "SILVER";
+                    else if(numCompleted >= 3)
+                        ranking = "BRONZE";
+                    else
+                        ranking = "NONE  :(";
+                    String endMessage = "Game Over!\nRanking:\n" + ranking;
+                    Label end = new Label(endMessage);
                     end.setFont(new Font("Verdana", 48));
+                    end.setAlignment(Pos.CENTER);
+                    end.setPrefHeight(root.getHeight());
+                    end.setPrefWidth(root.getWidth());
                     end.setTextFill(Color.WHITE);
                     root.getChildren().add(end);
                 }
             }
+            if(!gameOver)
+            {
+                //this function will de all of the redrawing that is needed.
+                moveHandsAround();
+                playerIndex = (playerIndex +1) % bakery.getPlayers().size();
+                /*This player index thing makes it so that the position of the hands is determined by how close they are to playing.
+                The order is that the next player will be top left, then top right, then bottom left, then bottom right.
+                */
+            }
 
 
-            //Now comes a big section to animate the hands moving across to their new positions.
-            moveHandsAround();
 
         }
-        updateActionsLeft();
+        if(!gameOver)
+            updateActionsLeft();
         return turnEnd;
 
     }
