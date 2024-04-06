@@ -53,6 +53,8 @@ public class MainHandler
     private HBox pantryRow;
     @FXML
     private HBox handRow;
+    @FXML
+    private StackPane currentHandPane;
 
     @FXML
     private VBox leftHands;
@@ -148,7 +150,7 @@ public class MainHandler
         String name = ((Label) card.getChildren().get(2)).getText();
         bakery.drawFromPantry(name);
 
-        TranslateTransition cardMove = animateNodeToNode(card, handRow.getChildren().get(0), null);
+        TranslateTransition cardMove = animateNodeToNode(card, currentHandPane, null);
         cardMove.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -182,8 +184,9 @@ public class MainHandler
         drawPantry();
 
         //This has to be reversed because this animation can only happen after everything is redrawn
-        Node card = ((StackPane) handRow.getChildren().get(0)).getChildren().get(indexOfNew);
+        StackPane card = (StackPane) currentHandPane.getChildren().get(indexOfNew);
         //TODO: fix this so that the cards actually come from the deck rather than just float down from above.
+        System.out.println("reversed to deck:");
         TranslateTransition reverseDraw = animateNodeToNode(card, pantryRow.getChildren().get(1), null);
         reverseDraw.setRate(-1);
         reverseDraw.setOnFinished(new EventHandler<ActionEvent>() {
@@ -208,7 +211,8 @@ public class MainHandler
     public void bakeLayer(MouseEvent event, List<Ingredient> usedIngredients)
     {
         StackPane card = (StackPane) event.getSource();
-        TranslateTransition cardMove = animateNodeToNode(card, handRow.getChildren().get(0), null);
+        System.out.println("Layer move:");
+        TranslateTransition cardMove = animateNodeToNode(card, currentHandPane, null);
         cardMove.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -220,15 +224,14 @@ public class MainHandler
         });
 
         ArrayList<TranslateTransition> spentCardAnimations = new ArrayList<>();
-        StackPane handPane = (StackPane) handRow.getChildren().get(0);
-        //Currently an issue here from helpful ducks
-        for(Node ingredientNode :  handPane.getChildren()) {
+        for(Node ingredientNode :  currentHandPane.getChildren()) {
             StackPane ingredientCard = (StackPane) ingredientNode;
             String name = ((Label) ingredientCard.getChildren().get(2)).getText();
             Ingredient temp = new Ingredient(name.toLowerCase());
             if(usedIngredients.isEmpty())
                 break;
             if (usedIngredients.contains(temp)) {
+                System.out.println("Card to Deck: ");
                 spentCardAnimations.add(animateNodeToNode(ingredientCard, pantryRow.getChildren().get(1), null));
                 usedIngredients.remove(temp);
             }
@@ -236,7 +239,7 @@ public class MainHandler
         // now the clean-up round on helpful ducks
         if(!usedIngredients.isEmpty())
         {
-            for(Node ingredientNode :  handPane.getChildren()) {
+            for(Node ingredientNode :  currentHandPane.getChildren()) {
                 StackPane ingredientCard = (StackPane) ingredientNode;
                 String name = ((Label) ingredientCard.getChildren().get(2)).getText();
                 if(name.contains("helpful duck")) // not pasting the whole thing because I have precautions around the duck character not working on all platforms.
@@ -269,6 +272,8 @@ public class MainHandler
         Bounds destinationBound = destination.localToScene(destination.getLayoutBounds());
         double[] to = {destinationBound.getCenterX(), destinationBound.getCenterY()};
         TranslateTransition movingCard = animateNode(source, from, to, duration);
+        System.out.println("From X: " + from[0] + " From Y: " + from[1]);
+        System.out.println("To X: " + to[0] + " To Y: " + to[1]);
         return movingCard;
     }
 
@@ -317,6 +322,10 @@ public class MainHandler
         boolean turnEnd = false;
         if(bakery.getActionsRemaining() == 0)
         {
+            playerIndex = (playerIndex +1) % bakery.getPlayers().size();
+            /*This player index thing makes it so that the position of the hands is determined by how close they are to playing.
+            The order is that the next player will be top left, then top right, then bottom left, then bottom right.
+            */
             turnEnd = true;
             if(bakery.endTurn())
             {
@@ -369,9 +378,8 @@ public class MainHandler
             coords[i][0] = x;
             coords[i][1] = y;
         }
-        StackPane currentHand = (StackPane) handRow.getChildren().get(0);
 
-        Bounds currentBound = currentHand.localToScene(currentHand.getLayoutBounds());
+        Bounds currentBound = currentHandPane.localToScene(currentHandPane.getLayoutBounds());
         coords[numPlayers-1][0] = currentBound.getCenterX();
         coords[numPlayers-1][1] = currentBound.getCenterY();
 
@@ -394,7 +402,7 @@ public class MainHandler
 
             hands[i] = hand;
         }
-        hands[numPlayers-1] = (StackPane) handRow.getChildren().get(0);
+        hands[numPlayers-1] = currentHandPane;
 
 
 
@@ -597,8 +605,8 @@ public class MainHandler
         handRow.getChildren().clear();
 
         double maxWidth = handRow.getScene().getWidth()/2;
-        StackPane handPane = makePlayerHand(bakery.getCurrentPlayer(),maxWidth);
-        handRow.getChildren().add(handPane);
+        currentHandPane = makePlayerHand(bakery.getCurrentPlayer(),maxWidth);
+        handRow.getChildren().add(currentHandPane);
     }
 
     public void drawOtherHands()
@@ -702,10 +710,7 @@ public class MainHandler
 
             i = (i+1) % numPlayers;
         }while( i != playerIndex);
-        playerIndex = (playerIndex +1) % numPlayers;
-        /*This player index thing makes it so that the position of the hands is determined by how close they are to playing.
-        The order is that the next player will be top left, then top right, then bottom left, then bottom right.
-        */
+
 
     }
 
