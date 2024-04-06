@@ -65,6 +65,9 @@ public class MainHandler
     @FXML
     private Label customerStatus;
 
+    //This is going to be for a very weird thing to do with dragging cards to pass to other players.
+    private StackPane draggedHand;
+
     private int playerIndex = 1;
 
     private final DropShadow yellowHighlight = new DropShadow(5,0,5, Color.YELLOW);
@@ -678,6 +681,8 @@ public class MainHandler
 
                         if(event.getDragboard().hasContent(ingredientFormat))
                         {
+                            draggedHand = (StackPane) event.getSource();
+
                             Ingredient passedCard = (Ingredient) event.getDragboard().getContent(ingredientFormat);
                             bakery.passCard(passedCard,player);
                             dragDropWorked = true;
@@ -797,23 +802,47 @@ public class MainHandler
                 card.setOnDragDone(new EventHandler<DragEvent>() {
                     @Override
                     public void handle(DragEvent event) {
-                        if(event.getTransferMode() == TransferMode.MOVE)
-                        { // If the drag drop has worked
-                            if(!handleTurnEnd())
-                            {
-                                drawCustomers();
-                                drawLayers();
-                                drawHand();
-                                drawOtherHands();
-                            }
-                        }
-                        event.consume();
+                        handleDragDone(event);
                     }
                 });
             }
 
         }
         return handPane;
+    }
+
+    public void handleDragDone(DragEvent event)
+    {
+        if(event.getTransferMode() == TransferMode.MOVE)
+        { // If the drag drop has worked
+            StackPane card = (StackPane) event.getSource();
+            System.out.println(card);
+            TranslateTransition moveCard = animateNodeToNode(card, draggedHand, Duration.millis(800));
+
+            moveCard.setOnFinished(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    if(!handleTurnEnd())
+                    {
+                        drawCustomers();
+                        drawLayers();
+                        drawHand();
+                        drawOtherHands();
+                    }
+                    draggedHand = null;
+                }
+            });
+
+            RotateTransition spin = new RotateTransition(Duration.millis(500), (Node) event.getSource());
+            if(moveCard.getToX() > 0)
+                spin.setByAngle(-90);
+            else
+                spin.setByAngle(90);
+
+            spin.play();
+            moveCard.play();
+        }
+        event.consume();
     }
 
     public void drawCardSlot(HBox row, String name)
