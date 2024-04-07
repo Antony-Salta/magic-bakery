@@ -12,6 +12,7 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
@@ -59,9 +60,15 @@ public class MainHandler
     @FXML
     private VBox leftHands;
 
-    @FXML VBox rightHands;
+    @FXML
+    private VBox rightHands;
 
-    @FXML VBox mainLayout;
+    @FXML
+    private VBox mainLayout;
+
+    @FXML
+    private VBox messageBox;
+
     @FXML
     private Label customerStatus;
 
@@ -119,23 +126,12 @@ public class MainHandler
         try
         {
             bakery.saveState(save);
-            Label saveConfirmation = new Label("Game saved.");
-            saveConfirmation.setFont(new Font(48));
-            saveConfirmation.setBackground(new Background(new BackgroundFill( Color.color(0d,0d,0d,0.5), null, null)));
-            ((AnchorPane) currentPlayer.getScene().getRoot()).getChildren().add(saveConfirmation);
-            Scene scene = currentPlayer.getScene();
-            saveConfirmation.setLayoutX(scene.getWidth()/2);
-            saveConfirmation.setLayoutY(scene.getHeight()/2);
-
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(3000), saveConfirmation);
-            fadeOut.setFromValue(1);
-            fadeOut.setToValue(0);
-            fadeOut.play();
-            fadeOut.setOnFinished(new EventHandler<ActionEvent>() {
+            FadeTransition saveFade = makeFadingMessage("Game Saved!", null);
+            saveFade.play();
+            saveFade.setOnFinished(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    Node origin = ((FadeTransition) event.getSource()).getNode();
-                    ((AnchorPane) origin.getParent()).getChildren().remove(origin);
+                    deleteMessage(event);
                 }
             });
         }
@@ -147,6 +143,47 @@ public class MainHandler
             alert.show();
             IOe.printStackTrace();
         }
+    }
+
+    /**
+     *
+     * @param message
+     * @param duration this will default to 3000ms
+     * @return the transition, so that it can be played and a setOnFinished method set.
+     */
+    public FadeTransition makeFadingMessage(String message, Duration duration)
+    {
+        if(duration == null)
+            duration = Duration.millis(3000);
+
+        Label messageLabel = new Label(message);
+        messageLabel.setWrapText(true);
+        messageLabel.setFont(new Font(48));
+        messageLabel.setAlignment(Pos.CENTER);
+        messageLabel.setBackground(new Background(new BackgroundFill( Color.color(0d,0d,0d,0.5), null, null)));
+        messageBox.getChildren().clear();
+        messageBox.getChildren().add(messageLabel);
+        messageBox.toFront();
+        Scene scene = messageBox.getScene();
+        messageBox.setPrefWidth(scene.getWidth());
+        messageBox.setPrefHeight(scene.getHeight());
+        messageLabel.setMaxWidth(scene.getWidth()/2);
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(3000), messageLabel);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        return fadeOut;
+    }
+
+    /**
+     * this specifically deletes the message from a fading message, just to reduce code duplication when setting the OnFinished for the animations.
+     * @param event the event of the transition ending
+     */
+    public void deleteMessage(ActionEvent event)
+    {
+        Node origin = ((FadeTransition) event.getSource()).getNode();
+        messageBox.getChildren().remove(origin);
+        messageBox.toBack();
     }
 
     public void drawFromPantry(MouseEvent event)
@@ -321,21 +358,26 @@ public class MainHandler
      * It will always update the number of actions left
      * It will always update the currentPlayer when needed
      * It will always update customerStatus if it is the end of a round.
+     * At the end of a round, a message will be displayed, stating that a new round has started.
      * @return whether it is the end of a round, and therefore if everything but the pantry row has been redrawn
      */
     public boolean handleTurnEnd()
     {
         boolean gameOver = false;
         boolean turnEnd = false;
+        boolean newRound = false;
         if(bakery.getActionsRemaining() == 0)
         {
             turnEnd = true;
             if(bakery.endTurn())
             {
+                newRound = true;
+
                 Customers customers = bakery.getCustomers();
 
-
                 updateCustomerStatus();
+
+
                 //If the game is ending
                 if(customers.isEmpty() && customers.getCustomerDeck().isEmpty())
                 {
@@ -364,15 +406,29 @@ public class MainHandler
             }
             if(!gameOver)
             {
-                //this function will de all of the redrawing that is needed.
-                moveHandsAround();
-                playerIndex = (playerIndex +1) % bakery.getPlayers().size();
+                //this function will do all of the redrawing that is needed.
+                if(newRound)
+                {
+                    FadeTransition roundMessage = makeFadingMessage("New round starting", Duration.millis(2000));
+                    roundMessage.play();
+                    roundMessage.setOnFinished(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            deleteMessage(event);
+                            moveHandsAround();
+                            playerIndex = (playerIndex +1) % bakery.getPlayers().size();
+                        }
+                    });
+                }
+                else
+                {
+                    moveHandsAround();
+                    playerIndex = (playerIndex +1) % bakery.getPlayers().size();
                 /*This player index thing makes it so that the position of the hands is determined by how close they are to playing.
                 The order is that the next player will be top left, then top right, then bottom left, then bottom right.
                 */
+                }
             }
-
-
 
         }
         if(!gameOver)
