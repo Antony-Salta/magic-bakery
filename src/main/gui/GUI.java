@@ -32,6 +32,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 //Chocolate image by Freepik at https://www.freepik.com/free-vector/flat-design-pixel-art-food-illustration_38216041.htm#query=chocolate%20pixel%20art&position=2&from_view=keyword&track=ais&uuid=bc60eb34-62f3-4321-b470-b02975120073
 
@@ -41,15 +42,6 @@ public class GUI extends Application {
     private Parent root;
 
     public static void main(String[] args) {
-        /*
-        for(String name: Font.getFamilies())
-        {
-            System.out.println(name);
-        }
-
-        System.exit(0);
-
-         */
         launch(args);
         System.out.println("done now");
     }

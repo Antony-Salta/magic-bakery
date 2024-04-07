@@ -187,7 +187,7 @@ public class MainHandler
     }
 
     public void drawFromPantry(MouseEvent event)
-    {//TODO: make an animation for this using the chosen card.
+    {
         StackPane card = (StackPane) event.getSource();
         String name = ((Label) card.getChildren().get(2)).getText();
         bakery.drawFromPantry(name);
@@ -409,7 +409,7 @@ public class MainHandler
                 //this function will do all of the redrawing that is needed.
                 if(newRound)
                 {
-                    FadeTransition roundMessage = makeFadingMessage("New round starting", Duration.millis(2000));
+                    FadeTransition roundMessage = makeFadingMessage("New round starting", Duration.millis(1500));
                     roundMessage.play();
                     roundMessage.setOnFinished(new EventHandler<ActionEvent>() {
                         @Override
@@ -551,14 +551,54 @@ public class MainHandler
             }
         });
     }
-    public void fulfilOrder(CustomerOrder order, boolean garnish)
-    {
-        bakery.fulfillOrder(order,garnish);
+    public void fulfilOrder(CustomerOrder order, boolean garnish) {
+        ArrayList<Ingredient> prevHand = null;
+        ArrayList<Ingredient> newHand = null;
+
+        List<Ingredient> newCards =  bakery.fulfillOrder(order, garnish);
+
+        // This chunk of code will figure out where the cards drawn when garnishing come from, so that it can be animated.
+        if (garnish) {
+
+            ArrayList<TranslateTransition> cardDraws = new ArrayList<>(2);
+            for (int i = 2; i < pantryRow.getChildren().size(); i++) {
+                if(newCards.isEmpty())
+                    break;
+                StackPane card = (StackPane) pantryRow.getChildren().get(i);
+                String name = ((Label) card.getChildren().get(2)).getText();
+
+                for (int j = 0; j < newCards.size(); j++) {
+                    if (newCards.get(j).toString().equals(name)) {
+                        cardDraws.add(animateNodeToNode(card, currentHandPane, null));
+                        newCards.remove(j);
+                        break;
+                    }
+                }
+
+            }
+            cardDraws.get(0).setOnFinished(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    if(handleTurnEnd())
+                        drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
+                    else
+                        drawRows();
+                }
+            });
+            cardDraws.forEach(t -> t.play());
+
+        }
+
+
         updateCustomerStatus();
-        if(handleTurnEnd())
-            drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
-        else
-            drawRows();
+        if(!garnish)
+        {
+            if(handleTurnEnd())
+                drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
+            else
+                drawRows();
+        }
+
 
     }
 
@@ -667,7 +707,6 @@ public class MainHandler
                 drawFromPantryDeck(event);
             }
         });
-
         for(Ingredient ingredient : bakery.getPantry())
         {
             StackPane card = makeNamedCard(ingredient.toString());
@@ -683,7 +722,6 @@ public class MainHandler
             });
 
             pantryRow.getChildren().add(card);
-
         }
     }
     public void drawHand()

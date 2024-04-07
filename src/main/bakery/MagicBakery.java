@@ -217,16 +217,17 @@ public class MagicBakery implements Serializable{
             boolean ingredientThere = false;
             for (int i = 0; i < pantry.size(); i++) 
             {
-                Ingredient pantryIngredient = ((ArrayList<Ingredient>)pantry).get(i);
+                ArrayList<Ingredient> pantryList = (ArrayList<Ingredient>) pantry;
+                Ingredient pantryIngredient = pantryList.get(i);
                 if (ingredient.equals(pantryIngredient))
                 {
                     getCurrentPlayer().addToHand(pantryIngredient);
                     try{
-                        ((ArrayList<Ingredient>) pantry).set(i, drawFromPantryDeck());
+                        pantryList.set(i, drawFromPantryDeck());
 
                     }catch(EmptyPantryException e)
                     {
-                        ((ArrayList<Ingredient>) pantry).remove(i);
+                        pantryList.remove(i);
                         System.out.println(e.getMessage());
                     }
                     ingredientThere = true;
