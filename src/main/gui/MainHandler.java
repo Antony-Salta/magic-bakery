@@ -4,12 +4,11 @@ import bakery.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 
-import javafx.animation.FadeTransition;
-import javafx.animation.RotateTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -366,16 +365,37 @@ public class MainHandler
         boolean gameOver = false;
         boolean turnEnd = false;
         boolean newRound = false;
+
         if(bakery.getActionsRemaining() == 0)
         {
+            boolean wasDeckEmpty = bakery.getCustomers().getCustomerDeck().isEmpty();
             turnEnd = true;
+            ParallelTransition animations = new ParallelTransition();
 
-            LinkedList<CustomerOrder> prevCustomers = new LinkedList<>(bakery.getCustomers().getActiveCustomers());
             if(bakery.endTurn())
             {
                 Customers customers = bakery.getCustomers();
                 newRound = true;
-                LinkedList<CustomerOrder> currentCustomers = new LinkedList<>(customers.getActiveCustomers());
+
+                for (int i = 1; i < customerRow.getChildren().size() -1 ; i++)
+                {
+                    StackPane customerCard = (StackPane) customerRow.getChildren().get(i);
+                    if( !((Label) customerCard.getChildren().get(2)).getText().equals("Customer order")) // so if there's an actual order there
+                    {//If the deck is empty, then all cards animate to the right
+                        double[] from = {0,0};
+                        double[] to = {customerCard.getWidth() + customerRow.getSpacing(),0};
+                        SequentialTransition delayedTransition = new SequentialTransition(new PauseTransition(Duration.millis(1000)),
+                                animateNode(customerCard, from, to, null));
+                        animations.getChildren().add(delayedTransition);
+                    }
+                    else
+                    {
+                        customerCard.setVisible(false);
+                        if(!customers.getCustomerDeck().isEmpty()) // if the deck isn't empty, then cards only animate right as long as there's no gap inbetween.
+                            break;
+                    }
+
+                }
 
 
                 updateCustomerStatus();
@@ -413,15 +433,18 @@ public class MainHandler
                 if(newRound)
                 {
                     FadeTransition roundMessage = makeFadingMessage("New round starting", Duration.millis(1500));
-                    roundMessage.play();
                     roundMessage.setOnFinished(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent event) {
                             deleteMessage(event);
                             moveHandsAround();
                             playerIndex = (playerIndex +1) % bakery.getPlayers().size();
+                            animateDrawnCustomer(wasDeckEmpty);
                         }
                     });
+                    animations.getChildren().add(roundMessage);
+                    animations.play();
+
                 }
                 else
                 {
@@ -431,6 +454,7 @@ public class MainHandler
                 The order is that the next player will be top left, then top right, then bottom left, then bottom right.
                 */
                 }
+
             }
 
         }
@@ -438,6 +462,25 @@ public class MainHandler
             updateActionsLeft();
         return turnEnd;
 
+    }
+
+    private void animateDrawnCustomer(boolean wasDeckEmpty)
+    {
+        if(!wasDeckEmpty) // This will animate the card that was just drawn from the deck, as coming from the deck
+        {
+            for (int i = 1; i < customerRow.getChildren().size()-1; i++) {
+                StackPane customerCard = (StackPane) customerRow.getChildren().get(i);
+                if (!((Label) customerCard.getChildren().get(2)).getText().equals("Customer order")) // so if there's an actual order there
+                {
+                    double[] from = {0,0};
+                    double[] to = {- calculateCardHeight() * 2/3 - customerRow.getSpacing(),0};
+                    TranslateTransition customerDraw = animateNode(customerCard,from,to, null);
+                    customerDraw.setRate(-1);
+                    customerDraw.play();
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -676,6 +719,20 @@ public class MainHandler
                     });
                 }
             }
+        }
+        if(customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GARNISHED).isEmpty() && customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.FULFILLED).isEmpty() && customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GIVEN_UP).isEmpty())
+        {
+            drawCardSlot(customerRow, "Customer Discard");
+        }
+        else
+        {
+            StackPane card = makeStackCard("Customer");
+
+            Rectangle backing = (Rectangle) card.getChildren().get(0);
+            backing.setFill(Color.LIGHTBLUE);
+            backing.setStroke(Color.WHITE);
+
+            customerRow.getChildren().add(card);
         }
     }
     public void drawLayers()
@@ -969,6 +1026,12 @@ public class MainHandler
         event.consume();
     }
 
+    /**
+     * Generates a card that is translucent to show where a card should be going. Uses makeBasicCard, then adds another label to indicate the name of the slot
+     * So the children of this StackPane will be the Rectangle backing, then an empty ImageView, then a centred Label
+     * @param row the row that this card is to be inserted into
+     * @param name the name given to this card
+     */
     public void drawCardSlot(HBox row, String name)
     {
         StackPane card = makeBasicCard(null);
