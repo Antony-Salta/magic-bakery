@@ -369,11 +369,14 @@ public class MainHandler
         if(bakery.getActionsRemaining() == 0)
         {
             turnEnd = true;
+
+            LinkedList<CustomerOrder> prevCustomers = new LinkedList<>(bakery.getCustomers().getActiveCustomers());
             if(bakery.endTurn())
             {
-                newRound = true;
-
                 Customers customers = bakery.getCustomers();
+                newRound = true;
+                LinkedList<CustomerOrder> currentCustomers = new LinkedList<>(customers.getActiveCustomers());
+
 
                 updateCustomerStatus();
 
@@ -632,11 +635,16 @@ public class MainHandler
             customerRow.getChildren().add(card);
         }
 
+        for (int i = 0; i < 3-activeCustomers.size(); i++) {
+            drawCardSlot(customerRow, "Customer order");
+        }
+
         Collection<CustomerOrder> fulfilable = bakery.getFulfilableCustomers();
         Collection<CustomerOrder> garnishable = bakery.getGarnishableCustomers();
         Iterator<CustomerOrder> iterator = (
-                (LinkedList<CustomerOrder>) customers.getActiveCustomers()
+                (LinkedList<CustomerOrder>) activeCustomers
         ).descendingIterator();
+
         while(iterator.hasNext())
         {
             CustomerOrder order = iterator.next();
