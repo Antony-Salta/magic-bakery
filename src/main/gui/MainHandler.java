@@ -601,6 +601,26 @@ public class MainHandler
         ArrayList<Ingredient> prevHand = null;
         ArrayList<Ingredient> newHand = null;
 
+        animateCustomerToDeck(order,garnish);
+
+
+
+
+    }
+    private void animateCustomerToDeck(CustomerOrder order, boolean garnish)
+    {
+        for (int i = 1; i < customerRow.getChildren().size()-1; i++) {
+            StackPane customerCard = (StackPane) customerRow.getChildren().get(i);
+            if( ((Label) customerCard.getChildren().get(2)).getText().equals(order.toString()))
+            {
+                TranslateTransition toDeck = animateNodeToNode(customerCard, customerRow.getChildren().get(customerRow.getChildren().size()-1), null);
+                toDeck.setOnFinished(e -> finishFulfilOrder(order,garnish));
+                toDeck.play();
+            }
+        }
+    }
+    private void finishFulfilOrder(CustomerOrder order, boolean garnish)
+    {
         List<Ingredient> newCards =  bakery.fulfillOrder(order, garnish);
 
         // This chunk of code will figure out where the cards drawn when garnishing come from, so that it can be animated.
@@ -644,8 +664,6 @@ public class MainHandler
             else
                 drawRows();
         }
-
-
     }
 
     public void drawCustomers()
