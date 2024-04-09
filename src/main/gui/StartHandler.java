@@ -3,6 +3,7 @@ package gui;
 import bakery.MagicBakery;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -19,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class StartHandler {
 
@@ -30,7 +34,7 @@ public class StartHandler {
 
     private List<String> names = new ArrayList<>();
 
-    public  void switchToMainGame(ActionEvent event) throws IOException {
+    public  void switchToMainGame(Event event) throws IOException {
         //TODO: put in an actual random seed.
         if(bakery == null)
         {
@@ -58,7 +62,7 @@ public class StartHandler {
 
 
 @FXML
-    public  void startPrompt(ActionEvent event)
+    public  void startPrompt(ActionEvent actionEvent)
     {
         ObservableList<Node> children = root.getChildren();
         children.clear();
@@ -68,11 +72,11 @@ public class StartHandler {
         nameEntry.setMaxWidth(root.getWidth() /2);
         nameEntry.setPromptText("Player name: e.g. Martin");
 
-
         HBox buttons = new HBox(100);
         buttons.setAlignment(Pos.CENTER);
 
         Button begin = new Button("Begin game");
+
 
         begin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -86,27 +90,36 @@ public class StartHandler {
         });
 
         Button submit = new Button("Submit");
-
-
-        submit.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                boolean added = validateName(nameEntry);
-                if (added) {
-                    if (names.size() == 2) {
-                        buttons.getChildren().add(begin);
-                    }
-                    if (names.size() == 5) {
-                        try {
-                            switchToMainGame(actionEvent);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        EventHandler<Event> submitHandler = (event) ->
+        {
+            boolean added = validateName(nameEntry);
+            if (added) {
+                if (names.size() == 2) {
+                    buttons.getChildren().add(begin);
+                }
+                if (names.size() == 5) {
+                    try {
+                        switchToMainGame(event);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-                nameEntry.setPromptText("Player name: e.g. Martin");
-                numPlayers.setText(names.size() + "/5 Players");
+            }
+            nameEntry.setPromptText("Player name: e.g. Martin");
+            numPlayers.setText(names.size() + "/5 Players");
+        };
+
+        submit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                submitHandler.handle(actionEvent);
+            }
+        });
+        nameEntry.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if(keyEvent.getCode().equals(KeyCode.ENTER))
+                    submitHandler.handle(keyEvent);
             }
         });
         buttons.getChildren().add(submit);
