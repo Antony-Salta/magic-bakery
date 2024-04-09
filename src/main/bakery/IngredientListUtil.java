@@ -2,6 +2,7 @@ package bakery;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -11,7 +12,7 @@ import java.util.List;
  * 
  * Another way to do this would be to make a wrapper class for List<Ingredient> that does this specifically, but that would slightly change the attributes of existing parts of the UML diagram.
  * @author Antony Salta
- * @version 1.0
+ * @version 1.1
  *
  * This isn't the correct version number, but I haven't been tracking until now
  */
@@ -30,7 +31,7 @@ public abstract class IngredientListUtil {
      * instead of "Chocolate, Eggs, Eggs, Sugar"
      */
     protected static String stringFromIngList(List<Ingredient> list, boolean capitalised, boolean sorted)
-    {
+    { //TODO: fix this to count duplicates even if it's not sorted.
         if(list == null || list.isEmpty())
             return ""; // This should basically just come up when passing in the garnish for a customerOrder that doesn't have a garnish.
             
@@ -39,47 +40,37 @@ public abstract class IngredientListUtil {
             Collections.sort(copy);
 
         String csList = "";
-        Ingredient prevIng = copy.get(0);
         int numSame = 0;
         // e.g. c, e, e, e , s
+        HashMap<Ingredient, Integer> quantities = new HashMap<>();
         for( Ingredient ing: copy)
         {
-            if(!ing.equals(prevIng))
+            if(quantities.containsKey(ing))
+                quantities.put(ing, quantities.get(ing) +1);
+            else
+                quantities.put(ing, 1);
+        }
+        for (Ingredient ing: copy)
+        {
+            String name;
+            String original = ing.toString();
+            if(csList.toLowerCase().contains(original.toLowerCase())) // So skip if it's already been put in.
+                continue;
+            if(capitalised)
             {
-                String original = prevIng.toString();
-                String name;
-                if(capitalised)
-                {
-                    name = original.substring(0,1).toUpperCase();
-                    name += original.substring(1);  
-                }
-                else
-                    name = original;
-                
-                csList += name;
-                if(numSame > 1)
-                    csList += " (x" + numSame + ")";
-                csList += ", ";
-                numSame = 1;
-                prevIng = ing;
+                name = original.substring(0,1).toUpperCase();
+                name += original.substring(1);
             }
             else
-                numSame++;
-        }
-        String original = copy.get(copy.size() -1).toString();
-        String name;
-        if(capitalised)
-        {
-            name = original.substring(0,1).toUpperCase();
-            name += original.substring(1);  
-        }
-        else
-            name = original;
-        csList += name;
-        if(numSame > 1)
-            csList += " (x" + numSame + ")";
+                name = original;
 
-        return  csList;
+            csList += name;
+            if(quantities.get(ing) > 1)
+                csList += " (x" + quantities.get(ing) + ")";
+            csList += ", ";
+        }
+        csList = csList.substring(0,csList.length()-2);
+        return csList;
     }
 }
     
