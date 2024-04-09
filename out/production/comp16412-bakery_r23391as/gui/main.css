@@ -13,6 +13,15 @@
 .customerRecipe{
     -fx-text-fill: black;
 }
+.button{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 5, 0.25, 0.0, 0.0);
+    -fx-border-color: white;
+    -fx-text-fill:white;
+}
+.button .content{
+    -fx-background-color: transparent;
+}
 
 
 .text-area{
