@@ -4,7 +4,6 @@ import bakery.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -228,12 +227,36 @@ public class MainHandler
         StackPane card = (StackPane) currentHandPane.getChildren().get(indexOfNew);
         //TODO: fix this so that the cards actually come from the deck rather than just float down from above.
         System.out.println("reversed to deck:");
+
+        //This wait thing just makes sure that everything is actually drawn and has a width before the rest happens
+        PauseTransition wait = new PauseTransition(Duration.millis(20));
+        wait.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                drawCardAnimation(card);
+            }
+        });
+        wait.play();
+
+    }
+
+    /**
+     * Used in the drawCardFromPantry.
+     * This will animate the card coming from the pantry deck, and then run handleTurnEnd as part of this being an action that the player takes
+     * @param card, the card that is being animated from the pantry deck
+     *
+     */
+    private void drawCardAnimation(StackPane card)
+    {
+        EventHandler<? super MouseEvent> hover =  card.getOnMouseEntered();
+        card.setOnMouseEntered(null);
         TranslateTransition reverseDraw = animateNodeToNode(card, pantryRow.getChildren().get(1), null);
         reverseDraw.setRate(-1);
         reverseDraw.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event)
             {
+                card.setOnMouseEntered(hover);
                 if(!handleTurnEnd())
                 {
                     drawCustomers();
