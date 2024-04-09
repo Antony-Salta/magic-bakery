@@ -225,8 +225,6 @@ public class MainHandler
 
         //This has to be reversed because this animation can only happen after everything is redrawn
         StackPane card = (StackPane) currentHandPane.getChildren().get(indexOfNew);
-        //TODO: fix this so that the cards actually come from the deck rather than just float down from above.
-        System.out.println("reversed to deck:");
 
         //This wait thing just makes sure that everything is actually drawn and has a width before the rest happens
         PauseTransition wait = new PauseTransition(Duration.millis(20));
@@ -248,15 +246,19 @@ public class MainHandler
      */
     private void drawCardAnimation(StackPane card)
     {
-        EventHandler<? super MouseEvent> hover =  card.getOnMouseEntered();
+        //This just clears this stuff while it's moving, to stop weird animation issues.
+        EventHandler<? super MouseEvent> hoverUp =  card.getOnMouseEntered();
+        EventHandler<? super MouseEvent> hoverDown =  card.getOnMouseExited();
         card.setOnMouseEntered(null);
+        card.setOnMouseExited(null);
         TranslateTransition reverseDraw = animateNodeToNode(card, pantryRow.getChildren().get(1), null);
         reverseDraw.setRate(-1);
         reverseDraw.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event)
             {
-                card.setOnMouseEntered(hover);
+                card.setOnMouseEntered(hoverUp);
+                card.setOnMouseExited(hoverDown);
                 if(!handleTurnEnd())
                 {
                     drawCustomers();
@@ -275,7 +277,6 @@ public class MainHandler
     public void bakeLayer(MouseEvent event, List<Ingredient> usedIngredients)
     {
         StackPane card = (StackPane) event.getSource();
-        System.out.println("Layer move:");
         TranslateTransition cardMove = animateNodeToNode(card, currentHandPane, null);
         cardMove.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
@@ -295,7 +296,6 @@ public class MainHandler
             if(usedIngredients.isEmpty())
                 break;
             if (usedIngredients.contains(temp)) {
-                System.out.println("Card to Deck: ");
                 spentCardAnimations.add(animateNodeToNode(ingredientCard, pantryRow.getChildren().get(1), null));
                 usedIngredients.remove(temp);
             }
@@ -336,8 +336,6 @@ public class MainHandler
         Bounds destinationBound = destination.localToScene(destination.getLayoutBounds());
         double[] to = {destinationBound.getCenterX(), destinationBound.getCenterY()};
         TranslateTransition movingCard = animateNode(source, from, to, duration);
-        System.out.println("From X: " + from[0] + " From Y: " + from[1]);
-        System.out.println("To X: " + to[0] + " To Y: " + to[1]);
         return movingCard;
     }
 
@@ -1038,7 +1036,6 @@ public class MainHandler
         if(event.getTransferMode() == TransferMode.MOVE)
         { // If the drag drop has worked
             StackPane card = (StackPane) event.getSource();
-            System.out.println(card);
             TranslateTransition moveCard = animateNodeToNode(card, draggedHand, Duration.millis(800));
 
             moveCard.setOnFinished(new EventHandler<ActionEvent>() {
