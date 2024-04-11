@@ -42,5 +42,11 @@ There are two ways of testing your project.
 2. Remotely on Gradescope. Every time you upload to Gradescope, you will be able to see the outcome of the tests.
 
 ##Credits:
+
 Oak table background: https://pixabay.com/photos/trees-wood-yellow-wood-oak-1915245/
+
 Chocolate image by Freepik at https://www.freepik.com/free-vector/flat-design-pixel-art-food-illustration_38216041.htm#query=chocolate%20pixel%20art&position=2&from_view=keyword&track=ais&uuid=bc60eb34-62f3-4321-b470-b02975120073
+
+The ingredient and layer images come from bakery game itself.
+
+Handwriting font by Cocodesign on Font Space at https://www.fontspace.com/handwriting-font-f100873

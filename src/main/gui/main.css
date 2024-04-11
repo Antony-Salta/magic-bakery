@@ -1,14 +1,31 @@
 
+@font-face {
+    src: url("file:font/HandwritingRegular-owLLA.otf");
+}
+
 #background{
     -fx-background-image: url("file:images/oak-background.jpg");
 }
+
+.text{
+    -fx-font-family: "handwriting";
+}
+
 .label{
     -fx-text-alignment: center;
     -fx-text-fill: white;
+
+}
+.label, .button{
+-fx-font-size: 30;
+}
+.cardLabel, .text-area, .text-field{
+    -fx-font-size: 24;
 }
 
 .cardLabel{
     -fx-text-fill: black;
+    -fx-font-size: 18;
 }
 .customerRecipe{
     -fx-text-fill: black;
