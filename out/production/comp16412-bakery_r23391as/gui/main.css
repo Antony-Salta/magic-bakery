@@ -22,6 +22,9 @@
 .cardLabel, .text-area, .text-field{
     -fx-font-size: 24;
 }
+.ingredientLit{
+    -fx-font-size: 18;
+}
 
 .cardLabel{
     -fx-text-fill: black;

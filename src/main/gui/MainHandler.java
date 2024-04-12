@@ -1208,6 +1208,7 @@ public class MainHandler
         }
         recipeText = recipeText.replace(", ", "\n- ");
         recipe.setText(recipeText);
+        recipe.getStyleClass().add("cardLabel");
         Rectangle backing = (Rectangle) card.getChildren().get(0);
         backing.setFill(Color.rgb(255,255,150));
         backing.setStroke(Color.LIGHTBLUE);
