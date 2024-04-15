@@ -38,8 +38,8 @@ public class StartHandler {
         //TODO: put in an actual random seed.
         if(bakery == null)
         {
-            bakery = new MagicBakery(24,"io/ingredients.csv", "io/layers.csv");
-            bakery.startGame(names, "io/customers.csv");
+            bakery = new MagicBakery(24,"../../io/ingredients.csv", "../../io/layers.csv");
+            bakery.startGame(names, "../../io/customers.csv");
         }
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("mainGame.fxml"));
@@ -61,8 +61,7 @@ public class StartHandler {
     }
 
 
-@FXML
-    public  void startPrompt(ActionEvent actionEvent)
+    public void startPrompt(ActionEvent actionEvent)
     {
         ObservableList<Node> children = root.getChildren();
         children.clear();

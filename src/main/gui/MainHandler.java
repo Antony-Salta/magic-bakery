@@ -79,7 +79,7 @@ public class MainHandler
     private final DropShadow blueHighlight = new DropShadow(5,0,5, Color.BLUE);
     private final DropShadow greenHighlight = new DropShadow(5,0,5, Color.GREEN);
 
-    private Image logo = new Image("file:images/KJMB_Logo.png");
+    private Image logo = new Image("file:../../images/KJMB_Logo.png");
 
     private final DataFormat ingredientFormat = new DataFormat("bakery.Ingredient");
 
@@ -1141,7 +1141,7 @@ public class MainHandler
      */
     public StackPane makeNamedCard(String name)
     {
-        StackPane card = makeBasicCard(new Image("file:images/" + name + ".png"));
+        StackPane card = makeBasicCard(new Image("file:../../images/" + name + ".png"));
         Label nameLabel = new Label(name);
         nameLabel.getStyleClass().add("cardLabel");
         nameLabel.setWrapText(true);

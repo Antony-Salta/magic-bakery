@@ -1,10 +1,10 @@
 
 @font-face {
-    src: url("file:font/HandwritingRegular-owLLA.otf");
+    src: url("file:../../font/HandwritingRegular-owLLA.otf");
 }
 
 #background{
-    -fx-background-image: url("file:images/oak-background.jpg");
+    -fx-background-image: url("file:../../images/oak-background.jpg");
 }
 
 .text{
@@ -21,9 +21,6 @@
 }
 .cardLabel, .text-area, .text-field{
     -fx-font-size: 24;
-}
-.ingredientLit{
-    -fx-font-size: 18;
 }
 
 .cardLabel{

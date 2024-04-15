@@ -1,5 +1,4 @@
 package gui;
-import gui.GUI;
 import util.ConsoleUtils;
 
 import java.io.File;
