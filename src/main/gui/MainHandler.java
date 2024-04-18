@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
@@ -31,6 +32,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainHandler
@@ -69,6 +71,10 @@ public class MainHandler
 
     @FXML
     private Label customerStatus;
+
+    @FXML StackPane helpBox;
+    @FXML Button closePrompt;
+
 
     //This is going to be for a very weird thing to do with dragging cards to pass to other players.
     private StackPane draggedHand;
@@ -112,6 +118,12 @@ public class MainHandler
         updateActionsLeft();
         updateCurrentPlayer();
         updateCustomerStatus();
+
+        // This section makes sure that the help message is centred, and they can't play the game while the message is up, since most of it will be blocked anyway
+        Stage stage = (Stage) helpBox.getScene().getWindow();
+        VBox blocker = (VBox) helpBox.getParent();
+        blocker.setPrefWidth(stage.getWidth());
+        blocker.setPrefHeight(stage.getHeight());
     }
 
     @FXML
@@ -141,6 +153,20 @@ public class MainHandler
             alert.show();
             IOe.printStackTrace();
         }
+    }
+
+    @FXML
+    public void closePrompt()
+    {
+        helpBox.setVisible(false);
+        helpBox.getParent().toBack();
+    }
+    @FXML
+    public void showHelp()
+    {
+        helpBox.getParent().toFront();
+        helpBox.setMaxWidth(((Label) helpBox.getChildren().get(0)).getWidth());
+        helpBox.setVisible(true);
     }
 
     /**

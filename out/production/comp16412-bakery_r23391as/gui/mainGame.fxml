@@ -15,6 +15,23 @@
 
 <AnchorPane id="background" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainHandler">
    <children>
+      <VBox alignment="CENTER" prefHeight="1080.0" prefWidth="1920.0">
+         <children>
+            <StackPane fx:id="helpBox" style="-fx-background-color: rgba(255,255,255,0.7); -fx-border-color: gold; -fx-border-width: 10px; -fx-alignment: center-left;" visible="false">
+               <children>
+                  <Label style="-fx-text-fill: black; -fx-text-alignment: left;" text="Here's the main controls you need to know to play the game:&#10;&#10;Click on the pantry cards or pantry deck to draw a card&#10;&#10;Drag and drop a card from your deck to another player's hand to pass it to them&#10;&#10;Click on a layer or customer card when it is highlighted to bake it:&#10;- Layers will have a yellow highlight when bakeable&#10;- Customers will highlight blue when fulfillable, and green when they are garnishable&#10;&#10;Have fun!" wrapText="true" StackPane.alignment="CENTER_LEFT" />
+                  <Button fx:id="closePrompt" mnemonicParsing="false" onAction="#closePrompt" style="-fx-background-color: red; -fx-text-fill: white;" text="X" StackPane.alignment="TOP_RIGHT">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </StackPane>
+         </children>
+      </VBox>
       <VBox fx:id="messageBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1080.0" prefWidth="1920.0" />
       <VBox fx:id="mainLayout" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1080.0" prefWidth="1920.0" spacing="10.0">
          <children>
@@ -44,6 +61,7 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
+                  <Button mnemonicParsing="false" onAction="#showHelp" text="Help!" />
                </children>
             </HBox>
             <HBox fx:id="customerRow" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="15.0">

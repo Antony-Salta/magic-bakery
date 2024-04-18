@@ -41,6 +41,8 @@
     -fx-font-size: 18;
 }
 
+
+
 .button{
     -fx-background-color: rgba(0,0,0,0);
     -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 5, 0.25, 0.0, 0.0);
