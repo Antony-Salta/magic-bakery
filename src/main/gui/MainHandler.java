@@ -1189,34 +1189,29 @@ public class MainHandler
     {
         StackPane card = makeNamedCard(order.toString());
 
-
         Label recipe = new Label();
         String recipeText = "Recipe:\n- " + order.getRecipeDescription();
-        recipe.getStyleClass().add("customerRecipe");
-        recipe.setFont(new Font("Consolas", 13));
+        recipe.getStyleClass().addAll("customerCard","customerRecipe");
 
         recipe.setWrapText(true);
         recipe.setAlignment(Pos.CENTER_LEFT);
         card.getChildren().add(recipe);
         StackPane.setAlignment(recipe,Pos.BOTTOM_LEFT);
         StackPane.setMargin(recipe, new Insets(0,0,5,0));
-        recipe.setPadding(new Insets(0,5,0,5));
-        recipe.setAlignment(Pos.CENTER);
+        recipe.setPadding(new Insets(0,10,0,10));
         if( !(order.getGarnish() == null || order.getGarnish().isEmpty()) )
         {
             recipeText += "\nGarnish:\n- " + order.getGarnishDescription();
         }
         recipeText = recipeText.replace(", ", "\n- ");
         recipe.setText(recipeText);
-        recipe.getStyleClass().add("cardLabel");
         Rectangle backing = (Rectangle) card.getChildren().get(0);
         backing.setFill(Color.rgb(255,255,150));
         backing.setStroke(Color.LIGHTBLUE);
         recipe.setMaxWidth(backing.getWidth());
 
         Label nameLabel = (Label) card.getChildren().get(2);
-        nameLabel.getStyleClass().add("customerRecipe");
-        nameLabel.setFont(new Font("Consolas", 15));
+        nameLabel.getStyleClass().addAll("customerCard", "customerName");
 
         return card;
     }

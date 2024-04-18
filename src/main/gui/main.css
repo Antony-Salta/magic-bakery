@@ -7,7 +7,8 @@
     -fx-background-image: url("file:../../images/oak-background.jpg");
 }
 
-.text{
+
+.label, .button, .text-field, .text-area{
     -fx-font-family: "handwriting";
 }
 
@@ -27,9 +28,19 @@
     -fx-text-fill: black;
     -fx-font-size: 18;
 }
-.customerRecipe{
+.customerCard{
     -fx-text-fill: black;
+    -fx-font-family: "Consolas";
 }
+
+.customerRecipe{
+    -fx-text-alignment: left;
+    -fx-font-size: 15;
+}
+.customerName{
+    -fx-font-size: 18;
+}
+
 .button{
     -fx-background-color: rgba(0,0,0,0);
     -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 5, 0.25, 0.0, 0.0);
