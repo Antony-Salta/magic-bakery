@@ -5,12 +5,12 @@ import bakery.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 
 import javafx.animation.*;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
@@ -18,7 +18,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
@@ -138,12 +137,7 @@ public class MainHandler
             bakery.saveState(save);
             FadeTransition saveFade = makeFadingMessage("Game Saved!", null);
             saveFade.play();
-            saveFade.setOnFinished(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    deleteMessage(event);
-                }
-            });
+            saveFade.setOnFinished(e -> deleteMessage(e));
         }
 
         catch (IOException IOe){
@@ -217,16 +211,11 @@ public class MainHandler
         bakery.drawFromPantry(name);
 
         TranslateTransition cardMove = animateNodeToNode(card, currentHandPane, null);
-        cardMove.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(handleTurnEnd())
-                    drawPantry();
-                else
-                {
-                    drawRows();
-                }
-            }
+        cardMove.setOnFinished(e -> {
+            if (handleTurnEnd())
+                drawPantry();
+            else
+                drawRows();
         });
         cardMove.play();
     }
@@ -254,12 +243,7 @@ public class MainHandler
 
         //This wait thing just makes sure that everything is actually drawn and has a width before the rest happens
         PauseTransition wait = new PauseTransition(Duration.millis(20));
-        wait.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                drawCardAnimation(card);
-            }
-        });
+        wait.setOnFinished(e -> drawCardAnimation(card));
         wait.play();
 
     }
@@ -279,9 +263,7 @@ public class MainHandler
         card.setOnMouseExited(null);
         TranslateTransition reverseDraw = animateNodeToNode(card, pantryRow.getChildren().get(1), null);
         reverseDraw.setRate(-1);
-        reverseDraw.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event)
+        reverseDraw.setOnFinished(e ->
             {
                 card.setOnMouseEntered(hoverUp);
                 card.setOnMouseExited(hoverDown);
@@ -291,8 +273,7 @@ public class MainHandler
                     drawLayers();
                     drawHand();
                 }
-            }
-        });
+            });
         reverseDraw.play();
     }
 
@@ -304,15 +285,12 @@ public class MainHandler
     {
         StackPane card = (StackPane) event.getSource();
         TranslateTransition cardMove = animateNodeToNode(card, currentHandPane, null);
-        cardMove.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        cardMove.setOnFinished(e ->{
                 if(handleTurnEnd())
                     drawPantry(); //the pantry could technically need to be redrawn if the pantry deck was empty before
                 else
                     drawRows();
-            }
-        });
+            });
 
         ArrayList<TranslateTransition> spentCardAnimations = new ArrayList<>();
         for(Node ingredientNode :  currentHandPane.getChildren()) {
@@ -424,24 +402,30 @@ public class MainHandler
                 Customers customers = bakery.getCustomers();
                 newRound = true;
 
-                for (int i = 1; i < customerRow.getChildren().size() -1 ; i++)
+                boolean timeToStop = false;
+                boolean hitCustomer = false;
+                int i =1;
+                while( i < customerRow.getChildren().size() -1 &&  timeToStop == false)
                 {
                     StackPane customerCard = (StackPane) customerRow.getChildren().get(i);
                     if( !((Label) customerCard.getChildren().get(2)).getText().equals("Customer order")) // so if there's an actual order there
                     {//If the deck is empty, then all cards animate to the right
                         double[] from = {0,0};
                         double[] to = {customerCard.getWidth() + customerRow.getSpacing(),0};
-                        SequentialTransition delayedTransition = new SequentialTransition(new PauseTransition(Duration.millis(1000)),
-                                animateNode(customerCard, from, to, null));
+                        SequentialTransition delayedTransition = new SequentialTransition(
+                                new PauseTransition(Duration.millis(100)),
+                                animateNode(customerCard, from, to, null)
+                        );
                         animations.getChildren().add(delayedTransition);
+                        hitCustomer = true;
                     }
                     else
                     {
                         customerCard.setVisible(false);
-                        if(!customers.getCustomerDeck().isEmpty()) // if the deck isn't empty, then cards only animate right as long as there's no gap inbetween.
-                            break;
+                        if(!customers.getCustomerDeck().isEmpty() || hitCustomer) // if the deck isn't empty, then cards only animate right as long as there's no place without an order. If there's a customer before this, then always stop
+                            timeToStop = true;
                     }
-
+                    i++;
                 }
 
 
@@ -480,15 +464,13 @@ public class MainHandler
                 if(newRound)
                 {
                     FadeTransition roundMessage = makeFadingMessage("New round starting", Duration.millis(1500));
-                    roundMessage.setOnFinished(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent event) {
-                            deleteMessage(event);
-                            moveHandsAround();
-                            playerIndex = (playerIndex +1) % bakery.getPlayers().size();
+
+                    roundMessage.setOnFinished(e ->{
+                            deleteMessage(e);
+                            moveHandsAround(); // This will redraw everything that needs redrawing
                             animateDrawnCustomer(wasDeckEmpty);
-                        }
-                    });
+                            playerIndex = (playerIndex +1) % bakery.getPlayers().size();
+                        });
                     animations.getChildren().add(roundMessage);
                     animations.play();
 
@@ -511,21 +493,23 @@ public class MainHandler
 
     }
 
+    /**
+     * Will animate the leftmost card as coming from the customer deck if that is appropriate.
+     * This has to be called after everything is redrawn, otherwise it won't get the right customer
+     * @param wasDeckEmpty Whether the deck was empty before the new round started
+     */
     private void animateDrawnCustomer(boolean wasDeckEmpty)
     {
         if(!wasDeckEmpty) // This will animate the card that was just drawn from the deck, as coming from the deck
         {
-            for (int i = 1; i < customerRow.getChildren().size()-1; i++) {
-                StackPane customerCard = (StackPane) customerRow.getChildren().get(i);
-                if (!((Label) customerCard.getChildren().get(2)).getText().equals("Customer order")) // so if there's an actual order there
-                {
-                    double[] from = {0,0};
-                    double[] to = {- calculateCardHeight() * 2/3 - customerRow.getSpacing(),0};
-                    TranslateTransition customerDraw = animateNode(customerCard,from,to, null);
-                    customerDraw.setRate(-1);
-                    customerDraw.play();
-                    break;
-                }
+            StackPane customerCard = (StackPane) customerRow.getChildren().get(1); //Only the leftmost customer order can be just drawn, since that is where it will always go
+            if (!((Label) customerCard.getChildren().get(2)).getText().equals("Customer order")) // so if there's an actual order there
+            {
+                double[] from = {0,0};
+                double[] to = {- calculateCardHeight() * 2/3 - customerRow.getSpacing(),0};
+                TranslateTransition customerDraw = animateNode(customerCard,from,to, null);
+                customerDraw.setRate(-1);
+                customerDraw.play();
             }
         }
     }
@@ -628,21 +612,15 @@ public class MainHandler
         StackPane card = (StackPane) event.getSource();
         Button fulfil = new Button("Fulfil?");
         Button garnish = new Button("Garnish?");
+        garnish.getStyleClass().add("customerButton");
+        fulfil.getStyleClass().add("customerButton");
         card.getChildren().addAll(fulfil,garnish);
-        StackPane.setAlignment(fulfil,Pos.CENTER_LEFT);
-        StackPane.setAlignment(garnish,Pos.CENTER_RIGHT);
-        fulfil.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                fulfilOrder(order, false);
-            }
-        });
-        garnish.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                fulfilOrder(order, true);
-            }
-        });
+        StackPane.setAlignment(fulfil,Pos.CENTER);
+        StackPane.setAlignment(garnish,Pos.BOTTOM_CENTER);
+        StackPane.setMargin(fulfil, new Insets(0, 0, garnish.getHeight()/2, 0));
+        StackPane.setMargin(garnish, new Insets(fulfil.getHeight()/2, 0, 0, 0));
+        fulfil.setOnAction(e -> fulfilOrder(order, false));
+        garnish.setOnAction(e -> fulfilOrder(order, true));
     }
     public void fulfilOrder(CustomerOrder order, boolean garnish) {
         ArrayList<Ingredient> prevHand = null;
@@ -689,15 +667,12 @@ public class MainHandler
                 }
 
             }
-            cardDraws.get(0).setOnFinished(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
+            cardDraws.get(0).setOnFinished(e ->{
                     if(handleTurnEnd())
                         drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
                     else
                         drawRows();
-                }
-            });
+                });
             cardDraws.forEach(t -> t.play());
 
         }
@@ -766,22 +741,12 @@ public class MainHandler
                 if(garnishable.contains(order))
                 {
                     card.setEffect(greenHighlight);
-                    card.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            askFulfilOrGarnish(event, order);
-                        }
-                    });
+                    card.setOnMouseClicked(e ->askFulfilOrGarnish(e, order));
                 }
                 else if(fulfilable.contains(order))
                 {
                     card.setEffect(blueHighlight);
-                    card.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            fulfilOrder(order, false);
-                        }
-                    });
+                    card.setOnMouseClicked(e -> fulfilOrder(order, false));
                 }
             }
         }
@@ -812,12 +777,10 @@ public class MainHandler
             {
                 // indicate bakeable layers
                 card.setEffect(yellowHighlight);
-                card.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) { //TODO: make an animation for drawing cards
-                        bakery.bakeLayer(layer);
-                        bakeLayer(event, new ArrayList<>(layer.getRecipe()) ); //need to make the copy so that it doesn't wipe the other recipes
-                    }
+                card.setOnMouseClicked(e ->
+                {
+                    bakery.bakeLayer(layer);
+                    bakeLayer(e, new ArrayList<>(layer.getRecipe()) ); //need to make the copy so that it doesn't wipe the other recipes
                 });
             }
 
@@ -831,25 +794,14 @@ public class MainHandler
         stackBacking.setFill(Color.GOLD);
         stackBacking.setStroke(Color.WHITE);
         pantryRow.getChildren().add(stackCard);
-        stackCard.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                drawFromPantryDeck(event);
-            }
-        });
+        stackCard.setOnMouseClicked(e -> drawFromPantryDeck(e));
         for(Ingredient ingredient : bakery.getPantry())
         {
             StackPane card = makeNamedCard(ingredient.toString());
             Rectangle backing = (Rectangle) card.getChildren().get(0);
             backing.setFill(Color.WHITE);
             backing.setStroke(Color.GOLD);
-            card.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event)
-                {
-                    drawFromPantry(event);
-                }
-            });
+            card.setOnMouseClicked(e -> drawFromPantry(e));
 
             pantryRow.getChildren().add(card);
         }
@@ -887,44 +839,33 @@ public class MainHandler
             {
                 StackPane handPane = makePlayerHand(player,maxWidth);
 
-                handPane.setOnDragOver(new EventHandler<DragEvent>() {
-                    @Override
-                    public void handle(DragEvent event) {
-                        if(event.getDragboard().hasContent(ingredientFormat))
-                        {
-                            event.acceptTransferModes(TransferMode.MOVE);
-                        }
-                        event.consume();
-                    }
+                handPane.setOnDragOver(e ->
+                {
+                        if(e.getDragboard().hasContent(ingredientFormat))
+                            e.acceptTransferModes(TransferMode.MOVE);
+                        e.consume();
                 });
 
-                handPane.setOnDragEntered(new EventHandler<DragEvent>() {
-                    @Override
-                    public void handle(DragEvent event) {
+                handPane.setOnDragEntered(e ->
+                {
                         for( Node card :  handPane.getChildren())
                         {
                             ((Rectangle) ((StackPane)card).getChildren().get(0)).setEffect(new ColorAdjust(0.3, 0.3, 0, 0.5));
                         }
-
-                        event.consume();
-                    }
+                        e.consume();
                 });
-                handPane.setOnDragExited(new EventHandler<DragEvent>() {
-                    @Override
-                    public void handle(DragEvent event) {
+                handPane.setOnDragExited(e ->
+                {
                         for( Node card :  handPane.getChildren())
                         {
                             ((Rectangle) ((StackPane)card).getChildren().get(0)).setEffect(new ColorAdjust(0, 0, 0, 0));
                         }
-                        event.consume();
-                    }
+                        e.consume();
                 });
 
-                handPane.setOnDragDropped(new EventHandler<DragEvent>() {
-                    @Override
-                    public void handle(DragEvent event) {
+                handPane.setOnDragDropped(event ->
+                {
                         boolean dragDropWorked = false;
-
                         if(event.getDragboard().hasContent(ingredientFormat))
                         {
                             draggedHand = (StackPane) event.getSource();
@@ -935,9 +876,7 @@ public class MainHandler
                         }
 
                         event.setDropCompleted(dragDropWorked);
-
                         event.consume();
-                    }
                 });
 
                 ScrollPane name = makePlayerName(player.toString(), cardHeight);
@@ -1010,47 +949,35 @@ public class MainHandler
             hover.setToY(card.getLayoutY() -50);
             hover.setFromY(card.getLayoutY());
             int originalIndex = handPane.getChildren().indexOf(card);
-            card.setOnMouseEntered(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
+            card.setOnMouseEntered(e ->
+            {
                     Duration time = hover.getCurrentTime();
                     hover.setRate(1);
                     hover.playFrom(time);
                     card.toFront();
-                    card.toFront();
-                }
             });
-            card.setOnMouseExited(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
+            card.setOnMouseExited(e ->
+            {
                     Duration time = hover.getCurrentTime();
                     hover.setRate(-1);
                     hover.playFrom(time);
                     handPane.getChildren().remove(handPane.getChildren().size()-1); // Weird screwing with the children list to put the card back in the right spot in terms of being ahead and behind other cards.
                     handPane.getChildren().add(originalIndex,card);
-                }
             });
 
             if(player.equals(bakery.getCurrentPlayer()))
             { //Give the ability to pass cards
-                card.setOnDragDetected(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
+                card.setOnDragDetected(event ->
+                {
                         Dragboard db = card.startDragAndDrop(TransferMode.MOVE);
 
                         ClipboardContent content = new ClipboardContent();
                         content.put(ingredientFormat, ingredient);
                         db.setContent(content);
                         event.consume();
-                    }
                 });
 
-                card.setOnDragDone(new EventHandler<DragEvent>() {
-                    @Override
-                    public void handle(DragEvent event) {
-                        handleDragDone(event);
-                    }
-                });
+                card.setOnDragDone(e -> handleDragDone(e));
             }
 
         }
@@ -1064,9 +991,8 @@ public class MainHandler
             StackPane card = (StackPane) event.getSource();
             TranslateTransition moveCard = animateNodeToNode(card, draggedHand, Duration.millis(800));
 
-            moveCard.setOnFinished(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
+            moveCard.setOnFinished(e ->
+            {
                     if(!handleTurnEnd())
                     {
                         drawCustomers();
@@ -1075,7 +1001,6 @@ public class MainHandler
                         drawOtherHands();
                     }
                     draggedHand = null;
-                }
             });
 
             RotateTransition spin = new RotateTransition(Duration.millis(500), (Node) event.getSource());

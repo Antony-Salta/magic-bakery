@@ -77,15 +77,13 @@ public class StartHandler {
         Button begin = new Button("Begin game");
 
 
-        begin.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
+        begin.setOnAction(event ->
+        {
                 try {
-                    switchToMainGame(actionEvent);
+                    switchToMainGame(event);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
         });
 
         Button submit = new Button("Submit");
@@ -108,18 +106,14 @@ public class StartHandler {
             numPlayers.setText(names.size() + "/5 Players");
         };
 
-        submit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                submitHandler.handle(actionEvent);
-            }
+        submit.setOnAction(e ->
+        {
+            submitHandler.handle(e);
         });
-        nameEntry.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
+        nameEntry.setOnKeyPressed(keyEvent ->
+        {
                 if(keyEvent.getCode().equals(KeyCode.ENTER))
                     submitHandler.handle(keyEvent);
-            }
         });
         buttons.getChildren().add(submit);
 
