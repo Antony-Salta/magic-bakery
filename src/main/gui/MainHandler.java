@@ -1170,17 +1170,18 @@ public class MainHandler
     private ScrollPane makePlayerName(String name, double maxWidth)
     {
         Label nameLabel = new Label(name);
+        nameLabel.setAlignment(Pos.TOP_CENTER);
         ScrollPane scrollPane = new ScrollPane(nameLabel);
         nameLabel.setMaxWidth(Double.MAX_VALUE);
         scrollPane.setMaxWidth(maxWidth);
-        scrollPane.setMaxHeight(nameLabel.getHeight()+15);
+        scrollPane.setMaxHeight(nameLabel.getHeight()+40);
         return scrollPane;
     }
 
     public void updateCurrentPlayer()
     {
         currentPlayer.setText("Current Player: " + bakery.getCurrentPlayer().toString());
-        playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/4);
+        playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/6);
     }
     public void updateActionsLeft()
     {
