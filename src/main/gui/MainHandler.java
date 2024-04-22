@@ -783,7 +783,11 @@ public class MainHandler
         animations.play();
     }
 
-    public void drawCustomers()
+    /**
+     * Draws the elements in the customer row according to the game state. This will be the customer deck, up to 3 orders, and a discard pile.
+     * It gives appropriate event handlers and highlights to fulfil or garnish orders, if it's possible for the current player
+     */
+    private void drawCustomers()
     {
         customerRow.getChildren().clear();
 
@@ -860,7 +864,12 @@ public class MainHandler
             customerRow.getChildren().add(card);
         }
     }
-    public void drawLayers()
+
+    /**
+     * Draws the layer row based on the game state.
+     * Layers will have the appropriate event handlers and highlights if they are bakeable by the current player.
+     */
+    private void drawLayers()
     {
         layerRow.getChildren().clear();
         Collection<Layer> bakeables =  bakery.getBakeableLayers();
@@ -881,7 +890,12 @@ public class MainHandler
 
         }
     }
-    public void drawPantry()
+
+    /**
+     * Draws the pantry, with a refresh pantry button, pantry deck, and 5 pantry cards.
+     * There is no pantry discard, since it just gets shuffled back into the pantry deck, and there's no actual person that needs to manage the cards, and there are very few public methods to read the state of discard.
+     */
+    private void drawPantry()
     {
         pantryRow.getChildren().removeIf(node -> node instanceof StackPane); //keep the refresh pantry button
         StackPane stackCard = makeStackCard("Ingredient");
@@ -901,7 +915,11 @@ public class MainHandler
             pantryRow.getChildren().add(card);
         }
     }
-    public void drawHand()
+
+    /**
+     * Draws the current player's hand, giving events when the mouse is hovered over, and to drag and drop cards from one hand to another.
+     */
+    private void drawHand()
     {
         handRow.getChildren().clear();
 
@@ -910,7 +928,11 @@ public class MainHandler
         handRow.getChildren().add(currentHandPane);
     }
 
-    public void drawOtherHands()
+    /**
+     * Draws the other player's hands, which is similar to drawing the current player's hand, but without drag and drop being allowed.
+     * Instead, cards can be dragged into these hands
+     */
+    private void drawOtherHands()
     {
         leftHands.getChildren().clear();
         rightHands.getChildren().clear();
@@ -957,7 +979,7 @@ public class MainHandler
                         }
                         e.consume();
                 });
-
+                //This method does the main handling for the game logic of the drag being finished, passing a card to another hand after getting the dragboard content.
                 handPane.setOnDragDropped(event ->
                 {
                         boolean dragDropWorked = false;
@@ -1004,7 +1026,14 @@ public class MainHandler
 
     }
 
-    public StackPane makePlayerHand(Player player, double maxWidth)
+    /**
+     * This will make a hand, since it is very similar code for all of them. There is different functionality implemented for the current player's hand compared to the others
+     * since cards can be dragged from the current player's hand, into another player's hand.
+     * @param player Makes the stack pane of the specified player's hand
+     * @param maxWidth the max width that the hand can take up
+     * @return the stack pane, that is the player's hand
+     */
+    private StackPane makePlayerHand(Player player, double maxWidth)
     {
         StackPane handPane = new StackPane();
         handPane.setMaxWidth(maxWidth);
@@ -1079,7 +1108,11 @@ public class MainHandler
         return handPane;
     }
 
-    public void handleDragDone(DragEvent event)
+    /**
+     * This code will see when a drag-drop has finished, and do the necessary animation for the card moving from one hand to another.
+     * @param event the event of a dragged card being dropped into a valid place.
+     */
+    private void handleDragDone(DragEvent event)
     {
         if(event.getTransferMode() == TransferMode.MOVE)
         { // If the drag drop has worked
@@ -1116,7 +1149,7 @@ public class MainHandler
      * @param row the row that this card is to be inserted into
      * @param name the name given to this card
      */
-    public void drawCardSlot(HBox row, String name)
+    private void drawCardSlot(HBox row, String name)
     {
         StackPane card = makeBasicCard(null);
         ObservableList<Node> children = card.getChildren();
@@ -1144,7 +1177,7 @@ public class MainHandler
      * This will be used to make the basic card shape, with an image in the middle
      * @return a stackPane with the basic card shape and format. The pane will have its first child be the backing rectangle, and the second the centre image
      */
-    public StackPane makeBasicCard(Image image)
+    private StackPane makeBasicCard(Image image)
     {
         double height = calculateCardHeight();
         double width = height * 2/3;
@@ -1168,7 +1201,13 @@ public class MainHandler
         return card;
     }
 
-    public StackPane makeStackCard(String name)
+    /**
+     * Makes a card that is the top of a stack of cards, e.g. ingredient or the customer deck. It will make a basic card, then add on a centred label
+     * So the children are a backing rectangle, centre image, then a centred label.
+     * @param name the name to be put on the card
+     * @return the card that is made
+     */
+    private StackPane makeStackCard(String name)
     {
         StackPane card = makeBasicCard(logo);
         Label stackName = new Label(name);
@@ -1183,9 +1222,10 @@ public class MainHandler
 
     /**
      * Makes a card based on the makeBasicCard with a name at the top
+     * @param name the name to go at the top of the card
      * @return a stackPane that with the children: rectangle, centre image, name label aligned at the top
      */
-    public StackPane makeNamedCard(String name)
+    private StackPane makeNamedCard(String name)
     {
         StackPane card = makeBasicCard(new Image("file:../../images/" + name + ".png"));
         Label nameLabel = new Label(name);
@@ -1199,7 +1239,12 @@ public class MainHandler
         return card;
     }
 
-    public StackPane makeIngredientCard(String name)
+    /**
+     * Makes an ingredient card based on the named card creation
+     * @param name the name of the ingredient
+     * @return a stackPane that with the children: rectangle, centre image, name label aligned at the top
+     */
+    private StackPane makeIngredientCard(String name)
     {
         StackPane card = makeNamedCard(name);
         Rectangle backing = (Rectangle) card.getChildren().get(0);
@@ -1213,7 +1258,7 @@ public class MainHandler
      * @param layer the layer that this card will be of
      * @return a StackPane representing a card with the children: backing rectangle, centre image, name label at the top, recipe label at the bottom
      */
-    public StackPane makeLayerCard(Layer layer)
+    private StackPane makeLayerCard(Layer layer)
     {
         StackPane card = makeNamedCard(layer.toString());
         Label recipe = new Label("Recipe:\n" + layer.getRecipeDescription());
@@ -1231,7 +1276,12 @@ public class MainHandler
         StackPane.setMargin(recipe,new Insets(0,0,10,0));
         return card;
     }
-    public StackPane makeCustomerCard(CustomerOrder order)
+    /**
+     * This method will use the makeNamedCard to make a card as specified in that function, with a recipe displayed at the bottom
+     * @param order the customer order that this card will be of
+     * @return a StackPane representing a card with the children: backing rectangle, centre image, name label at the top, recipe label at the bottom
+     */
+    private StackPane makeCustomerCard(CustomerOrder order)
     {
         StackPane card = makeNamedCard(order.toString());
 
@@ -1262,6 +1312,12 @@ public class MainHandler
         return card;
     }
 
+    /**
+     * Makes a scroll pane with a label inside, used when making the name labels for other players.
+     * @param name The name of the player
+     * @param maxWidth the max width of the scroll pane
+     * @return the scroll pane
+     */
     private ScrollPane makePlayerName(String name, double maxWidth)
     {
         Label nameLabel = new Label(name);
@@ -1273,16 +1329,27 @@ public class MainHandler
         return scrollPane;
     }
 
-    public void updateCurrentPlayer()
+    /**
+     * updates the name in the currentPlayer field.
+     */
+    private void updateCurrentPlayer()
     {
         currentPlayer.setText("Current Player: " + bakery.getCurrentPlayer().toString());
         playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/6);
     }
-    public void updateActionsLeft()
+
+    /**
+     * Updates the number of actions being shown as being left.
+     */
+    private void updateActionsLeft()
     {
         actionsLeft.setText(bakery.getActionsRemaining() + "/" + bakery.getActionsPermitted() + "Actions left");
     }
-    public void updateCustomerStatus()
+
+    /**
+     * updates the customer status, so the number that have been fulfilled, garnished, and how many have given up.
+     */
+    private  void updateCustomerStatus()
     {
         int fulfilledCustomers, garnishedCustomers, givenUpCustomers;
         Customers customers = bakery.getCustomers();
@@ -1294,6 +1361,10 @@ public class MainHandler
     }
 
 
+    /**
+     * Calculates how tall cards should be, based on the height of the scene.
+     * @return The height in pixel that cards should be
+     */
     private double calculateCardHeight()
     {
         return handRow.getScene().getHeight() / 6 + 20;
