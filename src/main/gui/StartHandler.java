@@ -34,7 +34,12 @@ public class StartHandler {
 
     private List<String> names = new ArrayList<>();
 
-    public  void switchToMainGame(Event event) throws IOException {
+    /**
+     * Switches the game from this start prompt over to the actual game once the needed information to start a game has been gotten.
+     * @param event the event that starts the game proper. This is just needed to get the stage and change its scene to a new one
+     * @throws IOException if MainGame.fxml or any of the card CSVs cannot be read correctly.
+     */
+    private void switchToMainGame(Event event) throws IOException {
         //TODO: put in an actual random seed.
         if(bakery == null)
         {
@@ -61,6 +66,10 @@ public class StartHandler {
     }
 
 
+    /**
+     * Once the start button has been clicked, all the elements needed to prompt the user to enter names is instantiated.
+     * @param actionEvent this event is clicking the start, instead of load button
+     */
     public void startPrompt(ActionEvent actionEvent)
     {
         ObservableList<Node> children = root.getChildren();
@@ -119,6 +128,11 @@ public class StartHandler {
 
         children.addAll(numPlayers,prompt,nameEntry,buttons);
     }
+
+    /**
+     * Gets the user to select the file they want to load from their file explorer system, then loads that game and carries on playing it.
+     * @param event this event is the load button being pressed
+     */
     @FXML
     public void loadPrompt(ActionEvent event){
 

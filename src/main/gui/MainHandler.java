@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import javafx.animation.*;
@@ -96,7 +98,7 @@ public class MainHandler
      * The other hands will not be redrawn with this.
      * updateCurrentPlayer and updateActions left aren't called, since that will always be done in handleTurnEnd
      */
-    public void drawRows()
+    private void drawRows()
     {
         drawCustomers();
         drawLayers();
@@ -105,7 +107,7 @@ public class MainHandler
     }
 
     /**
-     *
+     * This sets up the scene and the needed instance variables. It will be called by StartHandler at the beginning of this handler being instantiated.
      * @param bakery the bakery object passed in from the startHandler
      */
     public void setup(MagicBakery bakery)
@@ -125,6 +127,10 @@ public class MainHandler
         blocker.setPrefHeight(stage.getHeight());
     }
 
+    /**
+     * Gives a file display system to allow the user to choose the file where they want to save their game.
+     * From there, they can just choose to save it.
+     */
     @FXML
     public void saveGame()
     {
@@ -149,12 +155,19 @@ public class MainHandler
         }
     }
 
+    /**
+     * 'Closes' the help prompt so that it isn't on screen
+     */
     @FXML
     public void closePrompt()
     {
         helpBox.setVisible(false);
         helpBox.getParent().toBack();
     }
+
+    /**
+     * 'Opens' the help prompt so that it is visible on screen
+     */
     @FXML
     public void showHelp()
     {
@@ -164,12 +177,12 @@ public class MainHandler
     }
 
     /**
-     *
-     * @param message
+     * Creates a message that will appear on screen and fade out
+     * @param message the message to be displayed
      * @param duration this will default to 3000ms
      * @return the transition, so that it can be played and a setOnFinished method set.
      */
-    public FadeTransition makeFadingMessage(String message, Duration duration)
+    private FadeTransition makeFadingMessage(String message, Duration duration)
     {
         if(duration == null)
             duration = Duration.millis(3000);
@@ -194,17 +207,22 @@ public class MainHandler
     }
 
     /**
-     * this specifically deletes the message from a fading message, just to reduce code duplication when setting the OnFinished for the animations.
+     * Specifically deletes the message from a fading message, just to reduce code duplication when setting the OnFinished for the animations.
+     * Some usages may want to more than just delete the message at the end, so the setOnFinished cannot be set immediately.
      * @param event the event of the transition ending
      */
-    public void deleteMessage(ActionEvent event)
+    private void deleteMessage(ActionEvent event)
     {
         Node origin = ((FadeTransition) event.getSource()).getNode();
         messageBox.getChildren().remove(origin);
         messageBox.toBack();
     }
 
-    public void drawFromPantry(MouseEvent event)
+    /**
+     * Draws a card from the pantry and makes an associated animation
+     * @param event The event of a pantry card being clicked on
+     */
+    private void drawFromPantry(MouseEvent event)
     {
         StackPane card = (StackPane) event.getSource();
         String name = ((Label) card.getChildren().get(2)).getText();
@@ -219,7 +237,12 @@ public class MainHandler
         });
         cardMove.play();
     }
-    public void drawFromPantryDeck(MouseEvent event)
+
+    /**
+     * Draws a card from the pantry deck and makes an associated animation of it going to hand (which is messier than the other animations for fun reasons)
+     * @param event the event of the pantry deck card being clicked
+     */
+    private void drawFromPantryDeck(MouseEvent event)
     {
         ArrayList<Ingredient> prevHand = new ArrayList<>(bakery.getCurrentPlayer().getHand());
 
@@ -252,7 +275,6 @@ public class MainHandler
      * Used in the drawCardFromPantry.
      * This will animate the card coming from the pantry deck, and then run handleTurnEnd as part of this being an action that the player takes
      * @param card, the card that is being animated from the pantry deck
-     *
      */
     private void drawCardAnimation(StackPane card)
     {
@@ -262,6 +284,7 @@ public class MainHandler
         card.setOnMouseEntered(null);
         card.setOnMouseExited(null);
         TranslateTransition reverseDraw = animateNodeToNode(card, pantryRow.getChildren().get(1), null);
+        //The rate is -1, because the card needs to look like it's going to the hand from the deck, when its original position is actually the hand.
         reverseDraw.setRate(-1);
         reverseDraw.setOnFinished(e ->
             {
@@ -278,10 +301,11 @@ public class MainHandler
     }
 
     /**
-     *
-     * @param event
+     * This is called after a layer has been baked in the game logic, and makes associated animations of cards leaving and entering the player's hand.
+     * @param event The event of the layer card being clicked
+     * @param usedIngredients The ingredients used to create the layer, which have to be animated from the hand going back to the pantry deck.
      */
-    public void bakeLayer(MouseEvent event, List<Ingredient> usedIngredients)
+    private void bakeLayer(MouseEvent event, List<Ingredient> usedIngredients)
     {
         StackPane card = (StackPane) event.getSource();
         TranslateTransition cardMove = animateNodeToNode(card, currentHandPane, null);
@@ -292,17 +316,74 @@ public class MainHandler
                     drawRows();
             });
 
-        ArrayList<TranslateTransition> spentCardAnimations = new ArrayList<>();
+        ParallelTransition usedCardAnimations = animateUsedCards(usedIngredients);
+        usedCardAnimations.play();
+        cardMove.play();
+    }
+
+    private ParallelTransition animateUsedCards(List<Ingredient> usedIngredients)
+    {
+        ParallelTransition usedCardAnimations = new ParallelTransition();
+
+        boolean recipeHasLayers = false;
+        for (Ingredient ingredient: usedIngredients)
+        {
+            if( ingredient instanceof Layer){
+                recipeHasLayers = true;
+                break;
+            }
+        }
+
         for(Node ingredientNode :  currentHandPane.getChildren()) {
             StackPane ingredientCard = (StackPane) ingredientNode;
             String name = ((Label) ingredientCard.getChildren().get(2)).getText();
-            Ingredient temp = new Ingredient(name.toLowerCase());
+            Ingredient temp = null;
+
+            //Now follows some awful ways of figuring out if a card is a layer or ingredient, and doing string parsing to recreate the layer if so
+            if( ((Rectangle) ingredientCard.getChildren().get(0)).getStroke().equals(Color.GOLD))
+                temp = new Ingredient(name.toLowerCase());
+            else if(recipeHasLayers) // so if this whole thing even has to be done.
+            {
+                List<Ingredient> recipe = new ArrayList<>();
+                String recipeString = ((Label) ingredientCard.getChildren().get(3)).getText();
+                String[] ingredients = recipeString.split(", ");
+                for (String ingredient: ingredients)
+                {
+                    //This regex will get the name and the number in the x2 if it's there, although I haven't seen a layer that needs 2 of any ingredient.
+                    Pattern pattern = Pattern.compile("(.+) \\(x(\\d+)\\)");
+                    Matcher matcher = pattern.matcher(ingredient);
+                    if(matcher.find())
+                    {
+                        String actualName = matcher.group(1);
+                        int quantity = Integer.parseInt(matcher.group(2));
+
+                        for (int i = 0; i < quantity; i++) {
+                            recipe.add(new Ingredient(actualName));
+                        }
+                    }
+                    else
+                        recipe.add(new Ingredient(ingredient));
+
+                }
+                temp = new Layer(name.toLowerCase(), recipe);
+            }
+            else if(!recipeHasLayers)
+                continue; //Skip the layer card in the hand if the recipe doesn't need a layer
+
+
             if(usedIngredients.isEmpty())
                 break;
-            if (usedIngredients.contains(temp)) {
-                spentCardAnimations.add(animateNodeToNode(ingredientCard, pantryRow.getChildren().get(1), null));
+            if (usedIngredients.contains(temp))
+            {
+                Node destination;
+                if(temp instanceof Ingredient)
+                    destination = pantryRow.getChildren().get(1);
+                else
+                    destination = layerRow;
+                usedCardAnimations.getChildren().add(animateNodeToNode(ingredientCard, destination, null));
                 usedIngredients.remove(temp);
             }
+
         }
         // now the clean-up round on helpful ducks
         if(!usedIngredients.isEmpty())
@@ -312,23 +393,22 @@ public class MainHandler
                 String name = ((Label) ingredientCard.getChildren().get(2)).getText();
                 if(name.contains("helpful duck")) // not pasting the whole thing because I have precautions around the duck character not working on all platforms.
                 {
-                    spentCardAnimations.add(animateNodeToNode(ingredientCard, pantryRow.getChildren().get(1), null));
+                    usedCardAnimations.getChildren().add(animateNodeToNode(ingredientCard, pantryRow.getChildren().get(1), null));
                     usedIngredients.remove(0);
                 }
             }
         }
-        spentCardAnimations.forEach(a -> a.play());
-        cardMove.play();
+        return usedCardAnimations;
     }
 
     /**
      * Uses animate node, and the bounding boxes of the source and destination node to animate one object to another.
-     * @param source
-     * @param destination
+     * @param source the node that is being moved
+     * @param destination the node that the source is moving to
      * @param duration default duration time is 500ms if null is passed in, otherwise dictates how long the animation takes to complete.
      * @return the TranslateTransition giving the animation.
      */
-    public TranslateTransition animateNodeToNode(Node source, Node destination, Duration duration)
+    private TranslateTransition animateNodeToNode(Node source, Node destination, Duration duration)
     {
         if(duration == null)
         {
@@ -346,14 +426,14 @@ public class MainHandler
 
 
     /**
-     * Makes a translate transition that moves a stack pane from one set of coordinates to another, because this is going to be needed a lot in animations
-     * @param source the StackPane that is being moved
+     * Makes a translate transition that moves a node from one set of coordinates to another, because this is going to be needed a lot in animations
+     * @param source the Mode that is being moved
      * @param from The coordinate that it is moving from, this should be an array of length 2, with the center x and then center y coordinate
      * @param to the coordinate that it is moving to, in the same format of the from variable
      * @param duration the duration of the animation, which will default to 500ms if null is passed in
      * @return the translate transition of this, with a default duration of 500ms
      */
-    public TranslateTransition animateNode(Node source, double[] from, double[] to, Duration duration)
+    private TranslateTransition animateNode(Node source, double[] from, double[] to, Duration duration)
     {
         if(duration == null)
             duration = Duration.millis(500);
@@ -366,6 +446,9 @@ public class MainHandler
         return move;
     }
 
+    /**
+     * Effectively just does the same thing as refresh pantry in the game logic, with the extra handling needed for the UI.
+     */
     @FXML
     public void refreshPantry()
     {
@@ -376,16 +459,17 @@ public class MainHandler
     }
 
     /**
-     * This function should be called after any action. It will check if the current player's turn has ended, and then check if the round has ended
+     * This  should be called after any action. It will check if the current player's turn has ended, and then check if the round has ended
      * It will update the bakery methods as needed
      * It will redraw everything that needs to be redrawn if it is the end of a player's turn, which is everything but the pantry row.
+     * (This could change if I make a separate setEffects method for layers and customers, but that's just optimisation)
      * It will always update the number of actions left
      * It will always update the currentPlayer when needed
-     * It will always update customerStatus if it is the end of a round.
+     * It will update customerStatus if it is the end of a round.
      * At the end of a round, a message will be displayed, stating that a new round has started.
      * @return whether it is the end of a round, and therefore if everything but the pantry row has been redrawn
      */
-    public boolean handleTurnEnd()
+    private boolean handleTurnEnd()
     {
         boolean gameOver = false;
         boolean turnEnd = false;
@@ -405,6 +489,7 @@ public class MainHandler
                 boolean timeToStop = false;
                 boolean hitCustomer = false;
                 int i =1;
+                //This loop makes all the animations needed to move customers along if it's the end of a round
                 while( i < customerRow.getChildren().size() -1 &&  timeToStop == false)
                 {
                     StackPane customerCard = (StackPane) customerRow.getChildren().get(i);
@@ -432,7 +517,8 @@ public class MainHandler
                 updateCustomerStatus();
 
 
-                //If the game is ending
+                //If the game is ending.
+                //TODO: put in separate function and prettify.
                 if(customers.isEmpty() && customers.getCustomerDeck().isEmpty())
                 {
                     gameOver =true;
@@ -515,7 +601,7 @@ public class MainHandler
     }
 
     /**
-     * This will move the hands around to make it more obvious when a turn ends.
+     * This will move the hands around to show how the order goes, and each player can follow the new position of their hand.
      * During this, all of the rows other than the pantry will be redrawn, as this is where the current player switches
      */
     private void moveHandsAround()
@@ -607,7 +693,13 @@ public class MainHandler
             rotates[i].play();
         }
     }
-    public void askFulfilOrGarnish(MouseEvent event, CustomerOrder order)
+
+    /**
+     * Brings up two buttons asking if the user would like to fulfil or garnish their order, with the buttons being able to implement the needed logic.
+     * @param event the event of a garnishable customer card being clicked on
+     * @param order The associated CustomerOrder with the card that's been clicked.
+     */
+    private void askFulfilOrGarnish(MouseEvent event, CustomerOrder order)
     {
         StackPane card = (StackPane) event.getSource();
         Button fulfil = new Button("Fulfil?");
@@ -619,39 +711,42 @@ public class MainHandler
         StackPane.setAlignment(garnish,Pos.BOTTOM_CENTER);
         StackPane.setMargin(fulfil, new Insets(0, 0, garnish.getHeight()/2, 0));
         StackPane.setMargin(garnish, new Insets(fulfil.getHeight()/2, 0, 0, 0));
-        fulfil.setOnAction(e -> fulfilOrder(order, false));
-        garnish.setOnAction(e -> fulfilOrder(order, true));
+        fulfil.setOnAction(e -> fulfilOrder(card, order, false));
+        garnish.setOnAction(e -> fulfilOrder(card, order, true));
     }
-    public void fulfilOrder(CustomerOrder order, boolean garnish) {
-        ArrayList<Ingredient> prevHand = null;
-        ArrayList<Ingredient> newHand = null;
 
-        animateCustomerToDeck(order,garnish);
-
-
-
-
+    /**
+     * Animates the selected card as going to the discard pile, then on finish calls finishFulfilOrder,
+     * which handles the game logic and animations of the player's card.
+     * @param card The card that will be animated going to the discard pile
+     * @param order the CustomerOrder that is being fulfilled
+     * @param garnish Whether the order is being garnished or not
+     */
+    private void fulfilOrder(StackPane card, CustomerOrder order, boolean garnish) {
+        //TODO: fix animation issue where the card carries on moving afterwards, maybe just delete it here
+        TranslateTransition toDeck = animateNodeToNode(card, customerRow.getChildren().get(customerRow.getChildren().size()-1), null);
+        toDeck.setOnFinished(e ->
+                {
+                    customerRow.getChildren().remove(card);
+                    finishFulfilOrder(order,garnish);
+                });
+        toDeck.play();
     }
-    private void animateCustomerToDeck(CustomerOrder order, boolean garnish)
-    {
-        for (int i = 1; i < customerRow.getChildren().size()-1; i++) {
-            StackPane customerCard = (StackPane) customerRow.getChildren().get(i);
-            if( ((Label) customerCard.getChildren().get(2)).getText().equals(order.toString()))
-            {
-                TranslateTransition toDeck = animateNodeToNode(customerCard, customerRow.getChildren().get(customerRow.getChildren().size()-1), null);
-                toDeck.setOnFinished(e -> finishFulfilOrder(order,garnish));
-                toDeck.play();
-            }
-        }
-    }
+
+    /**
+     * Calls the bakery's fulfillOrder method, and then animates the cards drawn from garnish going to the player's hand.
+     * It will also use AnimateUsedCards to animate the used c cards as going into the pantry deck.
+     * @param order the CustomerOrder that is being fulfilled
+     * @param garnish whether the order is being garnished
+     */
     private void finishFulfilOrder(CustomerOrder order, boolean garnish)
     {
         List<Ingredient> newCards =  bakery.fulfillOrder(order, garnish);
-
+        ParallelTransition animations = new ParallelTransition();
         // This chunk of code will figure out where the cards drawn when garnishing come from, so that it can be animated.
         if (garnish) {
 
-            ArrayList<TranslateTransition> cardDraws = new ArrayList<>(2);
+
             for (int i = 2; i < pantryRow.getChildren().size(); i++) {
                 if(newCards.isEmpty())
                     break;
@@ -660,32 +755,32 @@ public class MainHandler
 
                 for (int j = 0; j < newCards.size(); j++) {
                     if (newCards.get(j).toString().equals(name)) {
-                        cardDraws.add(animateNodeToNode(card, currentHandPane, null));
+                        animations.getChildren().add(animateNodeToNode(card, currentHandPane, null));
                         newCards.remove(j);
                         break;
                     }
                 }
 
             }
-            cardDraws.get(0).setOnFinished(e ->{
-                    if(handleTurnEnd())
-                        drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
-                    else
-                        drawRows();
-                });
-            cardDraws.forEach(t -> t.play());
+            ParallelTransition usedCardAnimations = animateUsedCards(order.getGarnish());
+            animations.getChildren().addAll( usedCardAnimations.getChildren());
+
 
         }
 
 
         updateCustomerStatus();
-        if(!garnish)
+
+        ParallelTransition usedCardAnimations = animateUsedCards(order.getRecipe());
+        animations.getChildren().addAll( usedCardAnimations.getChildren());
+        animations.setOnFinished(e ->
         {
             if(handleTurnEnd())
                 drawPantry(); // can technically change by putting ingredients back in when the pantry deck is emptied.
             else
                 drawRows();
-        }
+        });
+        animations.play();
     }
 
     public void drawCustomers()
@@ -746,7 +841,7 @@ public class MainHandler
                 else if(fulfilable.contains(order))
                 {
                     card.setEffect(blueHighlight);
-                    card.setOnMouseClicked(e -> fulfilOrder(order, false));
+                    card.setOnMouseClicked(e -> fulfilOrder(card, order, false));
                 }
             }
         }
