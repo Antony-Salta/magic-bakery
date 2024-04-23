@@ -10,13 +10,13 @@
    <children>
       <HBox alignment="TOP_CENTER" prefHeight="22.0" prefWidth="1280.0">
          <children>
-            <Label text="Please enter whether you would like to start a new game or load an existing one from file" />
+            <Label accessibleText="Please enter whether you would like to start a new game or load an existing one from file" text="Please enter whether you would like to start a new game or load an existing one from file" />
          </children>
       </HBox>
       <HBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="0.0" prefWidth="1280.0" spacing="100.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#startPrompt" text="Start" />
-            <Button mnemonicParsing="false" onAction="#loadPrompt" text="Load" />
+            <Button accessibleHelp="Click this to be prompted to enter names to start a game with" accessibleText="Start" mnemonicParsing="false" onAction="#startPrompt" text="Start" />
+            <Button accessibleHelp="Click this to select a file to load a save from" accessibleText="Load" mnemonicParsing="false" onAction="#loadPrompt" text="Load" />
          </children>
          <opaqueInsets>
             <Insets />

@@ -136,7 +136,7 @@ public class MainHandler
     {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose save file");
-        chooser.setInitialDirectory(new File("./"));
+        chooser.setInitialDirectory(new File("../../"));
         File save = chooser.showOpenDialog(currentPlayer.getScene().getWindow());
         try
         {
@@ -203,6 +203,8 @@ public class MainHandler
         FadeTransition fadeOut = new FadeTransition(Duration.millis(3000), messageLabel);
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
+
+        messageLabel.setAccessibleText(messageLabel.getText());
         return fadeOut;
     }
 
@@ -1171,6 +1173,10 @@ public class MainHandler
         card.getChildren().add(nameLabel);
         StackPane.setAlignment(nameLabel,Pos.CENTER);
         row.getChildren().add(card);
+
+        card.setAccessibleText(name + " slot");
+        card.setAccessibleHelp("This is a slot where a card can go, depending on how the game goes.");
+
     }
 
     /**
@@ -1217,6 +1223,8 @@ public class MainHandler
         card.getChildren().add(stackName);
         StackPane.setAlignment(stackName, Pos.BOTTOM_CENTER);
         StackPane.setMargin(stackName,new Insets(0,0,10,0));
+        card.setAccessibleText(name + " deck");
+        card.setAccessibleHelp("This is a deck of " + name + " cards");
         return card;
     }
 
@@ -1250,6 +1258,8 @@ public class MainHandler
         Rectangle backing = (Rectangle) card.getChildren().get(0);
         backing.setFill(Color.WHITE);
         backing.setStroke(Color.GOLD);
+        card.setAccessibleText("Ingredient: " + name);
+        card.setAccessibleHelp("This is an ingredient card, which you will use to make layers, and ultimately fulfil orders");
         return card;
     }
 
@@ -1274,6 +1284,8 @@ public class MainHandler
         backing.setStroke(Color.PINK);
         recipe.setMaxWidth(backing.getWidth());
         StackPane.setMargin(recipe,new Insets(0,0,10,0));
+        card.setAccessibleText("Layer: " + layer.toString() + recipe.getText());
+        card.setAccessibleHelp("This is a layer card, which you make with ingredients to help fulfil orders that come in.");
         return card;
     }
     /**
@@ -1284,7 +1296,6 @@ public class MainHandler
     private StackPane makeCustomerCard(CustomerOrder order)
     {
         StackPane card = makeNamedCard(order.toString());
-
         Label recipe = new Label();
         String recipeText = "Recipe:\n- " + order.getRecipeDescription();
         recipe.getStyleClass().addAll("customerCard","customerRecipe");
@@ -1308,7 +1319,8 @@ public class MainHandler
 
         Label nameLabel = (Label) card.getChildren().get(2);
         nameLabel.getStyleClass().addAll("customerCard", "customerName");
-
+        card.setAccessibleText("Customer order: " + order.toString() + " " + recipeText);
+        card.setAccessibleHelp("This is a customer card, which you should try to fulfil by getting the needed ingredients in the recipe, and garnish if you can.");
         return card;
     }
 
@@ -1336,6 +1348,7 @@ public class MainHandler
     {
         currentPlayer.setText("Current Player: " + bakery.getCurrentPlayer().toString());
         playerScroll.setMaxWidth(currentPlayer.getScene().getWidth()/6);
+        currentPlayer.setAccessibleText(currentPlayer.getText());
     }
 
     /**
@@ -1344,6 +1357,7 @@ public class MainHandler
     private void updateActionsLeft()
     {
         actionsLeft.setText(bakery.getActionsRemaining() + "/" + bakery.getActionsPermitted() + "Actions left");
+        actionsLeft.setAccessibleText(actionsLeft.getText());
     }
 
     /**
@@ -1356,8 +1370,9 @@ public class MainHandler
         fulfilledCustomers = customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.FULFILLED).size();
         garnishedCustomers = customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GARNISHED).size();
         givenUpCustomers = customers.getInactiveCustomersWithStatus(CustomerOrder.CustomerOrderStatus.GIVEN_UP).size();
-        String status = "Customers fulfiled (and garnished) : " + (fulfilledCustomers + garnishedCustomers) + "(" + garnishedCustomers + ")\nCustomers that have given up: " + givenUpCustomers;
+        String status = "Customers fulfiled (and garnished) : " + (fulfilledCustomers + garnishedCustomers) + "(" + garnishedCustomers + "). \nCustomers that have given up: " + givenUpCustomers;
         customerStatus.setText(status);
+        customerStatus.setAccessibleText(customerStatus.getText());
     }
 
 

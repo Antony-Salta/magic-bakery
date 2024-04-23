@@ -75,15 +75,20 @@ public class StartHandler {
         ObservableList<Node> children = root.getChildren();
         children.clear();
         Label numPlayers = new Label("0/5 Players");
+        numPlayers.setAccessibleText(numPlayers.getText());
         Label prompt = new Label("Please enter the name of the player");
+        prompt.setAccessibleText(prompt.getText());
         TextField nameEntry = new TextField();
         nameEntry.setMaxWidth(root.getWidth() /2);
         nameEntry.setPromptText("Player name: e.g. Martin");
+        nameEntry.setAccessibleText("Text field to enter names");
 
         HBox buttons = new HBox(100);
         buttons.setAlignment(Pos.CENTER);
 
         Button begin = new Button("Begin game");
+        begin.setAccessibleText("Begin game");
+        begin.setAccessibleHelp("Click this to go to a new scene where you play the game proper.");
 
 
         begin.setOnAction(event ->
@@ -96,6 +101,8 @@ public class StartHandler {
         });
 
         Button submit = new Button("Submit");
+        submit.setAccessibleText("Submit");
+        submit.setAccessibleHelp("Click this is to submit a name for a player in the game");
         EventHandler<Event> submitHandler = (event) ->
         {
             boolean added = validateName(nameEntry);
@@ -113,6 +120,7 @@ public class StartHandler {
             }
             nameEntry.setPromptText("Player name: e.g. Martin");
             numPlayers.setText(names.size() + "/5 Players");
+            numPlayers.setAccessibleText(numPlayers.getText());
         };
 
         submit.setOnAction(e ->
@@ -138,7 +146,7 @@ public class StartHandler {
 
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose save file");
-        chooser.setInitialDirectory(new File("./"));
+        chooser.setInitialDirectory(new File("../../"));
         File save = chooser.showOpenDialog(root.getScene().getWindow());
         try
         {
