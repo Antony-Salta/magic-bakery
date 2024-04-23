@@ -1,0 +1,1 @@
+java -Dfile.encoding=utf-8 --module-path ..\..\openjfx-21.0.2_windows-x64_bin-sdk\javafx-sdk-21.0.2\lib     --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics gui.GUI

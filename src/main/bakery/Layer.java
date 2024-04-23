@@ -43,7 +43,7 @@ public class Layer extends Ingredient
     public boolean canBake(List<Ingredient> ingredients)
     {
         HashMap<String, Integer> quantities = new HashMap<>();
-        for(Ingredient ingredient: recipe) // this builds up the amount needed for each ingredients
+        for(Ingredient ingredient: recipe) // this builds up the amount needed for each ingredient
         {
             String iName = ingredient.toString(); // just to get rid of all the toString calls.
             if(!quantities.containsKey(iName))
@@ -53,7 +53,8 @@ public class Layer extends Ingredient
         }
 
         int numDucks =0;
-        for (Ingredient ingredient : ingredients) {
+        for (Ingredient ingredient : ingredients)
+        {
             String iName = ingredient.toString();
             if(quantities.containsKey(iName))
             {
@@ -64,8 +65,9 @@ public class Layer extends Ingredient
                 
             
             
-            if(ingredient.equals(Ingredient.HELPFUL_DUCK)) // NOTE: dunno if this is how you actually count the helpful ducks.
+            if(ingredient.equals(Ingredient.HELPFUL_DUCK))
                 numDucks++;
+
         } // so at the end of the loop it will have counted down all of the ingredients, so then we just have to see if they have enough helpful ducks.
         
         int count = 0;
